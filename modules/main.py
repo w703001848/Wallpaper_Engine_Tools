@@ -1,24 +1,39 @@
 import logging  # 引入logging模块
 import os
-import shutil
 import json
 import winreg as reg
 from PySide6.QtWidgets import QFileDialog
 
 class MainFun(object):
-    pass
+     
+    def get_data_list(path):
+        list = []
+        for item in os.listdir(path):
+            obj = {
+                "name": item,
+                "path": os.path.join(path, item) # 结合目录名与文件名
+            }
+            list.append(obj)
+            # print(list)
+        return list
 
-print(os.path.dirname("C:/Program Files (x86)/Steam/steamapps/common/wallpaper_engine/e.exe"))
 
 class ConfigFun(object):
     def __init__(self):
         self.config_path = os.path.join(os.path.dirname(__file__), 'config.json')
         # 首次执行初始化config
         self.config = {
-            "steamPath": "",
-            "wallpaperPath": "",
-            "backupPath": ""
+            "username": os.getlogin(), # 获取本机用户名
+            "steamPath": "", # steam地址
+            "wallpaperPath": "", # wallpaper地址
+            "backupPath": "", # wallpaper备份地址
+            "isCheckedScene": True, # 场景
+            "isCheckedVideo": False, # 视频
+            "isCheckedWeb": False, # 网页
+            "isCheckedApplication": False, # 应用
+            "isCheckedInvalid": False, # 失效
         }
+        
         # 获取config.json
         try:
             with open(self.config_path, encoding="utf-8") as f1:
@@ -34,16 +49,16 @@ class ConfigFun(object):
         # 写入config.json
         self.save_config()
 
-
-    def save_config(self): # 写入config.json
+    # 写入config.json
+    def save_config(self): 
         try:
             with open(self.config_path, mode='wt', encoding="utf-8") as f1:
                 json.dump(self.config, f1) # 将json写入文件
         except Exception as e:
             logging.warning(f"Warning accessing registry: {e}")
 
-
-    def get_steam_path(self): # 获取Steam安装位置
+    # 获取Steam安装位置
+    def get_steam_path(self): 
         try:
             aReg = reg.ConnectRegistry(None, reg.HKEY_CURRENT_USER)
             aKey = reg.OpenKey(aReg, r"Software\Valve\Steam")
@@ -54,8 +69,8 @@ class ConfigFun(object):
             logging.error(f"Error accessing registry: {e}")
             return None
 
-
-    def get_wallpaper_path(self): # 获取WallpaperEngine安装位置
+    # 获取WallpaperEngine安装位置
+    def get_wallpaper_path(self): 
         try:
             aReg = reg.ConnectRegistry(None, reg.HKEY_CURRENT_USER)
             aKey = reg.OpenKey(aReg, r"Software\WallpaperEngine")
@@ -66,12 +81,14 @@ class ConfigFun(object):
         except Exception as e:
             logging.error(f"Error accessing registry: {e}")
             return None
-
-    def get_wallpaper_backup_path(self): # 获取WallpaperEngine备份位置
+        
+    # 获取WallpaperEngine备份位置
+    def get_wallpaper_backup_path(self): 
         backupPath = os.path.join(self.config['wallpaperPath'], 'projects\\backup')
         return backupPath
-
-    def openFileDialog(self, path, boxText): # 选择一个文件夹
+    
+    # 选择一个文件夹
+    def openFileDialog(self, path, boxText): 
         file_name = QFileDialog.getExistingDirectory(None, "选择一个文件夹", self.config[path])
         if file_name:
             self.config[path] = file_name
@@ -79,8 +96,8 @@ class ConfigFun(object):
             # 写入config.json
             self.save_config()
 
-
-    def get_wallpaper_config_path(self, wallpaper_path): # 获取WallpaperEngine config位置并读取
+    # 获取WallpaperEngine config位置并读取
+    def get_wallpaper_config_path(self, wallpaper_path): 
         wallpaper_config_path = os.path.join(wallpaper_path, 'config.json')
         try:
             with open(wallpaper_config_path, encoding="utf-8") as f1:
@@ -94,3 +111,4 @@ class ConfigFun(object):
 
         # mklink /j "C:\Program Files (x86)\Steam\steamapps\common\wallpaper_engine\projects\myprojects" "E:\wallpaper_engine_myprojects"
         # mklink /j "C:\Program Files (x86)\Steam\steamapps\workshop\content\431960" "E:\wallpaper_engine"
+
