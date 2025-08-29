@@ -6,7 +6,7 @@ from PySide6.QtCore import QMetaObject, QSize, Qt
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QWidget, QSpacerItem, QSizePolicy
 
-from RePKG import RePKG
+from modules import RePKG
 
 class Ui_tableItemBox(QWidget):
     def __init__(self):
