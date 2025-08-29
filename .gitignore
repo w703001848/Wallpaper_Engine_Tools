@@ -1,4 +1,7 @@
 modules/config.json
+# filtered-images
+# ideal-images
+output
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

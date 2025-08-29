@@ -6,6 +6,8 @@ from PySide6.QtCore import QMetaObject, QSize, Qt
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QWidget, QSpacerItem, QSizePolicy
 
+from RePKG import RePKG
+
 class Ui_tableItemBox(QWidget):
     def __init__(self):
         super().__init__()  # 必须调用父类初始化
@@ -74,6 +76,9 @@ class Ui_tableItemBox(QWidget):
                     name = name + ':' + obj['type']
                     if obj['type'].lower() == 'scene':
                         self.btn_RePKG.setVisible(True)
+                        repkg = RePKG()
+                        repkg.steamDirs = os.path.join(path, 'scene.pkg')
+                        self.btn_RePKG.clicked.connect(lambda: repkg.process_item())
                 elif 'dependency' in obj:
                     name = name + ':' + obj['dependency']
                 self.label_name.setText(name)
