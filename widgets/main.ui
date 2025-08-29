@@ -26,277 +26,157 @@
    <iconset>
     <normaloff>../img/Management.ico</normaloff>../img/Management.ico</iconset>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_9">
-   <item>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
-     <widget class="QWidget" name="tab">
+     <widget class="QWidget" name="tab_main">
       <attribute name="title">
        <string>已订阅</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout">
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="1" column="1">
+        <layout class="QGridLayout" name="gridLayout_tabMain"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_backup">
+      <attribute name="title">
+       <string>备份</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0">
+        <layout class="QGridLayout" name="gridLayout_tabBackup"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>RePKG</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
        <item>
-        <widget class="QLabel" name="label_error">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>20</pointsize>
-          </font>
-         </property>
-         <property name="lineWidth">
-          <number>1</number>
-         </property>
-         <property name="text">
-          <string>您未安装Wallpaper Engine</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignCenter</set>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_8">
+         <item>
+          <widget class="QLineEdit" name="lineEdit_repkg">
+           <property name="placeholderText">
+            <string>拖入需要提取的PKG/MPKG文件</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btn_repkgPath">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset theme="QIcon::ThemeIcon::EditFind"/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btn_repkg">
+           <property name="text">
+            <string>提取</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
-        <widget class="QWidget" name="widget_1" native="true">
-         <layout class="QVBoxLayout" name="verticalLayout_6">
-          <property name="spacing">
-           <number>6</number>
-          </property>
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout">
-            <item>
-             <widget class="QCheckBox" name="checkBox_4">
-              <property name="minimumSize">
-               <size>
-                <width>40</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>50</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>场景</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="checkBox_3">
-              <property name="minimumSize">
-               <size>
-                <width>40</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>50</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>视频</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="checkBox_2">
-              <property name="minimumSize">
-               <size>
-                <width>40</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>50</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>网页</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="checkBox">
-              <property name="minimumSize">
-               <size>
-                <width>40</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>50</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>应用</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer">
-              <property name="orientation">
-               <enum>Qt::Orientation::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="checkBox_5">
-              <property name="minimumSize">
-               <size>
-                <width>40</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>50</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>失效</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <widget class="QTableWidget" name="tableWidget_1">
-            <property name="verticalScrollBarPolicy">
-             <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOn</enum>
-            </property>
-            <property name="gridStyle">
-             <enum>Qt::PenStyle::SolidLine</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_7">
-            <item>
-             <widget class="QLabel" name="label_3">
-              <property name="text">
-               <string>容量：0G</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Orientation::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QPushButton" name="pushButton">
-              <property name="text">
-               <string>删除失效订阅</string>
-              </property>
-              <property name="checkable">
-               <bool>false</bool>
-              </property>
-              <property name="autoDefault">
-               <bool>false</bool>
-              </property>
-              <property name="default">
-               <bool>false</bool>
-              </property>
-              <property name="flat">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
+        <widget class="QTableWidget" name="tableWidget_repkg">
+         <property name="frameShape">
+          <enum>QFrame::Shape::NoFrame</enum>
+         </property>
+         <property name="verticalScrollBarPolicy">
+          <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOn</enum>
+         </property>
+         <property name="horizontalScrollBarPolicy">
+          <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+         </property>
+         <property name="columnCount">
+          <number>4</number>
+         </property>
+         <attribute name="horizontalHeaderVisible">
+          <bool>false</bool>
+         </attribute>
+         <attribute name="verticalHeaderVisible">
+          <bool>false</bool>
+         </attribute>
+         <column/>
+         <column/>
+         <column/>
+         <column/>
         </widget>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_3">
-      <attribute name="title">
-       <string>备份</string>
-      </attribute>
-     </widget>
-     <widget class="QWidget" name="tab_2">
+     <widget class="QWidget" name="tab_set">
       <attribute name="title">
        <string>设置</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <widget class="QScrollArea" name="scrollArea_2">
+      <layout class="QGridLayout" name="gridLayout_3">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item row="0" column="0">
+        <widget class="QScrollArea" name="scrollArea_1">
+         <property name="frameShape">
+          <enum>QFrame::Shape::NoFrame</enum>
+         </property>
+         <property name="verticalScrollBarPolicy">
+          <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOn</enum>
+         </property>
          <property name="widgetResizable">
           <bool>true</bool>
          </property>
-         <widget class="QWidget" name="scrollAreaWidgetContents_2">
+         <widget class="QWidget" name="scrollAreaWidgetContents_1">
           <property name="geometry">
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>579</width>
-            <height>466</height>
+            <width>599</width>
+            <height>562</height>
            </rect>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_5">
+          <layout class="QVBoxLayout" name="verticalLayout_2">
            <item>
-            <widget class="QGroupBox" name="groupBox">
+            <widget class="QGroupBox" name="groupBox_dir">
              <property name="minimumSize">
               <size>
                <width>0</width>
-               <height>100</height>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>16777215</height>
               </size>
              </property>
              <property name="title">
               <string>软件目录</string>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_3">
+              <property name="spacing">
+               <number>0</number>
+              </property>
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_2">
+               <layout class="QHBoxLayout" name="horizontalLayout_1">
                 <item>
                  <widget class="QLabel" name="label">
                   <property name="minimumSize">
@@ -331,12 +211,21 @@
                   <property name="text">
                    <string/>
                   </property>
+                  <property name="icon">
+                   <iconset theme="QIcon::ThemeIcon::SystemSearch"/>
+                  </property>
+                  <property name="iconSize">
+                   <size>
+                    <width>20</width>
+                    <height>20</height>
+                   </size>
+                  </property>
                  </widget>
                 </item>
                </layout>
               </item>
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_3">
+               <layout class="QHBoxLayout" name="horizontalLayout_2">
                 <item>
                  <widget class="QLabel" name="label_2">
                   <property name="minimumSize">
@@ -371,12 +260,15 @@
                   <property name="text">
                    <string/>
                   </property>
+                  <property name="icon">
+                   <iconset theme="QIcon::ThemeIcon::EditFind"/>
+                  </property>
                  </widget>
                 </item>
                </layout>
               </item>
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_4">
+               <layout class="QHBoxLayout" name="horizontalLayout_3">
                 <item>
                  <widget class="QLabel" name="label_4">
                   <property name="minimumSize">
@@ -417,6 +309,9 @@
                   <property name="text">
                    <string/>
                   </property>
+                  <property name="icon">
+                   <iconset theme="QIcon::ThemeIcon::EditFind"/>
+                  </property>
                  </widget>
                 </item>
                </layout>
@@ -425,11 +320,11 @@
             </widget>
            </item>
            <item>
-            <widget class="QGroupBox" name="groupBox_4">
+            <widget class="QGroupBox" name="groupBox_mklink">
              <property name="minimumSize">
               <size>
                <width>0</width>
-               <height>194</height>
+               <height>200</height>
               </size>
              </property>
              <property name="title">
@@ -437,58 +332,104 @@
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_4">
               <item>
-               <widget class="QLabel" name="label_7">
-                <property name="lineWidth">
-                 <number>2</number>
-                </property>
-                <property name="text">
-                 <string>注意：生成软链接将重命名源文件夹（名称+后缀）防止丢失，如果失败请手动改回。
-转移项目不建议使用，请手动剪切订阅目录</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_6">
+               <layout class="QHBoxLayout" name="horizontalLayout_4">
                 <item>
-                 <widget class="QLineEdit" name="lineEdit_wallpaperBackupPath_2">
-                  <property name="placeholderText">
-                   <string>目录地址：Steam\\steamapps\\workshop\\content\\431960</string>
+                 <widget class="QRadioButton" name="radio_mklink_steam">
+                  <property name="text">
+                   <string>壁纸</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="btn_backup_3">
-                  <property name="minimumSize">
+                 <widget class="QRadioButton" name="radio_mklink_backup">
+                  <property name="text">
+                   <string>备份</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="btn_mklink_new">
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="icon">
+                   <iconset theme="QIcon::ThemeIcon::FolderNew"/>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
                    <size>
-                    <width>0</width>
-                    <height>23</height>
+                    <width>40</width>
+                    <height>20</height>
                    </size>
                   </property>
-                  <property name="text">
-                   <string>订阅壁纸生成软链接</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="btn_backup_4">
-                  <property name="text">
-                   <string>转移项目</string>
-                  </property>
-                 </widget>
+                 </spacer>
                 </item>
                </layout>
               </item>
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_5">
                 <item>
-                 <widget class="QLineEdit" name="lineEdit_wallpaperBackupPath_3">
+                 <widget class="QLabel" name="label_3">
+                  <property name="minimumSize">
+                   <size>
+                    <width>160</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>原地址</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="lineEdit_wallpaperBackupPath_mklink">
                   <property name="placeholderText">
                    <string>目录地址：wallpaper_engine\\projects\\backup</string>
                   </property>
                  </widget>
                 </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_7">
                 <item>
-                 <widget class="QPushButton" name="btn_backup_2">
+                 <widget class="QLabel" name="label_5">
+                  <property name="minimumSize">
+                   <size>
+                    <width>160</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>目标地址</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="lineEdit_steamPath_mklink">
+                  <property name="placeholderText">
+                   <string>目录地址：Steam\\steamapps\\workshop\\content\\431960</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout">
+                <item>
+                 <widget class="QPushButton" name="btn_mklink_create">
                   <property name="minimumSize">
                    <size>
                     <width>0</width>
@@ -501,7 +442,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="btn_backup">
+                 <widget class="QPushButton" name="btn_dir_move">
                   <property name="text">
                    <string>转移项目</string>
                   </property>
@@ -510,27 +451,47 @@
                </layout>
               </item>
               <item>
+               <widget class="QLabel" name="label_7">
+                <property name="lineWidth">
+                 <number>2</number>
+                </property>
+                <property name="text">
+                 <string>注意：生成软链接将重命名源文件夹（名称+后缀）防止丢失，如果失败请手动改回。
+转移项目不建议使用，请手动剪切订阅目录</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox">
+             <property name="title">
+              <string>NAS备份</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout">
+              <item>
                <widget class="QLabel" name="label_8">
                 <property name="lineWidth">
                  <number>2</number>
                 </property>
                 <property name="text">
-                 <string>NAS迁移（针对不常用壁纸和应用压缩包迁移来减小硬盘占用）
+                 <string>针对不常用壁纸和应用压缩包迁移来减小硬盘占用
 步骤：1.手动转移项目到指定ip地址目录 2.生成快捷方式</string>
                 </property>
                </widget>
               </item>
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_8">
+               <layout class="QHBoxLayout" name="horizontalLayout_6">
                 <item>
-                 <widget class="QLineEdit" name="lineEdit_wallpaperBackupPath_4">
+                 <widget class="QLineEdit" name="lineEdit_nasBackupPath">
                   <property name="placeholderText">
                    <string>ip地址：192.168.10.101\\wallpaper_engine</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="btn_backup_5">
+                 <widget class="QPushButton" name="btn_backup_nas">
                   <property name="minimumSize">
                    <size>
                     <width>0</width>
@@ -548,7 +509,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QGroupBox" name="groupBox_3">
+            <widget class="QGroupBox" name="groupBox_info">
              <property name="minimumSize">
               <size>
                <width>0</width>
@@ -558,19 +519,15 @@
              <property name="title">
               <string>关于</string>
              </property>
-             <widget class="QLabel" name="label_version">
-              <property name="geometry">
-               <rect>
-                <x>10</x>
-                <y>25</y>
-                <width>221</width>
-                <height>16</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string>版本：0</string>
-              </property>
-             </widget>
+             <layout class="QVBoxLayout" name="verticalLayout_6">
+              <item>
+               <widget class="QLabel" name="label_version">
+                <property name="text">
+                 <string>版本：0</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </widget>
            </item>
            <item>
@@ -603,12 +560,7 @@
   <tabstop>btn_wallpaperPath</tabstop>
   <tabstop>lineEdit_wallpaperBackupPath</tabstop>
   <tabstop>btn_wallpaperBackupPath</tabstop>
-  <tabstop>btn_backup</tabstop>
-  <tabstop>btn_backup_2</tabstop>
-  <tabstop>btn_backup_3</tabstop>
-  <tabstop>btn_backup_4</tabstop>
-  <tabstop>lineEdit_wallpaperBackupPath_2</tabstop>
-  <tabstop>lineEdit_wallpaperBackupPath_3</tabstop>
+  <tabstop>lineEdit_wallpaperBackupPath_mklink</tabstop>
  </tabstops>
  <resources/>
  <connections/>

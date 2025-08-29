@@ -1,2 +1,3 @@
 from .main import MainFun, ConfigFun
-from .RePKG import RePKG
+from .componentList import MyWindow as Ui_List
+from .RePKG import RePKGFun
