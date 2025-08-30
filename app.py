@@ -2,7 +2,7 @@ import os, logging
 
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QFont, QPixmap
-from PySide6.QtWidgets import QApplication, QWidget, QLabel
+from PySide6.QtWidgets import QApplication, QWidget, QLabel, QRadioButton
 from widgets import Ui_MainForm
 from modules import MainFun, ConfigFun, Ui_List, RePKGFun
 
@@ -18,52 +18,119 @@ class MyWindow(QWidget, Ui_MainForm):
     def initPage(self):
         self.setupUi(self)
 
+        self.btn_mklink_open_old.clicked.connect(lambda: MainFun.openStartfile(self.lineEdit_mklink_path.text())) # mklink打开资源管理器
+        self.btn_mklink_open.clicked.connect(lambda: MainFun.openStartfile(self.lineEdit_mklink_path_new.text())) # mklink打开资源管理器
         self.label_version.setText('版本：' + self.configFun.config['version'])
         # 获取steam地址
         steam_path = self.configFun.config['steamPath']
         self.lineEdit_steamPath.setText(steam_path)
-        self.btn_steamPath.clicked.connect(lambda: self.configFun.openDirDialog('steamPath', self.lineEdit_steamPath))
-        # 获取steam软连接地址
-        # if self.configFun.config['mklinkSteamOld'] and self.configFun.config['mklinkSteam'] != self.configFun.config['mklinkSteamOld']:
-        #     self.lineEdit_steamPath_mklink.setText(self.configFun.config['mklinkSteam'])
-        # self.btn_steam_mklink.clicked.connect(lambda: self.configFun.openMklinkDialog('mklinkSteam', self.lineEdit_wallpaperBackupPath_mklink))
+        self.btn_steamPath.clicked.connect(self.setSteamPath)
         # 获取wallpaper地址
         if self.configFun.config['wallpaperPath']:
             self.lineEdit_wallpaperPath.setText(self.configFun.config['wallpaperPath'])
-            self.btn_wallpaperPath.clicked.connect(lambda: self.configFun.openDirDialog('wallpaperPath', self.lineEdit_wallpaperPath))
+            self.btn_wallpaperPath.clicked.connect(self.setWallpaperPath)
             self.lineEdit_wallpaperBackupPath.setText(self.configFun.config['backupPath'])
-            self.btn_wallpaperBackupPath.clicked.connect(lambda: self.configFun.openDirDialog('backupPath', self.lineEdit_wallpaperBackupPath))
-            # # 获取wallpaper软链接地址
-            # if self.configFun.config['mklinkWallpaperOld'] and self.configFun.config['mklinkWallpaper'] != self.configFun.config['mklinkWallpaperOld']:
-            #     self.lineEdit_wallpaperBackupPath_mklink.setText(self.configFun.config['mklinkWallpaper'])
-            #     self.btn_backup_mklink.setText("还原")
-            #     self.btn_backup_mklink.clicked.connect(lambda: self.configFun.backMklink('mklinkWallpaper', self.lineEdit_wallpaperBackupPath_mklink))
-            # else:
-            #     self.btn_backup_mklink.clicked.connect(lambda: self.configFun.openMklinkDialog('mklinkWallpaper', self.lineEdit_wallpaperBackupPath_mklink))
-
+            self.btn_wallpaperBackupPath.clicked.connect(self.setBackupPath)
+            
             # self.configFun.get_wallpaper_config_path(wallpaper_path) # 获取wallpaper_config数据
             self.addMainList() 
         else:
             self.addLabelError()
-
-        self.tabWidget.currentChanged.connect(lambda: self.repkgInit())
-        self.btn_repkgPath.clicked.connect(lambda: self.configFun.openFileDialog('repkgPath', self.lineEdit_repkg, "PKG/MPKG Files (*.pkg;*.mpkg)"))
-        self.btn_repkg.clicked.connect(lambda: self.repkgBtn())
         
+        self.repkgInit()
+        self.mklinkInit()
+
+    def func(self, *args, **kwargs):
+        print(11112)
+        pass
+    
+    # 设置文本框steam地址
+    def setSteamPath(self):
+        # path = MainFun.openFileDialog(self.configFun.config['steamPath'])
+        path = MainFun.openFileDialog(self.configFun.config['steamPath'], "请选择steam.exe启动文件", "Steam (*.exe)")
+        if path:
+            self.configFun.set_steam_path(path)
+            self.lineEdit_steamPath.setText(path)
+            self.mklinkChange(self.radio_mklink_steam) # 选中
+            # self.radio_mklink_steam.setChecked(True) 无法给文本框赋值
+            # 写入config.json
+            self.configFun.save_config()
+
+    # 设置文本框wallpaper地址
+    def setWallpaperPath(self):
+        # path = MainFun.openDirDialog(self.configFun.config['wallpaperPath'])
+        path = MainFun.openFileDialog(self.configFun.config['wallpaperPath'], "请选择wallpaper_engine/launcher.exe启动文件", "Steam (*.exe)")
+        if path:
+            self.lineEdit_wallpaperPath.setText(path)
+            self.configFun.set_wallpaper_path(path)
+            # 写入config.json
+            self.configFun.save_config()
+
+    # 设置文本框backup地址
+    def setBackupPath(self):
+        path = MainFun.openDirDialog(self.configFun.config['backupPath'])
+        if path:
+            self.lineEdit_wallpaperBackupPath.setText(path)
+            self.configFun.set_wallpaper_backup_path(path)
+            self.mklinkChange(self.radio_mklink_backup) # 选中
+            # 写入config.json
+            self.configFun.save_config()
+
+    # 列表数据加载
+    def addMainList(self):
+        obj = Ui_List('main')
+        objChildren = self.tab_main.children()
+        objChildren[0].addWidget(obj)
+
+        obj2 = Ui_List('backup')
+        # 获取列表数据加载
+        obj2.setData(MainFun.getDirList(self.configFun.config['backupPath']))
+        objChildren = self.tab_backup.children()
+        objChildren[0].addWidget(obj2)
+
+    # 未安装Wallpaper Engine提示
+    def addLabelError(self):
+        obj = QLabel('您未安装Wallpaper Engine', self)
+        font = QFont()
+        font.setPointSize(20)
+        obj.setFont(font)
+        obj.setLineWidth(1)
+        obj.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.gridLayout_tabMain.addWidget(obj)
+   
+    # repkg初始化
     def repkgInit(self):
+        self.tabWidget.currentChanged.connect(self.repkgChange)
+        self.btn_repkg.clicked.connect(self.repkgBtn)
+
+        def func():
+            path = MainFun.openFileDialog(self.configFun.config['repkgPath'], "请在场景壁纸中选择一个PKG/MPKG文件", "PKG/MPKG Files (*.pkg;*.mpkg)")
+            if path:
+                self.configFun.set_config('repkgPath', path)
+                self.lineEdit_repkg.setText(path)
+                # 写入config.json
+                # self.configFun.save_config()
+        self.btn_repkgPath.clicked.connect(func)
+
+    # repkg生成数据加载
+    def repkgChange(self):
         if self.tabWidget.currentIndex() == 2:
+            # print(RePKGFun().steamDirs)
+            # print(self.configFun.config['repkgPath'])
             if RePKGFun().steamDirs != '' and RePKGFun().steamDirs != self.configFun.config['repkgPath']:
                 path = RePKGFun().steamDirs
                 self.configFun.set_config('repkgPath', path)
                 self.lineEdit_repkg.setText(path)
                 self.setRepkgImgData()
 
+    # repkg提取
     def repkgBtn(self):
         res = RePKGFun().processItem(self.configFun.config['repkgPath'])
-        print(res)
+        # print(res)
         if res:
             self.setRepkgImgData()
 
+    # repkg图表生成
     def setRepkgImgData(self):
         dirPath = os.path.join(os.getcwd(), RePKGFun().output)
         if not os.path.exists(dirPath):
@@ -98,27 +165,58 @@ class MyWindow(QWidget, Ui_MainForm):
                 row += 1
                 self.tableWidget_repkg.setRowHeight(row, size)
 
-    def xxx(self):
-        pass
+    # 软地址初始化
+    def mklinkInit(self):
+        self.radio_mklink_steam.index = 0
+        self.radio_mklink_backup.index = 1
+        self.mklinkChange(self.radio_mklink_backup) # 初始化选中
+        self.buttonGroup.buttonClicked.connect(self.mklinkChange)
+        self.btn_mklink_create.clicked.connect(lambda: self.mklinkBtn())
+        self.btn_mklink_restore.clicked.connect(lambda: self.configFun.backMklink()) # 还原
 
-    def addMainList(self):
-        obj = Ui_List('main')
-        self.gridLayout_tabMain.addWidget(obj)
+        self.btn_mklink_new.clicked.connect(self.func)
+            # # 获取wallpaper软链接地址
+            # if self.configFun.config['mklinkWallpaperOld'] and self.configFun.config['mklinkWallpaper'] != self.configFun.config['mklinkWallpaperOld']:
+            #     self.lineEdit_mklink_path.setText(self.configFun.config['mklinkWallpaperOld'])
+            #     self.lineEdit_mklink_path_new.setText(self.configFun.config['mklinkWallpaper'])
+        
+    # 软地址生成
+    def mklinkBtn(self):
+        index = self.configFun.config['mklinkIndex']
+        if index < 0:
+            return
+        self.configFun.openMklinkDialog(None, self.lineEdit_mklink_path_new)
+    
+    # 软地址切换
+    def mklinkChange(self, radioBtn:QRadioButton):
+        # print(radioBtn.text())
+        self.configFun.set_config('mklinkIndex', radioBtn.index)
+        obj = self.configFun.config['mklinkList'][radioBtn.index]
+        self.lineEdit_mklink_path.setText(obj['path'])
+        if obj['path_old'] != '':
+            self.lineEdit_mklink_path_new.setText(obj['path_old'])
 
-        obj2 = Ui_List('backup')
-        # 获取列表数据加载
-        obj2.setData(MainFun.getDirList(self.configFun.config['backupPath']))
-        self.gridLayout_tabBackup.addWidget(obj2)
+    # 软地址新增
+    def mklinkCreate(self, index, path, path_old):
+        mklinkList = self.configFun.config['mklinkList']
+        name = f"额外{index}"
+        mklinkList.append({
+            "name": name,
+            "path": path,
+            "path_old": path_old
+        })
+        self.configFun.save_config()
+        self.mklinkBtnCreate(index, name)
 
-    def addLabelError(self):
-        obj = QLabel('您未安装Wallpaper Engine', self)
-        font = QFont()
-        font.setPointSize(20)
-        obj.setFont(font)
-        obj.setLineWidth(1)
-        obj.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.gridLayout_tabMain.addWidget(obj)
-
+    # 软地址按钮新增
+    def mklinkBtnCreate(self, index, name):
+        btn = QRadioButton()
+        btn.index = index
+        btn.objectName = f"radio_mklink_{index}"
+        btn.setText(name)
+        self.buttonGroup.addButton(btn)
+        self.horizontalLayout_radio.addWidget(btn)
+        btn.setChecked(True)
 
 if __name__ == '__main__':
     app = QApplication([])

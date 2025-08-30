@@ -15,11 +15,11 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCommandLinkButton, QFrame, QGridLayout,
-    QGroupBox, QHBoxLayout, QHeaderView, QLabel,
-    QLineEdit, QPushButton, QRadioButton, QScrollArea,
-    QSizePolicy, QSpacerItem, QTabWidget, QTableWidget,
-    QTableWidgetItem, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QButtonGroup, QCommandLinkButton, QFrame,
+    QGridLayout, QGroupBox, QHBoxLayout, QHeaderView,
+    QLabel, QLineEdit, QPushButton, QRadioButton,
+    QScrollArea, QSizePolicy, QSpacerItem, QTabWidget,
+    QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget)
 
 class Ui_MainForm(object):
     def setupUi(self, MainForm):
@@ -39,21 +39,11 @@ class Ui_MainForm(object):
         self.tab_main.setObjectName(u"tab_main")
         self.gridLayout_4 = QGridLayout(self.tab_main)
         self.gridLayout_4.setObjectName(u"gridLayout_4")
-        self.gridLayout_tabMain = QGridLayout()
-        self.gridLayout_tabMain.setObjectName(u"gridLayout_tabMain")
-
-        self.gridLayout_4.addLayout(self.gridLayout_tabMain, 1, 1, 1, 1)
-
         self.tabWidget.addTab(self.tab_main, "")
         self.tab_backup = QWidget()
         self.tab_backup.setObjectName(u"tab_backup")
         self.gridLayout_2 = QGridLayout(self.tab_backup)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
-        self.gridLayout_tabBackup = QGridLayout()
-        self.gridLayout_tabBackup.setObjectName(u"gridLayout_tabBackup")
-
-        self.gridLayout_2.addLayout(self.gridLayout_tabBackup, 0, 0, 1, 1)
-
         self.tabWidget.addTab(self.tab_backup, "")
         self.tab = QWidget()
         self.tab.setObjectName(u"tab")
@@ -206,18 +196,29 @@ class Ui_MainForm(object):
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.horizontalLayout_radio = QHBoxLayout()
+        self.horizontalLayout_radio.setObjectName(u"horizontalLayout_radio")
         self.radio_mklink_steam = QRadioButton(self.groupBox_mklink)
+        self.buttonGroup = QButtonGroup(MainForm)
+        self.buttonGroup.setObjectName(u"buttonGroup")
+        self.buttonGroup.addButton(self.radio_mklink_steam)
         self.radio_mklink_steam.setObjectName(u"radio_mklink_steam")
 
-        self.horizontalLayout_4.addWidget(self.radio_mklink_steam)
+        self.horizontalLayout_radio.addWidget(self.radio_mklink_steam)
 
         self.radio_mklink_backup = QRadioButton(self.groupBox_mklink)
+        self.buttonGroup.addButton(self.radio_mklink_backup)
         self.radio_mklink_backup.setObjectName(u"radio_mklink_backup")
+        self.radio_mklink_backup.setChecked(True)
 
-        self.horizontalLayout_4.addWidget(self.radio_mklink_backup)
+        self.horizontalLayout_radio.addWidget(self.radio_mklink_backup)
+
+
+        self.horizontalLayout_4.addLayout(self.horizontalLayout_radio)
 
         self.btn_mklink_new = QPushButton(self.groupBox_mklink)
         self.btn_mklink_new.setObjectName(u"btn_mklink_new")
+        self.btn_mklink_new.setMaximumSize(QSize(48, 16777215))
         icon3 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.FolderNew))
         self.btn_mklink_new.setIcon(icon3)
 
@@ -235,14 +236,22 @@ class Ui_MainForm(object):
         self.label_3 = QLabel(self.groupBox_mklink)
         self.label_3.setObjectName(u"label_3")
         self.label_3.setMinimumSize(QSize(160, 0))
+        self.label_3.setMaximumSize(QSize(160, 16777215))
         self.label_3.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.horizontalLayout_5.addWidget(self.label_3)
 
-        self.lineEdit_wallpaperBackupPath_mklink = QLineEdit(self.groupBox_mklink)
-        self.lineEdit_wallpaperBackupPath_mklink.setObjectName(u"lineEdit_wallpaperBackupPath_mklink")
+        self.lineEdit_mklink_path = QLineEdit(self.groupBox_mklink)
+        self.lineEdit_mklink_path.setObjectName(u"lineEdit_mklink_path")
+        self.lineEdit_mklink_path.setEnabled(False)
 
-        self.horizontalLayout_5.addWidget(self.lineEdit_wallpaperBackupPath_mklink)
+        self.horizontalLayout_5.addWidget(self.lineEdit_mklink_path)
+
+        self.btn_mklink_open_old = QPushButton(self.groupBox_mklink)
+        self.btn_mklink_open_old.setObjectName(u"btn_mklink_open_old")
+        self.btn_mklink_open_old.setMaximumSize(QSize(48, 16777215))
+
+        self.horizontalLayout_5.addWidget(self.btn_mklink_open_old)
 
 
         self.verticalLayout_4.addLayout(self.horizontalLayout_5)
@@ -252,14 +261,21 @@ class Ui_MainForm(object):
         self.label_5 = QLabel(self.groupBox_mklink)
         self.label_5.setObjectName(u"label_5")
         self.label_5.setMinimumSize(QSize(160, 0))
+        self.label_5.setMaximumSize(QSize(160, 16777215))
         self.label_5.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.horizontalLayout_7.addWidget(self.label_5)
 
-        self.lineEdit_steamPath_mklink = QLineEdit(self.groupBox_mklink)
-        self.lineEdit_steamPath_mklink.setObjectName(u"lineEdit_steamPath_mklink")
+        self.lineEdit_mklink_path_new = QLineEdit(self.groupBox_mklink)
+        self.lineEdit_mklink_path_new.setObjectName(u"lineEdit_mklink_path_new")
 
-        self.horizontalLayout_7.addWidget(self.lineEdit_steamPath_mklink)
+        self.horizontalLayout_7.addWidget(self.lineEdit_mklink_path_new)
+
+        self.btn_mklink_open = QPushButton(self.groupBox_mklink)
+        self.btn_mklink_open.setObjectName(u"btn_mklink_open")
+        self.btn_mklink_open.setMaximumSize(QSize(48, 16777215))
+
+        self.horizontalLayout_7.addWidget(self.btn_mklink_open)
 
 
         self.verticalLayout_4.addLayout(self.horizontalLayout_7)
@@ -268,12 +284,19 @@ class Ui_MainForm(object):
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.btn_mklink_create = QPushButton(self.groupBox_mklink)
         self.btn_mklink_create.setObjectName(u"btn_mklink_create")
-        self.btn_mklink_create.setMinimumSize(QSize(0, 23))
+        self.btn_mklink_create.setMinimumSize(QSize(240, 23))
 
         self.horizontalLayout.addWidget(self.btn_mklink_create)
 
+        self.btn_mklink_restore = QPushButton(self.groupBox_mklink)
+        self.btn_mklink_restore.setObjectName(u"btn_mklink_restore")
+        self.btn_mklink_restore.setMaximumSize(QSize(80, 16777215))
+
+        self.horizontalLayout.addWidget(self.btn_mklink_restore)
+
         self.btn_dir_move = QPushButton(self.groupBox_mklink)
         self.btn_dir_move.setObjectName(u"btn_dir_move")
+        self.btn_dir_move.setMaximumSize(QSize(80, 16777215))
 
         self.horizontalLayout.addWidget(self.btn_dir_move)
 
@@ -301,10 +324,10 @@ class Ui_MainForm(object):
 
         self.horizontalLayout_6 = QHBoxLayout()
         self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
-        self.lineEdit_nasBackupPath = QLineEdit(self.groupBox)
-        self.lineEdit_nasBackupPath.setObjectName(u"lineEdit_nasBackupPath")
+        self.lineEdit_nas_path_backup = QLineEdit(self.groupBox)
+        self.lineEdit_nas_path_backup.setObjectName(u"lineEdit_nas_path_backup")
 
-        self.horizontalLayout_6.addWidget(self.lineEdit_nasBackupPath)
+        self.horizontalLayout_6.addWidget(self.lineEdit_nas_path_backup)
 
         self.btn_backup_nas = QPushButton(self.groupBox)
         self.btn_backup_nas.setObjectName(u"btn_backup_nas")
@@ -348,7 +371,6 @@ class Ui_MainForm(object):
         QWidget.setTabOrder(self.lineEdit_wallpaperPath, self.btn_wallpaperPath)
         QWidget.setTabOrder(self.btn_wallpaperPath, self.lineEdit_wallpaperBackupPath)
         QWidget.setTabOrder(self.lineEdit_wallpaperBackupPath, self.btn_wallpaperBackupPath)
-        QWidget.setTabOrder(self.btn_wallpaperBackupPath, self.lineEdit_wallpaperBackupPath_mklink)
 
         self.retranslateUi(MainForm)
 
@@ -377,21 +399,24 @@ class Ui_MainForm(object):
         self.lineEdit_wallpaperBackupPath.setPlaceholderText(QCoreApplication.translate("MainForm", u"\u4f8b\uff1aC:\\Program Files (x86)\\Steam\\steamapps\\common\\wallpaper_engine\\projects\\backup", None))
         self.btn_wallpaperBackupPath.setText("")
         self.groupBox_mklink.setTitle(QCoreApplication.translate("MainForm", u"C\u76d8\u7626\u8eab\uff08mklink\u547d\u4ee4\u751f\u6210\u8f6f\u94fe\u63a5\u76ee\u5f55\u8fc1\u79fb\u9879\u76ee\uff09", None))
-        self.radio_mklink_steam.setText(QCoreApplication.translate("MainForm", u"\u58c1\u7eb8", None))
+        self.radio_mklink_steam.setText(QCoreApplication.translate("MainForm", u"\u8ba2\u9605", None))
         self.radio_mklink_backup.setText(QCoreApplication.translate("MainForm", u"\u5907\u4efd", None))
-        self.btn_mklink_new.setText("")
-        self.label_3.setText(QCoreApplication.translate("MainForm", u"\u539f\u5730\u5740", None))
-        self.lineEdit_wallpaperBackupPath_mklink.setPlaceholderText(QCoreApplication.translate("MainForm", u"\u76ee\u5f55\u5730\u5740\uff1awallpaper_engine\\\\projects\\\\backup", None))
-        self.label_5.setText(QCoreApplication.translate("MainForm", u"\u76ee\u6807\u5730\u5740", None))
-        self.lineEdit_steamPath_mklink.setPlaceholderText(QCoreApplication.translate("MainForm", u"\u76ee\u5f55\u5730\u5740\uff1aSteam\\\\steamapps\\\\workshop\\\\content\\\\431960", None))
-        self.btn_mklink_create.setText(QCoreApplication.translate("MainForm", u"\u5907\u4efd\u58c1\u7eb8\u751f\u6210\u8f6f\u94fe\u63a5", None))
+        self.btn_mklink_new.setText(QCoreApplication.translate("MainForm", u"\u65b0\u589e", None))
+        self.label_3.setText(QCoreApplication.translate("MainForm", u"\u539f\u5730\u5740\uff08\u66ff\u6362\u8f6f\u94fe\u63a5\uff09", None))
+        self.lineEdit_mklink_path.setPlaceholderText(QCoreApplication.translate("MainForm", u"\u5c06\u9700\u8981\u751f\u6210\u7684\u6587\u4ef6\u5939\u62d6\u5165\u8fd9\u91cc", None))
+        self.btn_mklink_open_old.setText(QCoreApplication.translate("MainForm", u"\u6253\u5f00", None))
+        self.label_5.setText(QCoreApplication.translate("MainForm", u"\u76ee\u6807\u5730\u5740\uff08\u6307\u5411\u65b0\u5730\u5740\uff09", None))
+        self.lineEdit_mklink_path_new.setPlaceholderText(QCoreApplication.translate("MainForm", u"\u4f8b\uff1aD:/Documents/wallpaper_engine_backup", None))
+        self.btn_mklink_open.setText(QCoreApplication.translate("MainForm", u"\u6253\u5f00", None))
+        self.btn_mklink_create.setText(QCoreApplication.translate("MainForm", u"\u751f\u6210\u8f6f\u94fe\u63a5\uff08\u539f\u5730\u5740->\u76ee\u6807\u5730\u5740\uff09", None))
+        self.btn_mklink_restore.setText(QCoreApplication.translate("MainForm", u"\u8fd8\u539f", None))
         self.btn_dir_move.setText(QCoreApplication.translate("MainForm", u"\u8f6c\u79fb\u9879\u76ee", None))
         self.label_7.setText(QCoreApplication.translate("MainForm", u"\u6ce8\u610f\uff1a\u751f\u6210\u8f6f\u94fe\u63a5\u5c06\u91cd\u547d\u540d\u6e90\u6587\u4ef6\u5939\uff08\u540d\u79f0+\u540e\u7f00\uff09\u9632\u6b62\u4e22\u5931\uff0c\u5982\u679c\u5931\u8d25\u8bf7\u624b\u52a8\u6539\u56de\u3002\n"
 "\u8f6c\u79fb\u9879\u76ee\u4e0d\u5efa\u8bae\u4f7f\u7528\uff0c\u8bf7\u624b\u52a8\u526a\u5207\u8ba2\u9605\u76ee\u5f55", None))
         self.groupBox.setTitle(QCoreApplication.translate("MainForm", u"NAS\u5907\u4efd", None))
         self.label_8.setText(QCoreApplication.translate("MainForm", u"\u9488\u5bf9\u4e0d\u5e38\u7528\u58c1\u7eb8\u548c\u5e94\u7528\u538b\u7f29\u5305\u8fc1\u79fb\u6765\u51cf\u5c0f\u786c\u76d8\u5360\u7528\n"
 "\u6b65\u9aa4\uff1a1.\u624b\u52a8\u8f6c\u79fb\u9879\u76ee\u5230\u6307\u5b9aip\u5730\u5740\u76ee\u5f55 2.\u751f\u6210\u5feb\u6377\u65b9\u5f0f", None))
-        self.lineEdit_nasBackupPath.setPlaceholderText(QCoreApplication.translate("MainForm", u"ip\u5730\u5740\uff1a192.168.10.101\\\\wallpaper_engine", None))
+        self.lineEdit_nas_path_backup.setPlaceholderText(QCoreApplication.translate("MainForm", u"ip\u5730\u5740\uff1aftp://192.168.10.101/wallpaper_engine", None))
         self.btn_backup_nas.setText(QCoreApplication.translate("MainForm", u"\u751f\u6210\u5feb\u6377\u65b9\u5f0f", None))
         self.groupBox_info.setTitle(QCoreApplication.translate("MainForm", u"\u5173\u4e8e", None))
         self.label_version.setText(QCoreApplication.translate("MainForm", u"\u7248\u672c\uff1a0", None))
