@@ -18,8 +18,6 @@ class MyWindow(QWidget, Ui_MainForm):
     def initPage(self):
         self.setupUi(self)
 
-        self.btn_mklink_open_old.clicked.connect(lambda: MainFun.openStartfile(self.lineEdit_mklink_path.text())) # mklink打开资源管理器
-        self.btn_mklink_open.clicked.connect(lambda: MainFun.openStartfile(self.lineEdit_mklink_path_new.text())) # mklink打开资源管理器
         self.label_version.setText('版本：' + self.configFun.config['version'])
         # 获取steam地址
         steam_path = self.configFun.config['steamPath']
@@ -171,10 +169,11 @@ class MyWindow(QWidget, Ui_MainForm):
         self.radio_mklink_backup.index = 1
         self.mklinkChange(self.radio_mklink_backup) # 初始化选中
         self.buttonGroup.buttonClicked.connect(self.mklinkChange)
+        self.btn_mklink_open_old.clicked.connect(lambda: MainFun.openStartfile(self.lineEdit_mklink_path.text())) # mklink打开资源管理器
+        self.btn_mklink_open.clicked.connect(lambda: MainFun.openStartfile(self.lineEdit_mklink_path_new.text())) # mklink打开资源管理器
         self.btn_mklink_create.clicked.connect(lambda: self.mklinkBtn())
         self.btn_mklink_restore.clicked.connect(lambda: self.configFun.backMklink()) # 还原
-
-        self.btn_mklink_new.clicked.connect(self.func)
+        self.btn_mklink_new.clicked.connect(self.mklinkNew) # 新增
             # # 获取wallpaper软链接地址
             # if self.configFun.config['mklinkWallpaperOld'] and self.configFun.config['mklinkWallpaper'] != self.configFun.config['mklinkWallpaperOld']:
             #     self.lineEdit_mklink_path.setText(self.configFun.config['mklinkWallpaperOld'])
@@ -185,31 +184,45 @@ class MyWindow(QWidget, Ui_MainForm):
         index = self.configFun.config['mklinkIndex']
         if index < 0:
             return
-        self.configFun.openMklinkDialog(None, self.lineEdit_mklink_path_new)
-    
+        res = MainFun.openMessageDialog("生成前请先备份!确认后选择空文件夹开始执行。")
+        if res:
+            # print("用户点击了确定")
+            dir_path = self.lineEdit_mklink_path.text()
+            MainFun.openStartfile(os.path.dirname(dir_path))
+            dir_path_new = MainFun.openDirDialog(dir_path)
+            if dir_path_new: 
+                isSuccess = MainFun.create_symbolic_link(dir_path, dir_path_new)
+                if isSuccess:
+                    print(555)
+                    self.lineEdit_mklink_path_new.setText(dir_path_new)
+                    data = self.configFun.config['mklinkList']
+                    data[index]['path'] = dir_path
+                    data[index]['path_new'] = dir_path_new
+                    # 写入config.json
+                    self.configFun.save_config()
+
     # 软地址切换
     def mklinkChange(self, radioBtn:QRadioButton):
         # print(radioBtn.text())
         self.configFun.set_config('mklinkIndex', radioBtn.index)
         obj = self.configFun.config['mklinkList'][radioBtn.index]
         self.lineEdit_mklink_path.setText(obj['path'])
-        if obj['path_old'] != '':
-            self.lineEdit_mklink_path_new.setText(obj['path_old'])
+        self.lineEdit_mklink_path_new.setText(obj['path_new'])
 
     # 软地址新增
-    def mklinkCreate(self, index, path, path_old):
+    def mklinkNew(self, index, path, path_new):
         mklinkList = self.configFun.config['mklinkList']
         name = f"额外{index}"
         mklinkList.append({
             "name": name,
             "path": path,
-            "path_old": path_old
+            "path_new": path_new
         })
         self.configFun.save_config()
-        self.mklinkBtnCreate(index, name)
+        self.mklinkBtnNew(index, name)
 
     # 软地址按钮新增
-    def mklinkBtnCreate(self, index, name):
+    def mklinkBtnNew(self, index, name):
         btn = QRadioButton()
         btn.index = index
         btn.objectName = f"radio_mklink_{index}"

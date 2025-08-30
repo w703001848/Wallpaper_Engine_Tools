@@ -5,7 +5,6 @@ import winreg as reg
 import shutil
 from PySide6.QtWidgets import QFileDialog, QMessageBox, QWidget
 
-
 class ConfigFun(object):
     config_path = os.path.join(os.getcwd(), 'config.json')
 
@@ -133,7 +132,7 @@ class ConfigFun(object):
                 self.config['mklinkList'].append({
                     "name": "订阅",
                     "path": self.get_mklink_steam_path(),
-                    "path_old": ""
+                    "path_new": ""
                 })
             else:
                 data = self.config['mklinkList']
@@ -160,7 +159,7 @@ class ConfigFun(object):
                 self.config['mklinkList'].append({
                     "name": "备份",
                     "path": path,
-                    "path_old": ""
+                    "path_new": ""
                 })
             else:
                 data = self.config['mklinkList']
@@ -181,50 +180,6 @@ class ConfigFun(object):
         except Exception as e:
             logging.error(f"获取Steam软链接地址: {e}")
             return None
-        
-    # # 获取WallpaperEngine软链接地址
-    # def get_mklink_wallpaper_path(self): 
-    #     try:
-    #         path = self.config['backupPath']
-    #         if os.path.exists(path):
-    #             return path
-    #         else:
-    #             return ''
-    #     except Exception as e:
-    #         logging.error(f"获取WallpaperEngine软链接地址: {e}")
-    #         return None
-
-    # 软链接选择
-    def openMklinkDialog(self, path, boxText: QWidget):
-        def func():
-            # print("用户点击了确定")
-            dir_path = MainFun.openDirDialog(path, func)
-            if dir_path: 
-                boxText.setText(dir_path)
-                self.create_symbolic_link(path)
-        MainFun.openMessageDialog("生成前请先备份!确认后选择空文件夹开始执行。", func)
-    
-    # 软链接生成
-    def create_symbolic_link(self, path):
-        print(self.config[path])
-        pathOld = path + 'Old'
-        print(self.config[pathOld])
-        # 重命名原目录
-        pathOldBack = self.config[pathOld]+'_back'
-        os.rename(self.config[pathOld], pathOldBack)
-        try:
-            if os.path.exists(self.config[pathOld]):
-                shutil.rmtree(self.config[pathOld])
-            os.symlink(self.config[path], self.config[pathOld])
-            print(f"成功创建符号链接：{self.config[pathOld]} -> {self.config[path]}")
-        except Exception as e:
-            print(f"创建符号链接失败:{e}")
-            # 回退
-            os.rename(pathOldBack, self.config[pathOld])
-            self.config[path] = self.config[pathOld]
-            # 写入config.json
-            self.save_config()
-            raise
 
     # 回退
     def backMklink(self):
@@ -242,6 +197,27 @@ class MainFun(object):
     def func(*args, **kwargs):
         pass
 
+    # 软链接生成
+    def create_symbolic_link(path_old, path_new):
+        try:
+            # 重命名原目录
+            pathOldBack = path_old + '_back'
+            os.rename(path_old, pathOldBack)
+            # 软链接生成原地址目录不能存在，存在执行删除
+            if os.path.exists(path_old):
+                shutil.rmtree(path_old)
+            # 生成软链接
+            os.symlink(path_new, path_old)
+            print(f"成功创建符号链接：{path_old} -> {path_new}")
+            return True
+        except Exception as e:
+            print(f"创建符号链接失败:{e}")
+            # 回退
+            if os.path.exists(path_old):
+                shutil.rmtree(path_old)
+            os.rename(pathOldBack, path_old)
+        return False
+
     # 警告弹窗
     def openMessageDialog(txt="警告", funOK=func, funCancel=func):
         msg = QMessageBox()
@@ -253,8 +229,10 @@ class MainFun(object):
         ret = msg.exec()
         if ret == QMessageBox.Ok:
             funOK(ret)
+            return True
         elif ret == QMessageBox.Cancel:
             funCancel(ret)
+            return False
 
     # 打开资源管理器
     def openStartfile(path):
