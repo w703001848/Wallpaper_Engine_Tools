@@ -7,13 +7,14 @@ from PySide6.QtWidgets import QLineEdit
 
 from .main import checkEnvironment, openFileDialog, openDirDialog, openMessageDialog
 
+version = "1.2"
 config_path = os.path.join(os.getcwd(), 'config.json')
 
 # 首次执行初始化config
 boolSetConfig = False
 config = {
     "isDevelopment": checkEnvironment(), # 开发模式
-    "version": "1.1",
+    "version": "",
     "username": os.getlogin(), # 获取本机用户名
     "steamPath": "", # steam地址
     "wallpaperPath": "", # wallpaper地址
@@ -29,6 +30,7 @@ config = {
         "path": "",
         "path_new": ""
     }], # mklink历史新增
+    "nasLink": "", # NAS备份
     # "isCheckedScene": True, # 场景
     # "isCheckedVideo": False, # 视频
     # "isCheckedWeb": False, # 网页
@@ -45,7 +47,16 @@ def get_config():
     global config
     try:
         with open(config_path, encoding="utf-8") as f1:
-            config = json.load(f1) # 从文件读取json并反序列化
+            data = json.load(f1)
+            # 新版本config合并
+            if len(data) != len(config):
+                for key in config.keys():
+                    if not data.get(key, ''): data[key] = config[key]
+            # 清理历史遗弃字段
+            if len(data) != len(config):
+                for key in data.keys():
+                    if not config.get(key, ''): del data[key]
+            config = data
     except Exception as e:
         logging.warning(f"读取config.json: {e}")
 
@@ -175,15 +186,13 @@ def setBackupPath(lineEdit: QLineEdit):
         save_config()
         lineEdit.setText(__path)
 
-            
-
-
 # 查询是否存在并获取config.json
 if os.path.exists(config_path):
 # 测试用
 # if config['isDevelopment'] and os.path.exists(config_path):
     get_config()
 
+config['version'] = version
 if not config['steamPath']:
     boolSetConfig = set_steam_path(os.path.abspath(get_steam_path_registry() + '/steam.exe'))
 if not config['wallpaperPath']:
