@@ -36,6 +36,8 @@ config = {
     # "isCheckedWeb": False, # 网页
     # "isCheckedApplication": False, # 应用
     # "isCheckedInvalid": False, # 失效
+    "authorblocklistnames": [], # 拉黑名单
+    "folders": [], # 壁纸数据
 }
     
 # 下标获取参数
@@ -93,7 +95,7 @@ def get_steam_path_registry():
             return ''
     except Exception as e:
         logging.error(f"获取Steam安装位置: {e}")
-        return None
+        return ""
     
 # 注册表获取WallpaperEngine安装位置
 def get_wallpaper_path_registry(): 
@@ -109,7 +111,7 @@ def get_wallpaper_path_registry():
             return ''
     except Exception as e:
         logging.error(f"获取WallpaperEngine安装位置: {e}")
-        return None
+        return ""
     
 # 获取WallpaperEngine备份位置
 def get_wallpaper_backup_path(): 
@@ -121,7 +123,7 @@ def get_wallpaper_backup_path():
             return ''
     except Exception as e:
         logging.error(f"获取WallpaperEngine备份位置: {e}")
-        return None
+        return ""
 
 # 获取WallpaperEngine订阅地址
 def get_wallpaper_steam_path(): 
@@ -130,11 +132,21 @@ def get_wallpaper_steam_path():
         if os.path.exists(mklink_steam):
             return mklink_steam
         else:
-            openMessageDialog('当前steam文件夹下无法查询到壁纸订阅目录!')
             raise Exception("当前steam文件夹下无法查询到壁纸订阅目录!", mklink_steam)
     except Exception as e:
-        logging.error(f"获取Steam软链接地址: {e}")
-        return None
+        logging.error(f"获取Steam壁纸订阅地址: {e}")
+
+# 获取WallpaperEngine config位置并读取
+def get_wallpaper_config_path(wallpaper_path): 
+    wallpaper_config_path = os.path.join(os.path.dirname(wallpaper_path), 'config.json')
+    try:
+        with open(wallpaper_config_path, encoding="utf-8") as f1:
+            res = json.load(f1) # 从文件读取json并反序列化
+            set_config("authorblocklistnames", res[config["username"]]["general"]["browser"]["authorblocklistnames"])
+            set_config("folders", res[config["username"]]["general"]["browser"]["folders"])
+    except Exception as e:
+        logging.error(f"获取WallpaperEngine config位置并读取: {e}")
+    return None
 
 # 修改Steam安装位置
 def set_steam_path(path):
@@ -187,18 +199,20 @@ def setBackupPath(lineEdit: QLineEdit):
         lineEdit.setText(__path)
 
 # 查询是否存在并获取config.json
-if os.path.exists(config_path):
+# if os.path.exists(config_path):
 # 测试用
-# if config['isDevelopment'] and os.path.exists(config_path):
+if config['isDevelopment'] and os.path.exists(config_path):
     get_config()
 
 config['version'] = version
+
 if not config['steamPath']:
     boolSetConfig = set_steam_path(os.path.abspath(get_steam_path_registry() + '/steam.exe'))
 if not config['wallpaperPath']:
     boolSetConfig = set_wallpaper_path(os.path.abspath(get_wallpaper_path_registry() + '/launcher.exe'))
-if boolSetConfig:
+if config['steamPath'] or config['wallpaperPath']:
+    # 获取wallpaper_config数据
+    get_wallpaper_config_path(config["wallpaperPath"])
     # 写入config.json
     save_config()
-
 # print(f"steamPath:{steamPath}")

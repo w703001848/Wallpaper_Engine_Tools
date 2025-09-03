@@ -1,12 +1,12 @@
-import os, logging
+import os, logging, json, pyperclip
 # PySide6组件调用
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
-from PySide6.QtWidgets import QApplication, QWidget, QLabel
+from PySide6.QtWidgets import QApplication, QWidget, QLabel, QListWidgetItem
 # 加载模板
 from widgets import Ui_MainForm, Ui_List
 # 功能模块
-from modules.main import getDirList, openFileDialog, openStartfile, Debouncer
+from modules.main import getDirList, openFileDialog, openStartfile, openMessageDialog, Debouncer
 from modules.Config import config, setSteamPath, setWallpaperPath, setBackupPath, set_config, save_config
 from modules.RePKG import updataRepkg, processItem, updataRepkgData, setRepkgImgData
 from modules.Mklink import mklinkCreate, mklinkNew, mklinkBack
@@ -14,11 +14,18 @@ from modules.Mklink import mklinkCreate, mklinkNew, mklinkBack
 class MyWindow(QWidget, Ui_MainForm):
     def __init__(self):
         self.wallpaperConfig = {}
+        self.tabRepkgCurrent = False # 锁定tabRepkg页刷新
+        self.tabMainError = True # 防止重复加载
+        self.tabBackError = True # 防止重复加载
 
         super().__init__()
         self.initPage()
-        self.initRepkg()
-        self.initMklink()
+        # self.initRepkg()
+        # self.initMklink()
+        # self.initNaslink()
+
+        # 加载数据
+        self.tabChange()
 
     def func(self, *args, **kwargs):
         print(11112)
@@ -40,51 +47,64 @@ class MyWindow(QWidget, Ui_MainForm):
             self.btn_wallpaperPath.clicked.connect(lambda: setWallpaperPath(self.lineEdit_wallpaperPath))
             self.lineEdit_wallpaperBackupPath.setText(config["backupPath"])
             self.btn_wallpaperBackupPath.clicked.connect(lambda: setBackupPath(self.lineEdit_wallpaperBackupPath))
-            
-            # self.get_wallpaper_config_path(wallpaper_path) # 获取wallpaper_config数据
-            self.addMainList() 
-        else:
-            self.addLabelError()
+        # 黑名单列表点击
+        self.listWidget_authorblock.itemClicked.connect(self.authorblockChange)
 
+
+    # 窗口变化
     def resizeEvent(self, event):
-        if self.tabCurrent:
+        if self.tabRepkgCurrent:
             # print(f"窗口大小已更新为: {self.size().width()}x{self.size().height()}")
             self.debouncer.trigger()
 
     # tabWidget切换
     def tabChange(self):
-        if self.tabWidget.currentIndex() == 2:
-            self.tabCurrent = True
+        self.tabRepkgCurrent = False
+        if self.tabWidget.currentIndex() == 0: # 壁纸加载
+            if self.tabMainError: # 防止重复加载
+                if config['mklinkList'][0]["path"]:
+                    obj = Ui_List('main')
+                    objChildren = self.tab_main.children()
+                    objChildren[0].addWidget(obj)
+                else:
+                    self.addLabelError(self.tab_main)
+                self.tabMainError = False
+        elif self.tabWidget.currentIndex() == 1: # 备份壁纸加载
+            if self.tabBackError: # 防止重复加载
+                if config["backupPath"]:
+                    obj2 = Ui_List('backup')
+                    # 获取列表数据加载
+                    # obj2.setData(getDirList(config["backupPath"]))
+                    objChildren = self.tab_backup.children()
+                    objChildren[0].addWidget(obj2)
+                else:
+                    self.addLabelError(self.tab_backup)
+                self.tabBackError = False
+        elif self.tabWidget.currentIndex() == 2: # repkg加载
+            self.tabRepkgCurrent = True
             updataRepkg(config["repkgPath"], self.lineEdit_repkg, self.tableWidget_repkg)
-        else:
-            self.tabCurrent = False
+        elif self.tabWidget.currentIndex() == 5: # 黑名单加载
+            self.addauthorblockList()
 
-    # 列表数据加载
-    def addMainList(self):
-        obj = Ui_List('main')
-        objChildren = self.tab_main.children()
-        objChildren[0].addWidget(obj)
-
-        obj2 = Ui_List('backup')
-        # 获取列表数据加载
-        obj2.setData(getDirList(config["backupPath"]))
-        objChildren = self.tab_backup.children()
-        objChildren[0].addWidget(obj2)
+    # 黑名单列表数据加载
+    def addauthorblockList(self):
+        print('黑名单加载')
+        for index, item in enumerate(config["authorblocklistnames"]):
+            self.listWidget_authorblock.addItem(f"名称: {item['name']}\nID: {item['value']}")
 
     # 未安装Wallpaper Engine提示
-    def addLabelError(self):
-        obj = QLabel('您未安装Wallpaper Engine', self)
+    def addLabelError(self, tab):
+        obj = QLabel('您未安装Wallpaper Engine')
         font = QFont()
         font.setPointSize(20)
         obj.setFont(font)
         obj.setLineWidth(1)
         obj.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        objChildren = self.tab_main.children()
+        objChildren = tab.children()
         objChildren[0].addWidget(obj)
    
     # repkg初始化
     def initRepkg(self):
-        self.tabCurrent = False
         self.debouncer = Debouncer(lambda: setRepkgImgData(self.tableWidget_repkg, self.size().width()), 700)
         self.tableWidget_repkg.horizontalHeader().setStretchLastSection(True) # 表格自适应
         # self.tableWidget_repkg.horizontalHeader().setVisible(True) # 隐藏头
@@ -113,7 +133,7 @@ class MyWindow(QWidget, Ui_MainForm):
     def initMklink(self):
         self.mklinkCurrent = 1 # 当前启用的软地址
         self.updataMklink(self.mklinkCurrent)
-        self.listWidget_mklink.itemClicked.connect(self.listWidgetChange) # 表格点击
+        self.listWidget_mklink.itemClicked.connect(self.mklinkChange) # 表格点击
         self.btn_mklink_open_old.clicked.connect(lambda: openStartfile(self.lineEdit_mklink_path.text())) # mklink打开资源管理器
         self.btn_mklink_open.clicked.connect(lambda: openStartfile(self.lineEdit_mklink_path_new.text())) # mklink打开资源管理器
         # 新增
@@ -127,7 +147,7 @@ class MyWindow(QWidget, Ui_MainForm):
             del config["mklinkList"][self.mklinkCurrent]
             self.listWidget_mklink.takeItem(self.mklinkCurrent)
             self.listWidget_mklink.setCurrentRow(1) # 选中
-            self.listWidgetChange() # 选中
+            self.mklinkChange() # 选中
             save_config()
         self.btn_mklink_remove.clicked.connect(mklink_remove)
         # 生成软链接
@@ -157,26 +177,24 @@ class MyWindow(QWidget, Ui_MainForm):
         for index, item in enumerate(mklinkList):
             self.listWidget_mklink.addItem(f"标注:{item['name']}\n{item['path']}\n{item['path_new'] or '未生成'}")
         self.listWidget_mklink.setCurrentRow(current) # 选中
-        self.listWidgetChange() # 选中
+        self.mklinkChange() # 选中
 
     # 软地址切换
-    def listWidgetChange(self, item = None):
+    def mklinkChange(self, item = None):
         # print(f"Item clicked: {item.text()} at ({self.listWidget_mklink.currentRow()})")
         self.mklinkCurrent = self.listWidget_mklink.currentRow()
         obj = config["mklinkList"][self.mklinkCurrent]
         self.lineEdit_mklink_path.setText(obj['path'])
         self.lineEdit_mklink_path_new.setText(obj['path_new'])
         self.btn_mklink_remove.setVisible(self.mklinkCurrent > 1)
+    
+    # 黑名单列表点击
+    def authorblockChange(self):
+        authorblockCurrent = self.listWidget_authorblock.currentRow()
+        obj = config["authorblocklistnames"][authorblockCurrent]
+        openMessageDialog("已复制到剪贴板")
+        pyperclip.copy(f"名称: {obj['name']}\nID: {obj['value']}")
 
-    # 获取WallpaperEngine config位置并读取
-    # def get_wallpaper_config_path(self, wallpaper_path): 
-    #     wallpaper_config_path = os.path.join(wallpaper_path, 'config.json')
-    #     try:
-    #         with open(wallpaper_config_path, encoding="utf-8") as f1:
-    #             res = json.load(f1) # 从文件读取json并反序列化
-    #             print(res)
-    #     except Exception as e:
-    #         logging.error(f"获取WallpaperEngine config位置并读取: {e}")
 
 if __name__ == '__main__':
     app = QApplication([])

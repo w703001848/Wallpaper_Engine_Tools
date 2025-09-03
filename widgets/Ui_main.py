@@ -113,6 +113,7 @@ class Ui_MainForm(object):
 
         self.listWidget_mklink = QListWidget(self.tab_mklink)
         self.listWidget_mklink.setObjectName(u"listWidget_mklink")
+        self.listWidget_mklink.setSpacing(6)
 
         self.verticalLayout_7.addWidget(self.listWidget_mklink)
 
@@ -278,6 +279,19 @@ class Ui_MainForm(object):
         self.verticalLayout.addLayout(self.horizontalLayout_9)
 
         self.tabWidget.addTab(self.tab_nas, "")
+        self.tab = QWidget()
+        self.tab.setObjectName(u"tab")
+        self.gridLayout_5 = QGridLayout(self.tab)
+        self.gridLayout_5.setObjectName(u"gridLayout_5")
+        self.listWidget_authorblock = QListWidget(self.tab)
+        self.listWidget_authorblock.setObjectName(u"listWidget_authorblock")
+        self.listWidget_authorblock.setFrameShape(QFrame.Shape.StyledPanel)
+        self.listWidget_authorblock.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        self.listWidget_authorblock.setSpacing(6)
+
+        self.gridLayout_5.addWidget(self.listWidget_authorblock, 0, 0, 1, 1)
+
+        self.tabWidget.addTab(self.tab, "")
         self.tab_set = QWidget()
         self.tab_set.setObjectName(u"tab_set")
         self.gridLayout_3 = QGridLayout(self.tab_set)
@@ -412,7 +426,7 @@ class Ui_MainForm(object):
 
         self.retranslateUi(MainForm)
 
-        self.tabWidget.setCurrentIndex(4)
+        self.tabWidget.setCurrentIndex(5)
 
 
         QMetaObject.connectSlotsByName(MainForm)
@@ -450,6 +464,7 @@ class Ui_MainForm(object):
         self.btn_naslink_create.setText(QCoreApplication.translate("MainForm", u"\u6279\u91cf\u751f\u6210\u5feb\u6377\u65b9\u5f0f", None))
         self.btn_naslink_remove.setText(QCoreApplication.translate("MainForm", u"\u79fb\u9664", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_nas), QCoreApplication.translate("MainForm", u"NAS\u5907\u4efd", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QCoreApplication.translate("MainForm", u"\u62c9\u9ed1\u540d\u5355", None))
         self.groupBox_dir.setTitle(QCoreApplication.translate("MainForm", u"\u8f6f\u4ef6\u76ee\u5f55", None))
         self.label.setText(QCoreApplication.translate("MainForm", u"Steam\u5b89\u88c5\u4f4d\u7f6e", None))
         self.lineEdit_steamPath.setPlaceholderText(QCoreApplication.translate("MainForm", u"\u4f8b\uff1aC:\\Program Files (x86)\\Steam", None))
