@@ -15,9 +15,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QButtonGroup, QCommandLinkButton, QFrame,
-    QGridLayout, QGroupBox, QHBoxLayout, QHeaderView,
-    QLabel, QLineEdit, QPushButton, QRadioButton,
+from PySide6.QtWidgets import (QApplication, QCommandLinkButton, QFrame, QGridLayout,
+    QGroupBox, QHBoxLayout, QHeaderView, QLabel,
+    QLineEdit, QListWidget, QListWidgetItem, QPushButton,
     QScrollArea, QSizePolicy, QSpacerItem, QTabWidget,
     QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget)
 
@@ -85,6 +85,120 @@ class Ui_MainForm(object):
         self.verticalLayout_5.addWidget(self.tableWidget_repkg)
 
         self.tabWidget.addTab(self.tab, "")
+        self.tab_mklink = QWidget()
+        self.tab_mklink.setObjectName(u"tab_mklink")
+        self.verticalLayout_7 = QVBoxLayout(self.tab_mklink)
+        self.verticalLayout_7.setObjectName(u"verticalLayout_7")
+        self.horizontalLayout_4 = QHBoxLayout()
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.label_7 = QLabel(self.tab_mklink)
+        self.label_7.setObjectName(u"label_7")
+        self.label_7.setLineWidth(2)
+
+        self.horizontalLayout_4.addWidget(self.label_7)
+
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_4.addItem(self.horizontalSpacer)
+
+        self.btn_mklink_new = QPushButton(self.tab_mklink)
+        self.btn_mklink_new.setObjectName(u"btn_mklink_new")
+        self.btn_mklink_new.setMinimumSize(QSize(0, 45))
+        self.btn_mklink_new.setMaximumSize(QSize(80, 16777215))
+        icon2 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.FolderNew))
+        self.btn_mklink_new.setIcon(icon2)
+
+        self.horizontalLayout_4.addWidget(self.btn_mklink_new)
+
+
+        self.verticalLayout_7.addLayout(self.horizontalLayout_4)
+
+        self.listWidget_mklink = QListWidget(self.tab_mklink)
+        self.listWidget_mklink.setObjectName(u"listWidget_mklink")
+
+        self.verticalLayout_7.addWidget(self.listWidget_mklink)
+
+        self.horizontalLayout_5 = QHBoxLayout()
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.label_3 = QLabel(self.tab_mklink)
+        self.label_3.setObjectName(u"label_3")
+        self.label_3.setMinimumSize(QSize(160, 0))
+        self.label_3.setMaximumSize(QSize(160, 16777215))
+        self.label_3.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.horizontalLayout_5.addWidget(self.label_3)
+
+        self.lineEdit_mklink_path = QLineEdit(self.tab_mklink)
+        self.lineEdit_mklink_path.setObjectName(u"lineEdit_mklink_path")
+        self.lineEdit_mklink_path.setEnabled(False)
+
+        self.horizontalLayout_5.addWidget(self.lineEdit_mklink_path)
+
+        self.btn_mklink_open_old = QPushButton(self.tab_mklink)
+        self.btn_mklink_open_old.setObjectName(u"btn_mklink_open_old")
+        self.btn_mklink_open_old.setMaximumSize(QSize(48, 16777215))
+
+        self.horizontalLayout_5.addWidget(self.btn_mklink_open_old)
+
+
+        self.verticalLayout_7.addLayout(self.horizontalLayout_5)
+
+        self.horizontalLayout_7 = QHBoxLayout()
+        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
+        self.label_5 = QLabel(self.tab_mklink)
+        self.label_5.setObjectName(u"label_5")
+        self.label_5.setMinimumSize(QSize(160, 0))
+        self.label_5.setMaximumSize(QSize(160, 16777215))
+        self.label_5.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.horizontalLayout_7.addWidget(self.label_5)
+
+        self.lineEdit_mklink_path_new = QLineEdit(self.tab_mklink)
+        self.lineEdit_mklink_path_new.setObjectName(u"lineEdit_mklink_path_new")
+
+        self.horizontalLayout_7.addWidget(self.lineEdit_mklink_path_new)
+
+        self.btn_mklink_open = QPushButton(self.tab_mklink)
+        self.btn_mklink_open.setObjectName(u"btn_mklink_open")
+        self.btn_mklink_open.setMaximumSize(QSize(48, 16777215))
+
+        self.horizontalLayout_7.addWidget(self.btn_mklink_open)
+
+
+        self.verticalLayout_7.addLayout(self.horizontalLayout_7)
+
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.btn_mklink_create = QPushButton(self.tab_mklink)
+        self.btn_mklink_create.setObjectName(u"btn_mklink_create")
+        self.btn_mklink_create.setMinimumSize(QSize(240, 23))
+
+        self.horizontalLayout.addWidget(self.btn_mklink_create)
+
+        self.btn_mklink_restore = QPushButton(self.tab_mklink)
+        self.btn_mklink_restore.setObjectName(u"btn_mklink_restore")
+        self.btn_mklink_restore.setMaximumSize(QSize(80, 16777215))
+
+        self.horizontalLayout.addWidget(self.btn_mklink_restore)
+
+        self.btn_dir_move = QPushButton(self.tab_mklink)
+        self.btn_dir_move.setObjectName(u"btn_dir_move")
+        self.btn_dir_move.setMaximumSize(QSize(80, 16777215))
+
+        self.horizontalLayout.addWidget(self.btn_dir_move)
+
+        self.btn_mklink_remove = QPushButton(self.tab_mklink)
+        self.btn_mklink_remove.setObjectName(u"btn_mklink_remove")
+        self.btn_mklink_remove.setMaximumSize(QSize(80, 16777215))
+        self.btn_mklink_remove.setStyleSheet(u"color: rgb(255, 255, 255);\n"
+"background-color: rgb(255, 85, 0);")
+
+        self.horizontalLayout.addWidget(self.btn_mklink_remove)
+
+
+        self.verticalLayout_7.addLayout(self.horizontalLayout)
+
+        self.tabWidget.addTab(self.tab_mklink, "")
         self.tab_set = QWidget()
         self.tab_set.setObjectName(u"tab_set")
         self.gridLayout_3 = QGridLayout(self.tab_set)
@@ -98,7 +212,7 @@ class Ui_MainForm(object):
         self.scrollArea_1.setWidgetResizable(True)
         self.scrollAreaWidgetContents_1 = QWidget()
         self.scrollAreaWidgetContents_1.setObjectName(u"scrollAreaWidgetContents_1")
-        self.scrollAreaWidgetContents_1.setGeometry(QRect(0, 0, 599, 562))
+        self.scrollAreaWidgetContents_1.setGeometry(QRect(0, 0, 599, 434))
         self.verticalLayout_2 = QVBoxLayout(self.scrollAreaWidgetContents_1)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.groupBox_dir = QGroupBox(self.scrollAreaWidgetContents_1)
@@ -125,8 +239,8 @@ class Ui_MainForm(object):
         self.btn_steamPath = QCommandLinkButton(self.groupBox_dir)
         self.btn_steamPath.setObjectName(u"btn_steamPath")
         self.btn_steamPath.setMaximumSize(QSize(36, 16777215))
-        icon2 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.SystemSearch))
-        self.btn_steamPath.setIcon(icon2)
+        icon3 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.SystemSearch))
+        self.btn_steamPath.setIcon(icon3)
         self.btn_steamPath.setIconSize(QSize(20, 20))
 
         self.horizontalLayout_1.addWidget(self.btn_steamPath, 0, Qt.AlignmentFlag.AlignHCenter|Qt.AlignmentFlag.AlignVCenter)
@@ -188,129 +302,6 @@ class Ui_MainForm(object):
 
 
         self.verticalLayout_2.addWidget(self.groupBox_dir)
-
-        self.groupBox_mklink = QGroupBox(self.scrollAreaWidgetContents_1)
-        self.groupBox_mklink.setObjectName(u"groupBox_mklink")
-        self.groupBox_mklink.setMinimumSize(QSize(0, 200))
-        self.verticalLayout_4 = QVBoxLayout(self.groupBox_mklink)
-        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
-        self.horizontalLayout_4 = QHBoxLayout()
-        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.horizontalLayout_radio = QHBoxLayout()
-        self.horizontalLayout_radio.setObjectName(u"horizontalLayout_radio")
-        self.radio_mklink_steam = QRadioButton(self.groupBox_mklink)
-        self.buttonGroup = QButtonGroup(MainForm)
-        self.buttonGroup.setObjectName(u"buttonGroup")
-        self.buttonGroup.addButton(self.radio_mklink_steam)
-        self.radio_mklink_steam.setObjectName(u"radio_mklink_steam")
-
-        self.horizontalLayout_radio.addWidget(self.radio_mklink_steam)
-
-        self.radio_mklink_backup = QRadioButton(self.groupBox_mklink)
-        self.buttonGroup.addButton(self.radio_mklink_backup)
-        self.radio_mklink_backup.setObjectName(u"radio_mklink_backup")
-        self.radio_mklink_backup.setChecked(True)
-
-        self.horizontalLayout_radio.addWidget(self.radio_mklink_backup)
-
-
-        self.horizontalLayout_4.addLayout(self.horizontalLayout_radio)
-
-        self.btn_mklink_new = QPushButton(self.groupBox_mklink)
-        self.btn_mklink_new.setObjectName(u"btn_mklink_new")
-        self.btn_mklink_new.setMaximumSize(QSize(48, 16777215))
-        icon3 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.FolderNew))
-        self.btn_mklink_new.setIcon(icon3)
-
-        self.horizontalLayout_4.addWidget(self.btn_mklink_new)
-
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_4.addItem(self.horizontalSpacer)
-
-
-        self.verticalLayout_4.addLayout(self.horizontalLayout_4)
-
-        self.horizontalLayout_5 = QHBoxLayout()
-        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
-        self.label_3 = QLabel(self.groupBox_mklink)
-        self.label_3.setObjectName(u"label_3")
-        self.label_3.setMinimumSize(QSize(160, 0))
-        self.label_3.setMaximumSize(QSize(160, 16777215))
-        self.label_3.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.horizontalLayout_5.addWidget(self.label_3)
-
-        self.lineEdit_mklink_path = QLineEdit(self.groupBox_mklink)
-        self.lineEdit_mklink_path.setObjectName(u"lineEdit_mklink_path")
-        self.lineEdit_mklink_path.setEnabled(False)
-
-        self.horizontalLayout_5.addWidget(self.lineEdit_mklink_path)
-
-        self.btn_mklink_open_old = QPushButton(self.groupBox_mklink)
-        self.btn_mklink_open_old.setObjectName(u"btn_mklink_open_old")
-        self.btn_mklink_open_old.setMaximumSize(QSize(48, 16777215))
-
-        self.horizontalLayout_5.addWidget(self.btn_mklink_open_old)
-
-
-        self.verticalLayout_4.addLayout(self.horizontalLayout_5)
-
-        self.horizontalLayout_7 = QHBoxLayout()
-        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
-        self.label_5 = QLabel(self.groupBox_mklink)
-        self.label_5.setObjectName(u"label_5")
-        self.label_5.setMinimumSize(QSize(160, 0))
-        self.label_5.setMaximumSize(QSize(160, 16777215))
-        self.label_5.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.horizontalLayout_7.addWidget(self.label_5)
-
-        self.lineEdit_mklink_path_new = QLineEdit(self.groupBox_mklink)
-        self.lineEdit_mklink_path_new.setObjectName(u"lineEdit_mklink_path_new")
-
-        self.horizontalLayout_7.addWidget(self.lineEdit_mklink_path_new)
-
-        self.btn_mklink_open = QPushButton(self.groupBox_mklink)
-        self.btn_mklink_open.setObjectName(u"btn_mklink_open")
-        self.btn_mklink_open.setMaximumSize(QSize(48, 16777215))
-
-        self.horizontalLayout_7.addWidget(self.btn_mklink_open)
-
-
-        self.verticalLayout_4.addLayout(self.horizontalLayout_7)
-
-        self.horizontalLayout = QHBoxLayout()
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.btn_mklink_create = QPushButton(self.groupBox_mklink)
-        self.btn_mklink_create.setObjectName(u"btn_mklink_create")
-        self.btn_mklink_create.setMinimumSize(QSize(240, 23))
-
-        self.horizontalLayout.addWidget(self.btn_mklink_create)
-
-        self.btn_mklink_restore = QPushButton(self.groupBox_mklink)
-        self.btn_mklink_restore.setObjectName(u"btn_mklink_restore")
-        self.btn_mklink_restore.setMaximumSize(QSize(80, 16777215))
-
-        self.horizontalLayout.addWidget(self.btn_mklink_restore)
-
-        self.btn_dir_move = QPushButton(self.groupBox_mklink)
-        self.btn_dir_move.setObjectName(u"btn_dir_move")
-        self.btn_dir_move.setMaximumSize(QSize(80, 16777215))
-
-        self.horizontalLayout.addWidget(self.btn_dir_move)
-
-
-        self.verticalLayout_4.addLayout(self.horizontalLayout)
-
-        self.label_7 = QLabel(self.groupBox_mklink)
-        self.label_7.setObjectName(u"label_7")
-        self.label_7.setLineWidth(2)
-
-        self.verticalLayout_4.addWidget(self.label_7)
-
-
-        self.verticalLayout_2.addWidget(self.groupBox_mklink)
 
         self.groupBox = QGroupBox(self.scrollAreaWidgetContents_1)
         self.groupBox.setObjectName(u"groupBox")
@@ -388,6 +379,21 @@ class Ui_MainForm(object):
         self.btn_repkgPath.setText("")
         self.btn_repkg.setText(QCoreApplication.translate("MainForm", u"\u63d0\u53d6", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QCoreApplication.translate("MainForm", u"RePKG", None))
+        self.label_7.setText(QCoreApplication.translate("MainForm", u"C\u76d8\u7626\u8eab\uff08mklink\u547d\u4ee4\u751f\u6210\u8f6f\u94fe\u63a5\u76ee\u5f55\u8fc1\u79fb\u9879\u76ee\uff09\n"
+"\u6ce8\u610f\uff1a\u751f\u6210\u8f6f\u94fe\u63a5\u5c06\u91cd\u547d\u540d\u6e90\u6587\u4ef6\u5939\uff08\u540d\u79f0+\u540e\u7f00\uff09\u9632\u6b62\u4e22\u5931\uff0c\u5982\u679c\u5931\u8d25\u8bf7\u624b\u52a8\u6539\u56de\u3002\n"
+"\u5185\u5bb9\u8f6c\u79fb\u4e0d\u5efa\u8bae\u4f7f\u7528\uff0c\u8bf7\u624b\u52a8\u526a\u5207\u8ba2\u9605\u76ee\u5f55", None))
+        self.btn_mklink_new.setText(QCoreApplication.translate("MainForm", u"\u65b0\u589e", None))
+        self.label_3.setText(QCoreApplication.translate("MainForm", u"\u539f\u5730\u5740\uff08\u66ff\u6362\u8f6f\u94fe\u63a5\uff09", None))
+        self.lineEdit_mklink_path.setPlaceholderText(QCoreApplication.translate("MainForm", u"\u5c06\u9700\u8981\u751f\u6210\u7684\u6587\u4ef6\u5939\u62d6\u5165\u8fd9\u91cc", None))
+        self.btn_mklink_open_old.setText(QCoreApplication.translate("MainForm", u"\u6253\u5f00", None))
+        self.label_5.setText(QCoreApplication.translate("MainForm", u"\u76ee\u6807\u5730\u5740\uff08\u6307\u5411\u65b0\u5730\u5740\uff09", None))
+        self.lineEdit_mklink_path_new.setPlaceholderText(QCoreApplication.translate("MainForm", u"\u4f8b\uff1aD:/Documents/wallpaper_engine_backup", None))
+        self.btn_mklink_open.setText(QCoreApplication.translate("MainForm", u"\u6253\u5f00", None))
+        self.btn_mklink_create.setText(QCoreApplication.translate("MainForm", u"\u751f\u6210\u8f6f\u94fe\u63a5\uff08\u539f\u5730\u5740->\u76ee\u6807\u5730\u5740\uff09", None))
+        self.btn_mklink_restore.setText(QCoreApplication.translate("MainForm", u"\u8fd8\u539f", None))
+        self.btn_dir_move.setText(QCoreApplication.translate("MainForm", u"\u5185\u5bb9\u8f6c\u79fb", None))
+        self.btn_mklink_remove.setText(QCoreApplication.translate("MainForm", u"\u79fb\u9664", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_mklink), QCoreApplication.translate("MainForm", u"Mklink", None))
         self.groupBox_dir.setTitle(QCoreApplication.translate("MainForm", u"\u8f6f\u4ef6\u76ee\u5f55", None))
         self.label.setText(QCoreApplication.translate("MainForm", u"Steam\u5b89\u88c5\u4f4d\u7f6e", None))
         self.lineEdit_steamPath.setPlaceholderText(QCoreApplication.translate("MainForm", u"\u4f8b\uff1aC:\\Program Files (x86)\\Steam", None))
@@ -398,21 +404,6 @@ class Ui_MainForm(object):
         self.label_4.setText(QCoreApplication.translate("MainForm", u"\u5907\u4efd\u4f4d\u7f6e", None))
         self.lineEdit_wallpaperBackupPath.setPlaceholderText(QCoreApplication.translate("MainForm", u"\u4f8b\uff1aC:\\Program Files (x86)\\Steam\\steamapps\\common\\wallpaper_engine\\projects\\backup", None))
         self.btn_wallpaperBackupPath.setText("")
-        self.groupBox_mklink.setTitle(QCoreApplication.translate("MainForm", u"C\u76d8\u7626\u8eab\uff08mklink\u547d\u4ee4\u751f\u6210\u8f6f\u94fe\u63a5\u76ee\u5f55\u8fc1\u79fb\u9879\u76ee\uff09", None))
-        self.radio_mklink_steam.setText(QCoreApplication.translate("MainForm", u"\u8ba2\u9605", None))
-        self.radio_mklink_backup.setText(QCoreApplication.translate("MainForm", u"\u5907\u4efd", None))
-        self.btn_mklink_new.setText(QCoreApplication.translate("MainForm", u"\u65b0\u589e", None))
-        self.label_3.setText(QCoreApplication.translate("MainForm", u"\u539f\u5730\u5740\uff08\u66ff\u6362\u8f6f\u94fe\u63a5\uff09", None))
-        self.lineEdit_mklink_path.setPlaceholderText(QCoreApplication.translate("MainForm", u"\u5c06\u9700\u8981\u751f\u6210\u7684\u6587\u4ef6\u5939\u62d6\u5165\u8fd9\u91cc", None))
-        self.btn_mklink_open_old.setText(QCoreApplication.translate("MainForm", u"\u6253\u5f00", None))
-        self.label_5.setText(QCoreApplication.translate("MainForm", u"\u76ee\u6807\u5730\u5740\uff08\u6307\u5411\u65b0\u5730\u5740\uff09", None))
-        self.lineEdit_mklink_path_new.setPlaceholderText(QCoreApplication.translate("MainForm", u"\u4f8b\uff1aD:/Documents/wallpaper_engine_backup", None))
-        self.btn_mklink_open.setText(QCoreApplication.translate("MainForm", u"\u6253\u5f00", None))
-        self.btn_mklink_create.setText(QCoreApplication.translate("MainForm", u"\u751f\u6210\u8f6f\u94fe\u63a5\uff08\u539f\u5730\u5740->\u76ee\u6807\u5730\u5740\uff09", None))
-        self.btn_mklink_restore.setText(QCoreApplication.translate("MainForm", u"\u8fd8\u539f", None))
-        self.btn_dir_move.setText(QCoreApplication.translate("MainForm", u"\u8f6c\u79fb\u9879\u76ee", None))
-        self.label_7.setText(QCoreApplication.translate("MainForm", u"\u6ce8\u610f\uff1a\u751f\u6210\u8f6f\u94fe\u63a5\u5c06\u91cd\u547d\u540d\u6e90\u6587\u4ef6\u5939\uff08\u540d\u79f0+\u540e\u7f00\uff09\u9632\u6b62\u4e22\u5931\uff0c\u5982\u679c\u5931\u8d25\u8bf7\u624b\u52a8\u6539\u56de\u3002\n"
-"\u8f6c\u79fb\u9879\u76ee\u4e0d\u5efa\u8bae\u4f7f\u7528\uff0c\u8bf7\u624b\u52a8\u526a\u5207\u8ba2\u9605\u76ee\u5f55", None))
         self.groupBox.setTitle(QCoreApplication.translate("MainForm", u"NAS\u5907\u4efd", None))
         self.label_8.setText(QCoreApplication.translate("MainForm", u"\u9488\u5bf9\u4e0d\u5e38\u7528\u58c1\u7eb8\u548c\u5e94\u7528\u538b\u7f29\u5305\u8fc1\u79fb\u6765\u51cf\u5c0f\u786c\u76d8\u5360\u7528\n"
 "\u6b65\u9aa4\uff1a1.\u624b\u52a8\u8f6c\u79fb\u9879\u76ee\u5230\u6307\u5b9aip\u5730\u5740\u76ee\u5f55 2.\u751f\u6210\u5feb\u6377\u65b9\u5f0f", None))

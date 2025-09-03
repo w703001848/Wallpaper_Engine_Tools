@@ -2,9 +2,9 @@ import os, json, logging
 
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QApplication, QWidget
-from widgets import Ui_ItemFrame
+from .Ui_listItem import Ui_ItemFrame
 
-from .RePKG import RePKGFun
+from modules.RePKG import processItem
 
 class MyWindow(QWidget, Ui_ItemFrame):
     def __init__(self):
@@ -31,7 +31,7 @@ class MyWindow(QWidget, Ui_ItemFrame):
                     name = f"{name}【{obj['type']}】"
                     if obj['type'].lower() == 'scene':
                         self.btn_RePKG.setVisible(True)
-                        self.btn_RePKG.clicked.connect(lambda: RePKGFun().processItem(os.path.join(path, 'scene.pkg'), True))
+                        self.btn_RePKG.clicked.connect(lambda: processItem(os.path.join(path, 'scene.pkg'), True))
                 elif 'dependency' in obj:
                     name = f"{name}【{obj['dependency']}】"
                 self.label_name.setText(name)

@@ -1,7 +1,7 @@
 
 from PySide6.QtWidgets import QApplication, QWidget
-from widgets import Ui_ListWidget
-from .componentListItem import MyWindow as Ui_ListItem
+from .Ui_list import Ui_ListWidget
+from .componentListItem import MyWindow as Ui_Item
 
 class MyWindow(QWidget, Ui_ListWidget):
     def __init__(self, type):
@@ -24,7 +24,7 @@ class MyWindow(QWidget, Ui_ListWidget):
         self.tableWidget_main.setRowCount(len(data))
         for index, item in enumerate(data):
             self.tableWidget_main.setRowHeight(index, 140)
-            boxItem = Ui_ListItem()
+            boxItem = Ui_Item()
             boxItem.setData(item['name'], item['path'])
             self.tableWidget_main.setCellWidget(index, 0, boxItem)
 
