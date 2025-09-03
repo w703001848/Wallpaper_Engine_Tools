@@ -6,9 +6,9 @@ from PySide6.QtWidgets import QApplication, QWidget, QLabel
 # 加载模板
 from widgets import Ui_MainForm, Ui_List
 # 功能模块
-from modules.main import getDirList, openFileDialog, openStartfile
+from modules.main import getDirList, openFileDialog, openStartfile, Debouncer
 from modules.Config import config, setSteamPath, setWallpaperPath, setBackupPath, set_config, save_config
-from modules.RePKG import updataRepkg, processItem, setRepkgImgData
+from modules.RePKG import updataRepkg, processItem, updataRepkgData, setRepkgImgData
 from modules.Mklink import mklinkCreate, mklinkNew, mklinkBack
 
 class MyWindow(QWidget, Ui_MainForm):
@@ -46,10 +46,18 @@ class MyWindow(QWidget, Ui_MainForm):
         else:
             self.addLabelError()
 
+    def resizeEvent(self, event):
+        if self.tabCurrent:
+            # print(f"窗口大小已更新为: {self.size().width()}x{self.size().height()}")
+            self.debouncer.trigger()
+
     # tabWidget切换
     def tabChange(self):
         if self.tabWidget.currentIndex() == 2:
+            self.tabCurrent = True
             updataRepkg(config["repkgPath"], self.lineEdit_repkg, self.tableWidget_repkg)
+        else:
+            self.tabCurrent = False
 
     # 列表数据加载
     def addMainList(self):
@@ -76,6 +84,11 @@ class MyWindow(QWidget, Ui_MainForm):
    
     # repkg初始化
     def initRepkg(self):
+        self.tabCurrent = False
+        self.debouncer = Debouncer(lambda: setRepkgImgData(self.tableWidget_repkg, self.size().width()), 700)
+        self.tableWidget_repkg.horizontalHeader().setStretchLastSection(True) # 表格自适应
+        # self.tableWidget_repkg.horizontalHeader().setVisible(True) # 隐藏头
+        # self.tableWidget_repkg.verticalHeader().setVisible(True) # 隐藏侧边
         self.repkgPath = config["repkgPath"]
         # repkg选择
         def __set_repkg_path():
@@ -92,6 +105,7 @@ class MyWindow(QWidget, Ui_MainForm):
                 set_config('repkgPath', self.repkgPath)
                 # 写入config.json
                 save_config()
+                updataRepkgData()
                 setRepkgImgData(self.tableWidget_repkg)
         self.btn_repkg.clicked.connect(__repkg_btn)
 

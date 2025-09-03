@@ -4,7 +4,7 @@ from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QLineEdit, QTableWidget, QLabel
 
-from modules.Config import set_config, save_config
+from .Config import set_config, save_config
 
 # output_filter_img = "filtered-images"
 # output_ideal_img = "ideal-images"
@@ -87,42 +87,57 @@ def processItem(path, startfile=False):
 # repkg列表更新
 def updataRepkg(path, lineEdit: QLineEdit, tableWidget: QTableWidget):
     global updataPath
-    print(f"{updataPath}:{path}")
+    # print(f"{updataPath}:{path}")
     if path != '' and updataPath != path: # 防止重复刷新
         print("updataRepkg刷新")
         updataPath = path
         lineEdit.setText(path)
+        updataRepkgData()
         setRepkgImgData(tableWidget)
 
-# repkg图表生成
-def setRepkgImgData(tableWidget: QTableWidget):
+repkgImgData = []
+def updataRepkgData():
+    global repkgImgData
     dirPath = os.path.join(os.getcwd(), output)
     if not os.path.exists(dirPath):
         return
-    data = os.listdir(dirPath)
-    tableWidget.horizontalHeader().setStretchLastSection(True) # 表格自适应
-    # tableWidget.horizontalHeader().setVisible(True) # 隐藏头
-    # tableWidget.verticalHeader().setVisible(True) # 隐藏侧边
-    colMax = 3
+    repkgImgData.clear()
+    list = os.listdir(dirPath)
+    for index, item in enumerate(list):
+        repkgImgData.append(os.path.join(dirPath, item))
+
+def reCol(windowWidth, colMax):
+    size = int((windowWidth - 62) / colMax)
+    if size > 240:
+        size, colMax = reCol(windowWidth, colMax + 1)
+    # elif size < 180:
+    #     colMax = colMax - 1
+    #     size, _ = reCol(windowWidth, colMax)
+    print(size)
+    print(colMax)
+    return size, colMax
+
+# repkg图表生成
+def setRepkgImgData(tableWidget: QTableWidget, windowWidth = 640):
+    size, colMax = reCol(windowWidth, 3)
     tableWidget.setColumnCount(colMax)
     tableWidget.setRowCount(0) # 清空
-    tableWidget.setRowCount(int(len(data) / colMax + 0.9))
-    size = 199
+    tableWidget.setRowCount(int(len(repkgImgData) / colMax + 0.9))
+    tableWidget.setRowHeight(0, size)
+    # 根据列数设置列宽
+    i = 0
+    while i < 5:
+        tableWidget.setColumnWidth(i, size)
+        i += 1
     row = 0
     col = 0
-    tableWidget.setColumnWidth(0, size)
-    tableWidget.setColumnWidth(1, size)
-    tableWidget.setColumnWidth(2, size)
-    tableWidget.setRowHeight(0, size)
-    for index, item in enumerate(data):
-        imgPath = os.path.join(dirPath, item)
+    for index, imgPath in enumerate(repkgImgData):
         boxItem = QLabel()
-        boxItem.setMinimumSize(QSize(size, size))
+        # boxItem.setMinimumSize(QSize(size, size))
         boxItem.setMaximumSize(QSize(size, size))
-        boxItem.setScaledContents(True)
+        # boxItem.setScaledContents(True)
         boxItem.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        pic = QPixmap(imgPath)
-        boxItem.setPixmap(pic)
+        boxItem.setPixmap(QPixmap(imgPath).scaled(size, size, Qt.KeepAspectRatio, Qt.SmoothTransformation))
         tableWidget.setCellWidget(row, col, boxItem)
         col += 1
         if col >= colMax:

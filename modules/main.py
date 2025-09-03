@@ -1,7 +1,33 @@
 import logging  # 引入logging模块
 import os
 
+from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QFileDialog, QMessageBox
+
+
+class Debouncer(object):
+    # 简单防抖
+    def __init__(self, func, wait_time = 500):
+        self.timer = QTimer()
+        self.timer.setSingleShot(True)
+        self.timer.setInterval(wait_time)
+        self.timer.timeout.connect(self.action)
+        self.func = func
+ 
+    # 触发计时
+    def trigger(self):
+        if not self.timer.isActive():
+            self.timer.start()
+        else:
+            # 重新启动计时器以重置时间间隔
+            self.timer.stop()
+            self.timer.start()
+    
+    def action(self):
+        print('计时结束开始处理')
+        self.func()
+    # 使用示例
+    # debouncer = Debouncer(func, 500)  # 500毫秒的延迟
 
 # 用于传参，默认函数
 def func(*args, **kwargs):
