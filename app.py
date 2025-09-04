@@ -1,4 +1,5 @@
 import os, logging, json, pyperclip
+import atexit
 # PySide6组件调用
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
@@ -28,6 +29,8 @@ class MyWindow(QWidget, Ui_MainForm):
 
         # 加载数据
         self.tabChange()
+
+        atexit.register(save_config)
 
     def func(self, *args, **kwargs):
         print(11112)
@@ -123,8 +126,6 @@ class MyWindow(QWidget, Ui_MainForm):
             # print(res)
             if res:
                 set_config('repkgPath', self.repkgPath)
-                # 写入config.json
-                save_config()
                 updataRepkgData()
                 setRepkgImgData(self.tableWidget_repkg)
         self.btn_repkg.clicked.connect(__repkg_btn)
@@ -148,7 +149,6 @@ class MyWindow(QWidget, Ui_MainForm):
             self.listWidget_mklink.takeItem(self.mklinkCurrent)
             self.listWidget_mklink.setCurrentRow(1) # 选中
             self.mklinkChange() # 选中
-            save_config()
         self.btn_mklink_remove.clicked.connect(mklink_remove)
         # 生成软链接
         def mklink_create():
@@ -156,8 +156,6 @@ class MyWindow(QWidget, Ui_MainForm):
             if dir_path_new:
                 data = config["mklinkList"]
                 data[self.mklinkCurrent]['path_new'] = dir_path_new
-                # 写入config.json
-                save_config()
                 self.listWidget_mklink.currentItem().setText(f"标注:{data[self.mklinkCurrent]['name']}\n{data[self.mklinkCurrent]['path']}\n{data[self.mklinkCurrent]['path_new'] or '未生成'}")
                 self.lineEdit_mklink_path_new.setText(data[self.mklinkCurrent]['path_new'])
         self.btn_mklink_create.clicked.connect(mklink_create)
@@ -166,7 +164,6 @@ class MyWindow(QWidget, Ui_MainForm):
             if mklinkBack(self.mklinkCurrent):
                 data = config["mklinkList"]
                 data[self.mklinkCurrent]['path_new'] = ""
-                save_config()
                 self.listWidget_mklink.currentItem().setText(f"标注:{data[self.mklinkCurrent]['name']}\n{data[self.mklinkCurrent]['path']}\n未生成")
                 self.lineEdit_mklink_path_new.setText("")
         self.btn_mklink_restore.clicked.connect(mklink_back)

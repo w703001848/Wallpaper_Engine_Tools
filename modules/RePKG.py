@@ -4,7 +4,7 @@ from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QLineEdit, QTableWidget, QLabel
 
-from .Config import set_config, save_config
+from .Config import set_config
 
 # output_filter_img = "filtered-images"
 # output_ideal_img = "ideal-images"
@@ -79,7 +79,6 @@ def processItem(path, startfile=False):
     
     if startfile:
         set_config("repkgPath", pathExecuted)
-        save_config()
         # 打开资源管理器
         os.startfile(os.path.join(os.getcwd(), output))
     return True

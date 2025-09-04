@@ -11,7 +11,6 @@ version = "1.2"
 config_path = os.path.join(os.getcwd(), 'config.json')
 
 # 首次执行初始化config
-boolSetConfig = False
 config = {
     "isDevelopment": checkEnvironment(), # 开发模式
     "version": "",
@@ -68,21 +67,19 @@ def get_config():
 
 # 写入config.json
 def save_config(): 
-    global boolSetConfig
     try:
         with open(config_path, mode='wt', encoding="utf-8") as f1:
             json.dump(config, f1) # 将json写入文件
-            boolSetConfig = False
+            print("保存config")
     except Exception as e:
         logging.warning(f"写入config.json: {e}")
         
 # 设置config.json
 def set_config(key, obj): 
-    global config, boolSetConfig
+    global config
     try:
         if config[key] != obj:
             config[key] = obj
-            boolSetConfig = True
     except Exception as e:
         logging.warning(f"设置config.json: {e}")
 
@@ -274,8 +271,6 @@ def setSteamPath(lineEdit: QLineEdit):
     __path = openFileDialog(config["steamPath"], "请选择steam.exe启动文件", "Steam (*.exe)")
     if __path:
         set_steam_path(__path)
-        # 写入config.json
-        save_config()
         lineEdit.setText(__path)
 
 # 设置文本框wallpaper地址
@@ -284,8 +279,6 @@ def setWallpaperPath(lineEdit: QLineEdit):
     __path = openFileDialog(config["wallpaperPath"], "请选择wallpaper_engine/launcher.exe启动文件", "Steam (*.exe)")
     if __path:
         set_wallpaper_path(__path)
-        # 写入config.json
-        save_config()
         lineEdit.setText(__path)
 
 # 设置文本框backup地址
@@ -293,8 +286,6 @@ def setBackupPath(lineEdit: QLineEdit):
     __path = openDirDialog(config["backupPath"])
     if __path:
         set_wallpaper_backup_path(__path)
-        # 写入config.json
-        save_config()
         lineEdit.setText(__path)
 
 # 查询是否存在并获取config.json
@@ -306,17 +297,14 @@ if config['isDevelopment'] and os.path.exists(config_path):
 config['version'] = version
 
 if not config['steamPath']:
-    boolSetConfig = set_steam_path(os.path.abspath(get_steam_path_registry() + '/steam.exe'))
+    set_steam_path(os.path.abspath(get_steam_path_registry() + '/steam.exe'))
 
 if not config['wallpaperPath']:
-    boolSetConfig = set_wallpaper_path(os.path.abspath(get_wallpaper_path_registry() + '/launcher.exe'))
+    set_wallpaper_path(os.path.abspath(get_wallpaper_path_registry() + '/launcher.exe'))
 
 if config['wallpaperPath']:
     # 获取wallpaper_config数据
-    boolSetConfig = get_wallpaper_config()
-    boolSetConfig = get_workshopcache()
+    get_wallpaper_config()
+    get_workshopcache()
 
-if boolSetConfig:
-    # 写入config.json
-    save_config()
 # print(f"steamPath:{version}")

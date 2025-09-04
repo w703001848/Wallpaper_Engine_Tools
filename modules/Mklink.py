@@ -4,7 +4,7 @@ import shutil
 from PySide6.QtWidgets import QInputDialog
 
 from .main import openMessageDialog, openStartfile, openDirDialog
-from .Config import config, save_config
+from .Config import config
 
 # 软链接生成
 def createSymbolicLink(path_old, path_new):
@@ -75,6 +75,5 @@ def mklinkNew():
                 "path_new": ""
             }
             mklinkList.append(obj)
-            save_config()
             return obj
     return False
