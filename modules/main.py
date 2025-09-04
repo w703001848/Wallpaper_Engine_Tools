@@ -1,10 +1,12 @@
 import logging  # 引入logging模块
 import os
+import keyboard
+import time
 
 from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QFileDialog, QMessageBox
 
-
+# 防抖
 class Debouncer(object):
     # 简单防抖
     def __init__(self, func, wait_time = 500):
@@ -32,6 +34,30 @@ class Debouncer(object):
 # 用于传参，默认函数
 def func(*args, **kwargs):
     pass
+
+# Steam中解锁隐藏成就「30条命」‌,打开壁纸设置，切换到关于页面，点击解锁
+# 上上下下左右左右ba回车
+def Unlock_hidden_achievements():
+    # 模拟键盘输入文本，需要先按下CTRL+SHIFT+ALT+K来激活文本输入模式（在一些应用程序中可能需要）
+    keyboard.press_and_release('alt+tab') # 示例：激活文本输入模式（根据应用不同，可能需要不同的组合键）
+    time.sleep(1)  # 等待文本输入模式激活
+    keyegg = [
+        "up",
+        "up",
+        "down",
+        "down",
+        "left",
+        "right",
+        "left",
+        "right",
+        "b",
+        "a",
+    ]
+    for key in keyegg:
+        keyboard.press_and_release(key)
+        time.sleep(.5)
+        # keyboard.write(key)  # 输入文本
+    keyboard.press_and_release('enter')  # 按下Enter
 
 # 警告弹窗
 def openMessageDialog(txt="警告", funOK=func, funCancel=func):

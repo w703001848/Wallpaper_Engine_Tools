@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QApplication, QWidget, QLabel, QListWidgetItem
 # 加载模板
 from widgets import Ui_MainForm, Ui_List
 # 功能模块
-from modules.main import getDirList, openFileDialog, openStartfile, openMessageDialog, Debouncer
+from modules.main import getDirList, openFileDialog, openStartfile, openMessageDialog, Unlock_hidden_achievements, Debouncer
 from modules.Config import config, setSteamPath, setWallpaperPath, setBackupPath, set_config, save_config
 from modules.RePKG import updataRepkg, processItem, updataRepkgData, setRepkgImgData
 from modules.Mklink import mklinkCreate, mklinkNew, mklinkBack
@@ -20,8 +20,8 @@ class MyWindow(QWidget, Ui_MainForm):
 
         super().__init__()
         self.initPage()
-        # self.initRepkg()
-        # self.initMklink()
+        self.initRepkg()
+        self.initMklink()
         # self.initNaslink()
 
         # 加载数据
@@ -36,6 +36,7 @@ class MyWindow(QWidget, Ui_MainForm):
         self.setupUi(self)
         self.tabWidget.currentChanged.connect(self.tabChange)
         self.label_version.setText('版本：' + config["version"])
+        self.btn_unlock_hidden_achievements.clicked.connect(Unlock_hidden_achievements)
 
         # 获取steam地址
         steam_path = config["steamPath"]
@@ -89,7 +90,7 @@ class MyWindow(QWidget, Ui_MainForm):
     # 黑名单列表数据加载
     def addauthorblockList(self):
         print('黑名单加载')
-        for index, item in enumerate(config["authorblocklistnames"]):
+        for item in config["authorblocklistnames"]:
             self.listWidget_authorblock.addItem(f"名称: {item['name']}\nID: {item['value']}")
 
     # 未安装Wallpaper Engine提示
