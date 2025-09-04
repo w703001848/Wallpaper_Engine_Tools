@@ -26,7 +26,7 @@ class Ui_MainForm(object):
         if not MainForm.objectName():
             MainForm.setObjectName(u"MainForm")
         MainForm.setEnabled(True)
-        MainForm.resize(640, 480)
+        MainForm.resize(640, 496)
         MainForm.setMinimumSize(QSize(640, 480))
         icon = QIcon()
         icon.addFile(u"../img/Management.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
@@ -305,7 +305,7 @@ class Ui_MainForm(object):
         self.scrollArea_1.setWidgetResizable(True)
         self.scrollAreaWidgetContents_1 = QWidget()
         self.scrollAreaWidgetContents_1.setObjectName(u"scrollAreaWidgetContents_1")
-        self.scrollAreaWidgetContents_1.setGeometry(QRect(0, 0, 599, 434))
+        self.scrollAreaWidgetContents_1.setGeometry(QRect(0, 0, 599, 450))
         self.verticalLayout_2 = QVBoxLayout(self.scrollAreaWidgetContents_1)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.groupBox_dir = QGroupBox(self.scrollAreaWidgetContents_1)
@@ -393,6 +393,30 @@ class Ui_MainForm(object):
 
         self.verticalLayout_2.addWidget(self.groupBox_dir)
 
+        self.groupBox = QGroupBox(self.scrollAreaWidgetContents_1)
+        self.groupBox.setObjectName(u"groupBox")
+        self.groupBox.setMinimumSize(QSize(0, 80))
+        self.gridLayout_6 = QGridLayout(self.groupBox)
+        self.gridLayout_6.setObjectName(u"gridLayout_6")
+        self.horizontalLayout_11 = QHBoxLayout()
+        self.horizontalLayout_11.setObjectName(u"horizontalLayout_11")
+        self.label_9 = QLabel(self.groupBox)
+        self.label_9.setObjectName(u"label_9")
+
+        self.horizontalLayout_11.addWidget(self.label_9)
+
+        self.btn_unlock_hidden_achievements = QPushButton(self.groupBox)
+        self.btn_unlock_hidden_achievements.setObjectName(u"btn_unlock_hidden_achievements")
+        self.btn_unlock_hidden_achievements.setMaximumSize(QSize(80, 16777215))
+
+        self.horizontalLayout_11.addWidget(self.btn_unlock_hidden_achievements)
+
+
+        self.gridLayout_6.addLayout(self.horizontalLayout_11, 0, 0, 1, 1)
+
+
+        self.verticalLayout_2.addWidget(self.groupBox)
+
         self.groupBox_info = QGroupBox(self.scrollAreaWidgetContents_1)
         self.groupBox_info.setObjectName(u"groupBox_info")
         self.groupBox_info.setMinimumSize(QSize(0, 60))
@@ -426,7 +450,7 @@ class Ui_MainForm(object):
 
         self.retranslateUi(MainForm)
 
-        self.tabWidget.setCurrentIndex(5)
+        self.tabWidget.setCurrentIndex(6)
 
 
         QMetaObject.connectSlotsByName(MainForm)
@@ -475,6 +499,11 @@ class Ui_MainForm(object):
         self.label_4.setText(QCoreApplication.translate("MainForm", u"\u5907\u4efd\u4f4d\u7f6e", None))
         self.lineEdit_wallpaperBackupPath.setPlaceholderText(QCoreApplication.translate("MainForm", u"\u4f8b\uff1aC:\\Program Files (x86)\\Steam\\steamapps\\common\\wallpaper_engine\\projects\\backup", None))
         self.btn_wallpaperBackupPath.setText("")
+        self.groupBox.setTitle(QCoreApplication.translate("MainForm", u"\u89e3\u9501\u9690\u85cf\u6210\u5c31\u300c30\u6761\u547d\u300d", None))
+        self.label_9.setText(QCoreApplication.translate("MainForm", u"\u6253\u5f00\u58c1\u7eb8\u8bbe\u7f6e\uff0c\u5207\u6362\u5230\u5173\u4e8e\u9875\u9762\uff0c\u70b9\u51fb\u89e3\u9501\n"
+"\n"
+"\u6216\u8005\u624b\u52a8\u8f93\u5165\u201d\u4e0a\u4e0a\u4e0b\u4e0b\u5de6\u53f3\u5de6\u53f3ba\u56de\u8f66\u201c", None))
+        self.btn_unlock_hidden_achievements.setText(QCoreApplication.translate("MainForm", u"\u89e3\u9501", None))
         self.groupBox_info.setTitle(QCoreApplication.translate("MainForm", u"\u5173\u4e8e", None))
         self.label_version.setText(QCoreApplication.translate("MainForm", u"\u7248\u672c\uff1a0", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_set), QCoreApplication.translate("MainForm", u"\u8bbe\u7f6e", None))

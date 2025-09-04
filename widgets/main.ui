@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>640</width>
-    <height>480</height>
+    <height>496</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -30,7 +30,7 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>6</number>
      </property>
      <widget class="QWidget" name="tab_main">
       <attribute name="title">
@@ -504,7 +504,7 @@ background-color: rgb(255, 85, 0);</string>
             <x>0</x>
             <y>0</y>
             <width>599</width>
-            <height>434</height>
+            <height>450</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -665,6 +665,47 @@ background-color: rgb(255, 85, 0);</string>
                   </property>
                   <property name="icon">
                    <iconset theme="QIcon::ThemeIcon::EditFind"/>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>80</height>
+              </size>
+             </property>
+             <property name="title">
+              <string>解锁隐藏成就「30条命」</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_6">
+              <item row="0" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayout_11">
+                <item>
+                 <widget class="QLabel" name="label_9">
+                  <property name="text">
+                   <string>打开壁纸设置，切换到关于页面，点击解锁
+
+或者手动输入”上上下下左右左右ba回车“</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="btn_unlock_hidden_achievements">
+                  <property name="maximumSize">
+                   <size>
+                    <width>80</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>解锁</string>
                   </property>
                  </widget>
                 </item>
