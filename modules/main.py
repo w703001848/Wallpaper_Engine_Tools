@@ -2,6 +2,7 @@ import logging  # 引入logging模块
 import os
 import keyboard
 import time
+from contextlib import contextmanager
 
 from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QFileDialog, QMessageBox
@@ -34,6 +35,21 @@ class Debouncer(object):
 # 用于传参，默认函数
 def func(*args, **kwargs):
     pass
+ 
+# 代码耗时测试
+@contextmanager
+def timer(label):
+    start = time.perf_counter()
+    try:
+        yield
+    finally:
+        end = time.perf_counter()
+        print(f"{label}: {end - start:.4f} seconds")
+# 使用方式
+# with timer("Function Execution"):
+#     # 你的代码
+#     for i in range(1000000):
+#         pass
 
 # Steam中解锁隐藏成就「30条命」‌,打开壁纸设置，切换到关于页面，点击解锁
 # 上上下下左右左右ba回车
@@ -118,16 +134,28 @@ def getDirList(path, isSize=False):
     return list
     
 # 文件夹容量计算
-def getDirSize(folder_path):
-    logging.warning('开启文件夹容量计算，占用性能建议关闭')
+def getDirSize(folder_path, isTop = True):
+    if isTop:
+        logging.warning('开启文件夹容量计算，占用性能建议关闭')
     total_size = 0
     with os.scandir(folder_path) as entries:
         for entry in entries:
             if entry.is_file():
                 total_size += entry.stat().st_size
             elif entry.is_dir():
-                total_size += getDirSize(entry.path)
+                total_size += getDirSize(entry.path, False)
     return total_size
+
+# 容量转字符
+def dirSizeToStr(size):
+    size = size / 1024
+    if size < 1024:
+        return f"{size:.0f} KB"
+    elif size < 1048576:
+        return f"{size/1024:.0f} MB"
+    else:
+        return f"{size/1048576:.0f} GB"
+
 
 # 是否正式版
 def checkEnvironment():

@@ -6,19 +6,21 @@ from PySide6.QtWidgets import QApplication, QWidget, QLabel, QListWidgetItem
 # 加载模板
 from widgets import Ui_MainForm, Ui_List
 # 功能模块
-from modules.main import getDirList, openFileDialog, openStartfile, openMessageDialog, Unlock_hidden_achievements, Debouncer
-from modules.Config import config, setSteamPath, setWallpaperPath, setBackupPath, set_config, save_config
+from modules.main import dirSizeToStr, openFileDialog, openStartfile, openMessageDialog, Unlock_hidden_achievements, Debouncer
+from modules.Config import config, temp_authorblocklistnames, setSteamPath, setWallpaperPath, setBackupPath, set_config, save_config
 from modules.RePKG import updataRepkg, processItem, updataRepkgData, setRepkgImgData
 from modules.Mklink import mklinkCreate, mklinkNew, mklinkBack
 
 class MyWindow(QWidget, Ui_MainForm):
     def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+
         self.wallpaperConfig = {}
         self.tabRepkgCurrent = False # 锁定tabRepkg页刷新
         self.tabMainError = True # 防止重复加载
         self.tabBackError = True # 防止重复加载
 
-        super().__init__()
         self.initPage()
         self.initRepkg()
         self.initMklink()
@@ -33,10 +35,9 @@ class MyWindow(QWidget, Ui_MainForm):
 
     # 初始化设置界面
     def initPage(self):
-        self.setupUi(self)
         self.tabWidget.currentChanged.connect(self.tabChange)
         self.label_version.setText('版本：' + config["version"])
-        self.btn_unlock_hidden_achievements.clicked.connect(Unlock_hidden_achievements)
+        self.btn_unlock_hidden_achievements.clicked.connect(Unlock_hidden_achievements) # 解锁成就
 
         # 获取steam地址
         steam_path = config["steamPath"]
@@ -74,8 +75,6 @@ class MyWindow(QWidget, Ui_MainForm):
             if self.tabBackError: # 防止重复加载
                 if config["backupPath"]:
                     obj2 = Ui_List('backup')
-                    # 获取列表数据加载
-                    # obj2.setData(getDirList(config["backupPath"]))
                     objChildren = self.tab_backup.children()
                     objChildren[0].addWidget(obj2)
                 else:
@@ -90,7 +89,7 @@ class MyWindow(QWidget, Ui_MainForm):
     # 黑名单列表数据加载
     def addauthorblockList(self):
         print('黑名单加载')
-        for item in config["authorblocklistnames"]:
+        for item in temp_authorblocklistnames:
             self.listWidget_authorblock.addItem(f"名称: {item['name']}\nID: {item['value']}")
 
     # 未安装Wallpaper Engine提示
@@ -192,7 +191,7 @@ class MyWindow(QWidget, Ui_MainForm):
     # 黑名单列表点击
     def authorblockChange(self):
         authorblockCurrent = self.listWidget_authorblock.currentRow()
-        obj = config["authorblocklistnames"][authorblockCurrent]
+        obj = temp_authorblocklistnames[authorblockCurrent]
         openMessageDialog("已复制到剪贴板")
         pyperclip.copy(f"名称: {obj['name']}\nID: {obj['value']}")
 

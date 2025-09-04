@@ -1,11 +1,11 @@
 import logging  # 引入logging模块
-import os
-import json
+import os, json
+import time
 import winreg as reg
 
 from PySide6.QtWidgets import QLineEdit
 
-from .main import checkEnvironment, openFileDialog, openDirDialog, openMessageDialog
+from .main import checkEnvironment, getDirSize, dirSizeToStr, openFileDialog, openDirDialog
 
 version = "1.2"
 config_path = os.path.join(os.getcwd(), 'config.json')
@@ -19,6 +19,7 @@ config = {
     "steamPath": "", # steam地址
     "wallpaperPath": "", # wallpaper地址
     "backupPath": "", # wallpaper备份地址
+    "uiThumbnails": "", # wallpaper图片缓存位置
     "repkgPath": "", # 记录上次提取RePKG路径
     # "isCheckedRePKGClear": False, # 是否清空RePKG上次输出
     "mklinkList": [{
@@ -36,10 +37,13 @@ config = {
     # "isCheckedWeb": False, # 网页
     # "isCheckedApplication": False, # 应用
     # "isCheckedInvalid": False, # 失效
-    "authorblocklistnames": [], # 拉黑名单
-    "folders": [], # 壁纸数据
 }
-    
+
+temp_workshopcache = [] # 工坊壁纸数据
+temp_workshopcache_size = 0 # 工坊壁纸数据容量
+temp_folders = [] # 壁纸分类数据
+temp_authorblocklistnames = [] # 拉黑名单
+
 # 下标获取参数
 def __getitem__(key):
     return config[key]
@@ -137,37 +141,132 @@ def get_wallpaper_steam_path():
         logging.error(f"获取Steam壁纸订阅地址: {e}")
 
 # 获取WallpaperEngine config位置并读取
-def get_wallpaper_config_path(wallpaper_path): 
-    wallpaper_config_path = os.path.join(os.path.dirname(wallpaper_path), 'config.json')
+def get_wallpaper_config(): 
+    global temp_authorblocklistnames, temp_folders
     try:
-        with open(wallpaper_config_path, encoding="utf-8") as f1:
-            res = json.load(f1) # 从文件读取json并反序列化
-            set_config("authorblocklistnames", res[config["username"]]["general"]["browser"]["authorblocklistnames"])
-            set_config("folders", res[config["username"]]["general"]["browser"]["folders"])
+        # WallpaperEngine 壁纸分类目录，拉黑名单
+        with open(os.path.join(os.path.dirname(config["wallpaperPath"]), 'config.json'), encoding="utf-8") as f2:
+            res = json.load(f2) # 从文件读取json并反序列化
+            temp_authorblocklistnames = res[config["username"]]["general"]["browser"]["authorblocklistnames"]
+            temp_folders = res[config["username"]]["general"]["browser"]["folders"]
+            return True
     except Exception as e:
         logging.error(f"获取WallpaperEngine config位置并读取: {e}")
-    return None
+    return False
+
+# WallpaperEngine 工坊壁纸缓存
+# 参数有发布id，后期可查看是否黑名单。
+# 包含项目详细信息和图片缓存等
+def get_workshopcache():
+    global temp_workshopcache, temp_workshopcache_size
+    try:
+        with open(os.path.join(os.path.dirname(config["wallpaperPath"]), 'bin/workshopcache.json'), encoding="utf-8") as f1:
+            res = json.load(f1) # 从文件读取json并反序列化
+            temp_workshopcache = res["wallpapers"]
+            wallpaper_steam_path = config['mklinkList'][0]["path"]
+            if os.path.exists(wallpaper_steam_path):
+                for item in os.listdir(wallpaper_steam_path):
+                    # 判断文件夹是否包含在工坊壁纸缓存
+                    if not len(list(filter(lambda obj: obj['workshopid'] == item, temp_workshopcache))):
+                        dir_path = os.path.join(wallpaper_steam_path, item)
+                        project_path = os.path.join(dir_path, 'project.json')
+                        if os.path.exists(project_path):
+                            try:
+                                with open(project_path, encoding="utf-8") as f1:
+                                    data = json.load(f1) # 从文件读取json并反序列化
+                                    size = getDirSize(dir_path)
+                                    temp_workshopcache.append({
+                                        "allowmobileupload" : None,
+                                        "authorsteamid" : None,
+                                        "favorite" : None,
+                                        "file" : os.path.join(dir_path, data["file"]),
+                                        "filesize" : size,
+                                        "filesizelabel" : dirSizeToStr(size),
+                                        "hasrating" : None,
+                                        "ispreset" : None,
+                                        "local" : None,
+                                        "official" : None,
+                                        "preview" : os.path.join(dir_path, data["preview"]),
+                                        "previewsmall" : os.path.join(dir_path, data["preview"]),
+                                        "project" : project_path,
+                                        "rating" : None,
+                                        "ratingrounded" : 5.0,
+                                        "status" : None,
+                                        "subscriptiondate" : int(time.time()),
+                                        "tags" : ','.join(data["tags"]),
+                                        "title" : data["title"],
+                                        "type" : data["type"],
+                                        "updatedate" : int(time.time()),
+                                        "workshopid" : item,
+                                        "workshopurl" : None,
+
+                                        "description" : data["description"] if "description" in data else None,
+                                    }) 
+                            except Exception as e:
+                                logging.error(f"查询到未知文件夹并加入工坊: {item, e}")
+                        else:
+                            # 工坊文件夹存在，但缺少project.json文件，有空开发转移到备份文件夹
+                            # 备份文件夹项目，每次打开更新时间戳，大小计算
+                            pass
+                        print(f'工坊壁纸目录未知项目：{item}')
+            # 计算总容量
+            sum_size = 0
+            for obj in temp_workshopcache:
+                sum_size += obj["filesize"]
+            temp_workshopcache_size = sum_size
+            print(f"总容量：{temp_workshopcache_size}")
+            print(f"工坊壁纸缓存合未知项目数量：{len(temp_workshopcache)}")
+            return True
+    except Exception as e:
+        logging.error(f"获取WallpaperEngine 工坊壁纸缓存并读取: {e}")
+    return False
+
+def get_workshopcache_page(start = None, end = None, sort = None, reverse = False):
+    if sort:
+        # 待开发 排序功能
+        return temp_workshopcache[start:end].sort(reverse=reverse, key=setSortData)
+    else:
+        return temp_workshopcache[start:end]
+
+# 排序功能
+def setSortData(event):
+    print(event)
+
+# 获取WallpaperEngine 图片缓存位置
+def get_wallpaper_ui_thumbnails(name): 
+    return os.path.join(config['uiThumbnails'], name)
 
 # 修改Steam安装位置
 def set_steam_path(path):
     if path:
         set_config('steamPath', path)
+        # 同步设置mklinkList Steam地址
         config['mklinkList'][0]["path"] = get_wallpaper_steam_path()
-    return True
+        return True
+    else:
+        return False
 
 # 修改WallpaperEngine安装位置
 def set_wallpaper_path(path):
     if path:
         set_config('wallpaperPath', path)
+        # 同步设置 备份地址、图片缓存地址
         if not config['backupPath']:
             set_wallpaper_backup_path(get_wallpaper_backup_path())
-    return True
+            set_config('uiThumbnails', os.path.join(os.path.dirname(path), 'ui\\thumbnails'))
+        return True
+    else:
+        return False
 
 # 修改WallpaperEngine备份位置
 def set_wallpaper_backup_path(path):
     if path:
         set_config('backupPath', path)
+        # 同步设置mklinkList 备份地址
         config['mklinkList'][1]["path"] = path
+        return True
+    else:
+        return False
 
 # 设置文本框steam地址
 def setSteamPath(lineEdit: QLineEdit):
@@ -208,11 +307,16 @@ config['version'] = version
 
 if not config['steamPath']:
     boolSetConfig = set_steam_path(os.path.abspath(get_steam_path_registry() + '/steam.exe'))
+
 if not config['wallpaperPath']:
     boolSetConfig = set_wallpaper_path(os.path.abspath(get_wallpaper_path_registry() + '/launcher.exe'))
-if config['steamPath'] or config['wallpaperPath']:
+
+if config['wallpaperPath']:
     # 获取wallpaper_config数据
-    get_wallpaper_config_path(config["wallpaperPath"])
+    boolSetConfig = get_wallpaper_config()
+    boolSetConfig = get_workshopcache()
+
+if boolSetConfig:
     # 写入config.json
     save_config()
-# print(f"steamPath:{steamPath}")
+# print(f"steamPath:{version}")

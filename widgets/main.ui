@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>640</width>
-    <height>496</height>
+    <height>480</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -30,7 +30,7 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>6</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab_main">
       <attribute name="title">
@@ -504,7 +504,7 @@ background-color: rgb(255, 85, 0);</string>
             <x>0</x>
             <y>0</y>
             <width>599</width>
-            <height>450</height>
+            <height>434</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">

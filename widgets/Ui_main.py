@@ -26,7 +26,7 @@ class Ui_MainForm(object):
         if not MainForm.objectName():
             MainForm.setObjectName(u"MainForm")
         MainForm.setEnabled(True)
-        MainForm.resize(640, 496)
+        MainForm.resize(640, 480)
         MainForm.setMinimumSize(QSize(640, 480))
         icon = QIcon()
         icon.addFile(u"../img/Management.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
@@ -305,7 +305,7 @@ class Ui_MainForm(object):
         self.scrollArea_1.setWidgetResizable(True)
         self.scrollAreaWidgetContents_1 = QWidget()
         self.scrollAreaWidgetContents_1.setObjectName(u"scrollAreaWidgetContents_1")
-        self.scrollAreaWidgetContents_1.setGeometry(QRect(0, 0, 599, 450))
+        self.scrollAreaWidgetContents_1.setGeometry(QRect(0, 0, 599, 434))
         self.verticalLayout_2 = QVBoxLayout(self.scrollAreaWidgetContents_1)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.groupBox_dir = QGroupBox(self.scrollAreaWidgetContents_1)
@@ -450,7 +450,7 @@ class Ui_MainForm(object):
 
         self.retranslateUi(MainForm)
 
-        self.tabWidget.setCurrentIndex(6)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainForm)
