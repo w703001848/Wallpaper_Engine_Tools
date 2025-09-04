@@ -52,6 +52,9 @@
        <property name="checked">
         <bool>true</bool>
        </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroup_filter</string>
+       </attribute>
       </widget>
      </item>
      <item>
@@ -74,6 +77,9 @@
        <property name="checked">
         <bool>true</bool>
        </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroup_filter</string>
+       </attribute>
       </widget>
      </item>
      <item>
@@ -96,6 +102,9 @@
        <property name="checked">
         <bool>true</bool>
        </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroup_filter</string>
+       </attribute>
       </widget>
      </item>
      <item>
@@ -118,6 +127,9 @@
        <property name="checked">
         <bool>true</bool>
        </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroup_filter</string>
+       </attribute>
       </widget>
      </item>
      <item>
@@ -139,6 +151,16 @@
        </property>
        <property name="checked">
         <bool>true</bool>
+       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroup_filter</string>
+       </attribute>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_filter">
+       <property name="text">
+        <string>筛选结果（ 0 个中有 0 个）</string>
        </property>
       </widget>
      </item>
@@ -228,6 +250,12 @@
        <property name="text">
         <string>&lt;</string>
        </property>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroup_page</string>
+       </attribute>
       </widget>
      </item>
      <item>
@@ -238,36 +266,6 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <item>
-        <property name="text">
-         <string>1</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>333</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>2</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>2</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>3</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>4</string>
-        </property>
-       </item>
       </widget>
      </item>
      <item>
@@ -280,6 +278,16 @@
        </property>
        <property name="text">
         <string>&gt;</string>
+       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroup_page</string>
+       </attribute>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_page">
+       <property name="text">
+        <string>共 1 页</string>
        </property>
       </widget>
      </item>
@@ -297,7 +305,45 @@
       </spacer>
      </item>
      <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>每页显示数</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="comboBox_size">
+       <property name="currentIndex">
+        <number>2</number>
+       </property>
+       <item>
+        <property name="text">
+         <string>10</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>20</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>30</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>50</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="btn_invalid">
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 255, 255);
+background-color: rgb(255, 85, 0);</string>
+       </property>
        <property name="text">
         <string>删除失效订阅</string>
        </property>
@@ -321,4 +367,12 @@
  </widget>
  <resources/>
  <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroup_filter">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_page"/>
+ </buttongroups>
 </ui>

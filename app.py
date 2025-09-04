@@ -177,8 +177,7 @@ class MyWindow(QWidget, Ui_MainForm):
         self.mklinkChange() # 选中
 
     # 软地址切换
-    def mklinkChange(self, item = None):
-        # print(f"Item clicked: {item.text()} at ({self.listWidget_mklink.currentRow()})")
+    def mklinkChange(self):
         self.mklinkCurrent = self.listWidget_mklink.currentRow()
         obj = config["mklinkList"][self.mklinkCurrent]
         self.lineEdit_mklink_path.setText(obj['path'])

@@ -31,15 +31,16 @@ config = {
         "path_new": ""
     }], # mklink历史新增
     "nasLink": "", # NAS备份
-    # "isCheckedScene": True, # 场景
-    # "isCheckedVideo": False, # 视频
-    # "isCheckedWeb": False, # 网页
-    # "isCheckedApplication": False, # 应用
-    # "isCheckedInvalid": False, # 失效
+    "isCheckedScene": True, # 场景
+    "isCheckedVideo": True, # 视频
+    "isCheckedWeb": True, # 网页
+    "isCheckedApplication": True, # 应用
+    "isCheckedInvalid": True, # 失效
+    "filterSize": 30, # 分页
+    "sortCurrent": "subscriptiondate", # 订阅日期
 }
 
 temp_workshopcache = [] # 工坊壁纸数据
-temp_workshopcache_size = 0 # 工坊壁纸数据容量
 temp_folders = [] # 壁纸分类数据
 temp_authorblocklistnames = [] # 拉黑名单
 
@@ -155,79 +156,58 @@ def get_wallpaper_config():
 # 参数有发布id，后期可查看是否黑名单。
 # 包含项目详细信息和图片缓存等
 def get_workshopcache():
-    global temp_workshopcache, temp_workshopcache_size
+    global temp_workshopcache
     try:
         with open(os.path.join(os.path.dirname(config["wallpaperPath"]), 'bin/workshopcache.json'), encoding="utf-8") as f1:
             res = json.load(f1) # 从文件读取json并反序列化
             temp_workshopcache = res["wallpapers"]
             wallpaper_steam_path = config['mklinkList'][0]["path"]
-            if os.path.exists(wallpaper_steam_path):
-                for item in os.listdir(wallpaper_steam_path):
-                    # 判断文件夹是否包含在工坊壁纸缓存
-                    if not len(list(filter(lambda obj: obj['workshopid'] == item, temp_workshopcache))):
-                        dir_path = os.path.join(wallpaper_steam_path, item)
-                        project_path = os.path.join(dir_path, 'project.json')
-                        if os.path.exists(project_path):
-                            try:
-                                with open(project_path, encoding="utf-8") as f1:
-                                    data = json.load(f1) # 从文件读取json并反序列化
-                                    size = getDirSize(dir_path)
-                                    temp_workshopcache.append({
-                                        "allowmobileupload" : None,
-                                        "authorsteamid" : None,
-                                        "favorite" : None,
-                                        "file" : os.path.join(dir_path, data["file"]),
-                                        "filesize" : size,
-                                        "filesizelabel" : dirSizeToStr(size),
-                                        "hasrating" : None,
-                                        "ispreset" : None,
-                                        "local" : None,
-                                        "official" : None,
-                                        "preview" : os.path.join(dir_path, data["preview"]),
-                                        "previewsmall" : os.path.join(dir_path, data["preview"]),
-                                        "project" : project_path,
-                                        "rating" : None,
-                                        "ratingrounded" : 5.0,
-                                        "status" : None,
-                                        "subscriptiondate" : int(time.time()),
-                                        "tags" : ','.join(data["tags"]),
-                                        "title" : data["title"],
-                                        "type" : data["type"],
-                                        "updatedate" : int(time.time()),
-                                        "workshopid" : item,
-                                        "workshopurl" : None,
+            if not os.path.exists(wallpaper_steam_path):
+                raise Exception("文件夹不存在!", wallpaper_steam_path)
+            for item in os.listdir(wallpaper_steam_path):
+                # 判断文件夹是否包含在工坊壁纸缓存
+                if not len(list(filter(lambda obj: obj['workshopid'] == item, temp_workshopcache))):
+                    dir_path = os.path.join(wallpaper_steam_path, item)
+                    project_path = os.path.join(dir_path, 'project.json')
+                    if os.path.exists(project_path):
+                        with open(project_path, encoding="utf-8") as f1:
+                            data = json.load(f1) # 从文件读取json并反序列化
+                            size = getDirSize(dir_path)
+                            temp_workshopcache.append({
+                                "allowmobileupload" : False,
+                                "authorsteamid" : '',
+                                "favorite" : False,
+                                "file" : os.path.join(dir_path, data["file"]),
+                                "filesize" : size,
+                                "filesizelabel" : dirSizeToStr(size),
+                                "hasrating" : False,
+                                "ispreset" : False,
+                                "local" : False,
+                                "official" : False,
+                                "preview" : os.path.join(dir_path, data["preview"]),
+                                "previewsmall" : os.path.join(dir_path, data["preview"]),
+                                "project" : project_path,
+                                "rating" : 0,
+                                "ratingrounded" : 5.0,
+                                "status" : '',
+                                "subscriptiondate" : int(time.time()),
+                                "tags" : ','.join(data["tags"]),
+                                "title" : data["title"],
+                                "type" : data["type"],
+                                "updatedate" : int(time.time()),
+                                "workshopid" : item,
+                                "workshopurl" : '',
 
-                                        "description" : data["description"] if "description" in data else None,
-                                    }) 
-                            except Exception as e:
-                                logging.error(f"查询到未知文件夹并加入工坊: {item, e}")
-                        else:
-                            # 工坊文件夹存在，但缺少project.json文件，有空开发转移到备份文件夹
-                            # 备份文件夹项目，每次打开更新时间戳，大小计算
-                            pass
-                        print(f'工坊壁纸目录未知项目：{item}')
-            # 计算总容量
-            sum_size = 0
-            for obj in temp_workshopcache:
-                sum_size += obj["filesize"]
-            temp_workshopcache_size = sum_size
-            print(f"总容量：{temp_workshopcache_size}")
-            print(f"工坊壁纸缓存合未知项目数量：{len(temp_workshopcache)}")
+                                "description" : data["description"] if "description" in data else None,
+                            }) 
+                    else:
+                        # 工坊文件夹存在，但缺少project.json文件，有空开发转移到备份文件夹
+                        # 备份文件夹项目，每次打开更新时间戳，大小计算
+                        print(f"查询到工坊壁纸目录未知项目加入工坊，project.json不存在! {project_path}", )
             return True
     except Exception as e:
         logging.error(f"获取WallpaperEngine 工坊壁纸缓存并读取: {e}")
     return False
-
-def get_workshopcache_page(start = None, end = None, sort = None, reverse = False):
-    if sort:
-        # 待开发 排序功能
-        return temp_workshopcache[start:end].sort(reverse=reverse, key=setSortData)
-    else:
-        return temp_workshopcache[start:end]
-
-# 排序功能
-def setSortData(event):
-    print(event)
 
 # 获取WallpaperEngine 图片缓存位置
 def get_wallpaper_ui_thumbnails(name): 

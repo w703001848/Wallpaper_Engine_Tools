@@ -1,4 +1,4 @@
-import os, logging
+import os, math, logging
 
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QPixmap
@@ -121,7 +121,7 @@ def setRepkgImgData(tableWidget: QTableWidget, windowWidth = 640):
     size, colMax = reCol(windowWidth, 3)
     tableWidget.setColumnCount(colMax)
     tableWidget.setRowCount(0) # 清空
-    tableWidget.setRowCount(int(len(repkgImgData) / colMax + 0.9))
+    tableWidget.setRowCount(math.ceil(len(repkgImgData) / colMax))
     tableWidget.setRowHeight(0, size)
     # 根据列数设置列宽
     i = 0

@@ -15,10 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGridLayout,
-    QHBoxLayout, QHeaderView, QLabel, QPushButton,
-    QSizePolicy, QSpacerItem, QTableWidget, QTableWidgetItem,
-    QWidget)
+from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox,
+    QGridLayout, QHBoxLayout, QHeaderView, QLabel,
+    QPushButton, QSizePolicy, QSpacerItem, QTableWidget,
+    QTableWidgetItem, QWidget)
 
 class Ui_ListWidget(object):
     def setupUi(self, ListWidget):
@@ -39,6 +39,10 @@ class Ui_ListWidget(object):
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.checkBox_scene = QCheckBox(ListWidget)
+        self.buttonGroup_filter = QButtonGroup(ListWidget)
+        self.buttonGroup_filter.setObjectName(u"buttonGroup_filter")
+        self.buttonGroup_filter.setExclusive(False)
+        self.buttonGroup_filter.addButton(self.checkBox_scene)
         self.checkBox_scene.setObjectName(u"checkBox_scene")
         self.checkBox_scene.setMinimumSize(QSize(40, 0))
         self.checkBox_scene.setMaximumSize(QSize(50, 16777215))
@@ -47,6 +51,7 @@ class Ui_ListWidget(object):
         self.horizontalLayout.addWidget(self.checkBox_scene)
 
         self.checkBox_video = QCheckBox(ListWidget)
+        self.buttonGroup_filter.addButton(self.checkBox_video)
         self.checkBox_video.setObjectName(u"checkBox_video")
         self.checkBox_video.setMinimumSize(QSize(40, 0))
         self.checkBox_video.setMaximumSize(QSize(50, 16777215))
@@ -55,6 +60,7 @@ class Ui_ListWidget(object):
         self.horizontalLayout.addWidget(self.checkBox_video)
 
         self.checkBox_web = QCheckBox(ListWidget)
+        self.buttonGroup_filter.addButton(self.checkBox_web)
         self.checkBox_web.setObjectName(u"checkBox_web")
         self.checkBox_web.setMinimumSize(QSize(40, 0))
         self.checkBox_web.setMaximumSize(QSize(50, 16777215))
@@ -63,6 +69,7 @@ class Ui_ListWidget(object):
         self.horizontalLayout.addWidget(self.checkBox_web)
 
         self.checkBox_application = QCheckBox(ListWidget)
+        self.buttonGroup_filter.addButton(self.checkBox_application)
         self.checkBox_application.setObjectName(u"checkBox_application")
         self.checkBox_application.setMinimumSize(QSize(40, 0))
         self.checkBox_application.setMaximumSize(QSize(50, 16777215))
@@ -71,12 +78,18 @@ class Ui_ListWidget(object):
         self.horizontalLayout.addWidget(self.checkBox_application)
 
         self.checkBox_invalid = QCheckBox(ListWidget)
+        self.buttonGroup_filter.addButton(self.checkBox_invalid)
         self.checkBox_invalid.setObjectName(u"checkBox_invalid")
         self.checkBox_invalid.setMinimumSize(QSize(40, 0))
         self.checkBox_invalid.setMaximumSize(QSize(50, 16777215))
         self.checkBox_invalid.setChecked(True)
 
         self.horizontalLayout.addWidget(self.checkBox_invalid)
+
+        self.label_filter = QLabel(ListWidget)
+        self.label_filter.setObjectName(u"label_filter")
+
+        self.horizontalLayout.addWidget(self.label_filter)
 
         self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
@@ -112,18 +125,16 @@ class Ui_ListWidget(object):
         self.horizontalLayout_7.addItem(self.horizontalSpacer)
 
         self.btn_left = QPushButton(ListWidget)
+        self.buttonGroup_page = QButtonGroup(ListWidget)
+        self.buttonGroup_page.setObjectName(u"buttonGroup_page")
+        self.buttonGroup_page.addButton(self.btn_left)
         self.btn_left.setObjectName(u"btn_left")
         self.btn_left.setMaximumSize(QSize(24, 16777215))
+        self.btn_left.setCheckable(False)
 
         self.horizontalLayout_7.addWidget(self.btn_left)
 
         self.comboBox_page = QComboBox(ListWidget)
-        self.comboBox_page.addItem("")
-        self.comboBox_page.addItem("")
-        self.comboBox_page.addItem("")
-        self.comboBox_page.addItem("")
-        self.comboBox_page.addItem("")
-        self.comboBox_page.addItem("")
         self.comboBox_page.setObjectName(u"comboBox_page")
         sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
         sizePolicy1.setHorizontalStretch(0)
@@ -134,17 +145,39 @@ class Ui_ListWidget(object):
         self.horizontalLayout_7.addWidget(self.comboBox_page)
 
         self.btn_right = QPushButton(ListWidget)
+        self.buttonGroup_page.addButton(self.btn_right)
         self.btn_right.setObjectName(u"btn_right")
         self.btn_right.setMaximumSize(QSize(24, 16777215))
 
         self.horizontalLayout_7.addWidget(self.btn_right)
 
+        self.label_page = QLabel(ListWidget)
+        self.label_page.setObjectName(u"label_page")
+
+        self.horizontalLayout_7.addWidget(self.label_page)
+
         self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_7.addItem(self.horizontalSpacer_3)
 
+        self.label = QLabel(ListWidget)
+        self.label.setObjectName(u"label")
+
+        self.horizontalLayout_7.addWidget(self.label)
+
+        self.comboBox_size = QComboBox(ListWidget)
+        self.comboBox_size.addItem("")
+        self.comboBox_size.addItem("")
+        self.comboBox_size.addItem("")
+        self.comboBox_size.addItem("")
+        self.comboBox_size.setObjectName(u"comboBox_size")
+
+        self.horizontalLayout_7.addWidget(self.comboBox_size)
+
         self.btn_invalid = QPushButton(ListWidget)
         self.btn_invalid.setObjectName(u"btn_invalid")
+        self.btn_invalid.setStyleSheet(u"color: rgb(255, 255, 255);\n"
+"background-color: rgb(255, 85, 0);")
         self.btn_invalid.setCheckable(False)
         self.btn_invalid.setAutoDefault(False)
         self.btn_invalid.setFlat(False)
@@ -158,6 +191,7 @@ class Ui_ListWidget(object):
         self.retranslateUi(ListWidget)
 
         self.comboBox_sort.setCurrentIndex(3)
+        self.comboBox_size.setCurrentIndex(2)
         self.btn_invalid.setDefault(False)
 
 
@@ -171,6 +205,7 @@ class Ui_ListWidget(object):
         self.checkBox_web.setText(QCoreApplication.translate("ListWidget", u"\u7f51\u9875", None))
         self.checkBox_application.setText(QCoreApplication.translate("ListWidget", u"\u5e94\u7528", None))
         self.checkBox_invalid.setText(QCoreApplication.translate("ListWidget", u"\u5931\u6548", None))
+        self.label_filter.setText(QCoreApplication.translate("ListWidget", u"\u7b5b\u9009\u7ed3\u679c\uff08 0 \u4e2a\u4e2d\u6709 0 \u4e2a\uff09", None))
         self.comboBox_sort.setItemText(0, QCoreApplication.translate("ListWidget", u"\u540d\u79f0", None))
         self.comboBox_sort.setItemText(1, QCoreApplication.translate("ListWidget", u"\u6536\u85cf", None))
         self.comboBox_sort.setItemText(2, QCoreApplication.translate("ListWidget", u"\u6587\u4ef6\u5927\u5c0f", None))
@@ -179,14 +214,14 @@ class Ui_ListWidget(object):
 
         self.label_capacity.setText(QCoreApplication.translate("ListWidget", u"\u5bb9\u91cf\uff1a0G", None))
         self.btn_left.setText(QCoreApplication.translate("ListWidget", u"<", None))
-        self.comboBox_page.setItemText(0, QCoreApplication.translate("ListWidget", u"1", None))
-        self.comboBox_page.setItemText(1, QCoreApplication.translate("ListWidget", u"333", None))
-        self.comboBox_page.setItemText(2, QCoreApplication.translate("ListWidget", u"2", None))
-        self.comboBox_page.setItemText(3, QCoreApplication.translate("ListWidget", u"2", None))
-        self.comboBox_page.setItemText(4, QCoreApplication.translate("ListWidget", u"3", None))
-        self.comboBox_page.setItemText(5, QCoreApplication.translate("ListWidget", u"4", None))
-
         self.btn_right.setText(QCoreApplication.translate("ListWidget", u">", None))
+        self.label_page.setText(QCoreApplication.translate("ListWidget", u"\u5171 1 \u9875", None))
+        self.label.setText(QCoreApplication.translate("ListWidget", u"\u6bcf\u9875\u663e\u793a\u6570", None))
+        self.comboBox_size.setItemText(0, QCoreApplication.translate("ListWidget", u"10", None))
+        self.comboBox_size.setItemText(1, QCoreApplication.translate("ListWidget", u"20", None))
+        self.comboBox_size.setItemText(2, QCoreApplication.translate("ListWidget", u"30", None))
+        self.comboBox_size.setItemText(3, QCoreApplication.translate("ListWidget", u"50", None))
+
         self.btn_invalid.setText(QCoreApplication.translate("ListWidget", u"\u5220\u9664\u5931\u6548\u8ba2\u9605", None))
     # retranslateUi
 

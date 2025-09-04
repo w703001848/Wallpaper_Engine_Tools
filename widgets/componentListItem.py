@@ -7,11 +7,11 @@ from .Ui_listItem import Ui_ItemFrame
 from modules.RePKG import processItem
 
 class MyWindow(QWidget, Ui_ItemFrame):
-    def __init__(self, type):
+    def __init__(self, keyType):
         super().__init__()
         self.setupUi(self)
         self.btn_RePKG.setVisible(False)
-        if type == 'main':
+        if keyType == 'main':
             self.btn_name_edit.setVisible(False)
             self.btn_title_edit.setVisible(False)
 
