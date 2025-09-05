@@ -2,9 +2,7 @@ import os, math, logging
 
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import QLineEdit, QTableWidget, QLabel
-
-from .Config import set_config
+from PySide6.QtWidgets import QTableWidget, QLabel
 
 # output_filter_img = "filtered-images"
 # output_ideal_img = "ideal-images"
@@ -14,38 +12,61 @@ imageSuffix = ["bmp", "jpg", "png", "tif", "gif", "pcx", "tga", "exif",
                     "ai", "raw", "WMF", "webp", "avif", "apng"]
 filter_size_criteria = 500
 pathExecuted = "" # 提取地址
-updataPath = "" # 防止重复刷新
+
+# # 使用方式
+# def processItem(path):
+#     res = runRepkg(path)
+#     if res:
+#         res = followWork()
+
+#     # clearDir(output)
+#     # os.removedirs(output)
+#     # print("代码工作完成，请查看：\n{}\n{}".format(
+#     #     os.path.join(os.getcwd(), output_ideal_img),
+#     #     os.path.join(os.getcwd(), output_filter_img)))
 
 # 运行RePKG命令，提取文件到output文件夹
-def runRepkg():
+def runRepkg(path):
+    global pathExecuted
     try:
         # 修改工作目录
         if os.path.exists(output):
             clearDir(output)
             # os.removedirs(output)
-        os.system(r'repkg extract -e tex -s -o ./{} "{}"'.format(output, pathExecuted))
+        os.system(r'repkg extract -e tex -s -o ./{} "{}"'.format(output, path))
+        pathExecuted = path
     except Exception as e:
-        logging.error(f"Warning accessing registry 请检查路径是否正确: {e}")
+        logging.error(f"error 请检查路径是否正确: {e}")
+        return False
     os.chdir(os.getcwd())
-# 筛选提取的文件，整合到对应文件夹
+    print("\n{:*^150}\n".format("已完成pkg文件提取"))  
+    return True
 
+# 筛选提取的文件，整合到对应文件夹
 def followWork():
-    # if not os.path.exists(output_ideal_img):
-    #     os.makedirs(output_ideal_img)
-    # if not os.path.exists(output_filter_img):
-    #     os.makedirs(output_filter_img)
-    # clearDir(output_ideal_img, output_filter_img)
-    for fileName in os.listdir(output):
-        if fileName.split(".")[-1] in imageSuffix:
-            file = os.path.join(output, fileName)
-            size = os.path.getsize(file) / 1024
-            print("{} -> size:{:.3f}KB".format(fileName, size))
-            # if size > filter_size_criteria:
-            #     shutil.copy(file, output_ideal_img)
-            # else:
-            #     shutil.copy(file, output_filter_img)
-        else:
-            os.remove(os.path.join(os.getcwd(), output, fileName))
+    print(f"已完成pkg文件提取{pathExecuted}")
+    try:
+        # if not os.path.exists(output_ideal_img):
+        #     os.makedirs(output_ideal_img)
+        # if not os.path.exists(output_filter_img):
+        #     os.makedirs(output_filter_img)
+        # clearDir(output_ideal_img, output_filter_img)
+        print("\n{:*^150}\n".format("开始清理不必要文件"))
+        for fileName in os.listdir(output):
+            if fileName.split(".")[-1] in imageSuffix:
+                file = os.path.join(output, fileName)
+                size = os.path.getsize(file) / 1024
+                print("{} -> size:{:.3f}KB".format(fileName, size))
+                # if size > filter_size_criteria:
+                #     shutil.copy(file, output_ideal_img)
+                # else:
+                #     shutil.copy(file, output_filter_img)
+            else:
+                os.remove(os.path.join(os.getcwd(), output, fileName))
+        return True
+    except Exception as e:
+        logging.error(f"error 筛选提取的文件，整合到对应文件夹: {e}")
+        return False
 
 # 清理文件
 def clearDir(*dirs):
@@ -61,76 +82,35 @@ def clearDir(*dirs):
     # 重置工作目录
     os.chdir(chdir)
 
-def processItem(path, startfile=False):
-    global pathExecuted
-    if path:
-        pathExecuted = path
-    else:
-        return False
-    runRepkg()
-    print("\n{:*^150}\n".format("已完成pkg文件提取"))     
-    followWork()
-    print("\n{:*^150}\n".format("已完成图片提取，开始清理不必要文件"))
-    # clearDir(output)
-    # os.removedirs(output)
-    # print("代码工作完成，请查看：\n{}\n{}".format(
-    #     os.path.join(os.getcwd(), output_ideal_img),
-    #     os.path.join(os.getcwd(), output_filter_img)))
-    
-    if startfile:
-        set_config("repkgPath", pathExecuted)
-        # 打开资源管理器
-        os.startfile(os.path.join(os.getcwd(), output))
-    return True
+temp_repkg_img_list = [] # 存放临时数据
+def updateRepkgData(tableWidget: QTableWidget, windowWidth = 640, update = True):
+    global temp_repkg_img_list
+    # 更新数据
+    if update:
+        dirPath = os.path.join(os.getcwd(), output)
+        if not os.path.exists(dirPath):
+            return
+        temp_repkg_img_list.clear()
+        list = os.listdir(dirPath)
+        for index, item in enumerate(list):
+            temp_repkg_img_list.append(os.path.join(dirPath, item))
 
-# repkg列表更新
-def updataRepkg(path, lineEdit: QLineEdit, tableWidget: QTableWidget):
-    global updataPath
-    # print(f"{updataPath}:{path}")
-    if path != '' and updataPath != path: # 防止重复刷新
-        print("updataRepkg刷新")
-        updataPath = path
-        lineEdit.setText(path)
-        updataRepkgData()
-        setRepkgImgData(tableWidget)
-
-repkgImgData = []
-def updataRepkgData():
-    global repkgImgData
-    dirPath = os.path.join(os.getcwd(), output)
-    if not os.path.exists(dirPath):
-        return
-    repkgImgData.clear()
-    list = os.listdir(dirPath)
-    for index, item in enumerate(list):
-        repkgImgData.append(os.path.join(dirPath, item))
-
-def reCol(windowWidth, colMax):
-    size = int((windowWidth - 62) / colMax)
-    if size > 240:
-        size, colMax = reCol(windowWidth, colMax + 1)
-    # elif size < 180:
-    #     colMax = colMax - 1
-    #     size, _ = reCol(windowWidth, colMax)
-    print(size)
-    print(colMax)
-    return size, colMax
-
-# repkg图表生成
-def setRepkgImgData(tableWidget: QTableWidget, windowWidth = 640):
-    size, colMax = reCol(windowWidth, 3)
+    # repkg图表生成
+    size, colMax = calculateQuantity(windowWidth, 3)
     tableWidget.setColumnCount(colMax)
-    tableWidget.setRowCount(0) # 清空
-    tableWidget.setRowCount(math.ceil(len(repkgImgData) / colMax))
+    tableWidget.clearContents() # 清空
+    tableWidget.setRowCount(math.ceil(len(temp_repkg_img_list) / colMax))
     tableWidget.setRowHeight(0, size)
+
     # 根据列数设置列宽
     i = 0
-    while i < 5:
+    while i < colMax:
         tableWidget.setColumnWidth(i, size)
         i += 1
-    row = 0
-    col = 0
-    for index, imgPath in enumerate(repkgImgData):
+
+    row = 0 # 计数行
+    col = 0 # 计数列
+    for index, imgPath in enumerate(temp_repkg_img_list):
         boxItem = QLabel()
         # boxItem.setMinimumSize(QSize(size, size))
         boxItem.setMaximumSize(QSize(size, size))
@@ -138,8 +118,19 @@ def setRepkgImgData(tableWidget: QTableWidget, windowWidth = 640):
         boxItem.setAlignment(Qt.AlignmentFlag.AlignCenter)
         boxItem.setPixmap(QPixmap(imgPath).scaled(size, size, Qt.KeepAspectRatio, Qt.SmoothTransformation))
         tableWidget.setCellWidget(row, col, boxItem)
+        
         col += 1
         if col >= colMax:
             col = 0
             row += 1
             tableWidget.setRowHeight(row, size)
+
+def calculateQuantity(windowWidth, colMax):
+    size = int((windowWidth - 62) / colMax)
+    if size > 240:
+        size, colMax = calculateQuantity(windowWidth, colMax + 1)
+    # elif size < 180:
+    #     colMax = colMax - 1
+    #     size, _ = calculateQuantity(windowWidth, colMax)
+    print(f"Repkg更新 图size:{size} 列:{colMax}")
+    return size, colMax

@@ -15,19 +15,21 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCommandLinkButton, QFrame, QGridLayout,
-    QGroupBox, QHBoxLayout, QHeaderView, QLabel,
-    QLineEdit, QListWidget, QListWidgetItem, QPushButton,
+from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox,
+    QCommandLinkButton, QFrame, QGridLayout, QGroupBox,
+    QHBoxLayout, QHeaderView, QLabel, QLineEdit,
+    QListWidget, QListWidgetItem, QPushButton, QRadioButton,
     QScrollArea, QSizePolicy, QSpacerItem, QTabWidget,
-    QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget)
+    QTableWidget, QTableWidgetItem, QToolButton, QVBoxLayout,
+    QWidget)
 
 class Ui_MainForm(object):
     def setupUi(self, MainForm):
         if not MainForm.objectName():
             MainForm.setObjectName(u"MainForm")
         MainForm.setEnabled(True)
-        MainForm.resize(640, 480)
-        MainForm.setMinimumSize(QSize(640, 480))
+        MainForm.resize(1024, 768)
+        MainForm.setMinimumSize(QSize(1024, 768))
         icon = QIcon()
         icon.addFile(u"../img/Management.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         MainForm.setWindowIcon(icon)
@@ -37,14 +39,436 @@ class Ui_MainForm(object):
         self.tabWidget.setObjectName(u"tabWidget")
         self.tab_main = QWidget()
         self.tab_main.setObjectName(u"tab_main")
-        self.gridLayout_4 = QGridLayout(self.tab_main)
-        self.gridLayout_4.setObjectName(u"gridLayout_4")
+        self.verticalLayout_4 = QVBoxLayout(self.tab_main)
+        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
+        self.horizontalLayout_13 = QHBoxLayout()
+        self.horizontalLayout_13.setObjectName(u"horizontalLayout_13")
+        self.frame = QFrame(self.tab_main)
+        self.frame.setObjectName(u"frame")
+        self.frame.setFrameShape(QFrame.Shape.Panel)
+        self.frame.setFrameShadow(QFrame.Shadow.Sunken)
+        self.horizontalLayout_12 = QHBoxLayout(self.frame)
+        self.horizontalLayout_12.setSpacing(0)
+        self.horizontalLayout_12.setObjectName(u"horizontalLayout_12")
+        self.horizontalLayout_12.setContentsMargins(0, 0, 0, 0)
+        self.lineEdit_search = QLineEdit(self.frame)
+        self.lineEdit_search.setObjectName(u"lineEdit_search")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lineEdit_search.sizePolicy().hasHeightForWidth())
+        self.lineEdit_search.setSizePolicy(sizePolicy)
+        self.lineEdit_search.setMinimumSize(QSize(200, 0))
+        self.lineEdit_search.setFrame(False)
+
+        self.horizontalLayout_12.addWidget(self.lineEdit_search)
+
+        self.btn_clear = QToolButton(self.frame)
+        self.btn_clear.setObjectName(u"btn_clear")
+        self.btn_clear.setStyleSheet(u"border-style: outset;")
+        icon1 = QIcon(QIcon.fromTheme(u"edit-clear"))
+        self.btn_clear.setIcon(icon1)
+
+        self.horizontalLayout_12.addWidget(self.btn_clear)
+
+        self.btn_search = QToolButton(self.frame)
+        self.btn_search.setObjectName(u"btn_search")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.btn_search.sizePolicy().hasHeightForWidth())
+        self.btn_search.setSizePolicy(sizePolicy1)
+        self.btn_search.setStyleSheet(u"border-style: outset;")
+        icon2 = QIcon(QIcon.fromTheme(u"edit-find"))
+        self.btn_search.setIcon(icon2)
+
+        self.horizontalLayout_12.addWidget(self.btn_search)
+
+
+        self.horizontalLayout_13.addWidget(self.frame)
+
+        self.label_filter = QLabel(self.tab_main)
+        self.label_filter.setObjectName(u"label_filter")
+
+        self.horizontalLayout_13.addWidget(self.label_filter)
+
+        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_13.addItem(self.horizontalSpacer_4)
+
+
+        self.verticalLayout_4.addLayout(self.horizontalLayout_13)
+
+        self.horizontalLayout_14 = QHBoxLayout()
+        self.horizontalLayout_14.setSpacing(0)
+        self.horizontalLayout_14.setObjectName(u"horizontalLayout_14")
+        self.verticalLayout_8 = QVBoxLayout()
+        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
+        self.groupBox_2 = QGroupBox(self.tab_main)
+        self.groupBox_2.setObjectName(u"groupBox_2")
+        self.verticalLayout_9 = QVBoxLayout(self.groupBox_2)
+        self.verticalLayout_9.setObjectName(u"verticalLayout_9")
+        self.checkBox_scene = QCheckBox(self.groupBox_2)
+        self.buttonGroup_type = QButtonGroup(MainForm)
+        self.buttonGroup_type.setObjectName(u"buttonGroup_type")
+        self.buttonGroup_type.setExclusive(False)
+        self.buttonGroup_type.addButton(self.checkBox_scene)
+        self.checkBox_scene.setObjectName(u"checkBox_scene")
+        self.checkBox_scene.setMinimumSize(QSize(40, 0))
+        self.checkBox_scene.setMaximumSize(QSize(50, 16777215))
+
+        self.verticalLayout_9.addWidget(self.checkBox_scene)
+
+        self.checkBox_video = QCheckBox(self.groupBox_2)
+        self.buttonGroup_type.addButton(self.checkBox_video)
+        self.checkBox_video.setObjectName(u"checkBox_video")
+        self.checkBox_video.setMinimumSize(QSize(40, 0))
+        self.checkBox_video.setMaximumSize(QSize(50, 16777215))
+        self.checkBox_video.setChecked(False)
+
+        self.verticalLayout_9.addWidget(self.checkBox_video)
+
+        self.checkBox_web = QCheckBox(self.groupBox_2)
+        self.buttonGroup_type.addButton(self.checkBox_web)
+        self.checkBox_web.setObjectName(u"checkBox_web")
+        self.checkBox_web.setMinimumSize(QSize(40, 0))
+        self.checkBox_web.setMaximumSize(QSize(50, 16777215))
+        self.checkBox_web.setChecked(False)
+
+        self.verticalLayout_9.addWidget(self.checkBox_web)
+
+        self.checkBox_application = QCheckBox(self.groupBox_2)
+        self.buttonGroup_type.addButton(self.checkBox_application)
+        self.checkBox_application.setObjectName(u"checkBox_application")
+        self.checkBox_application.setMinimumSize(QSize(40, 0))
+        self.checkBox_application.setMaximumSize(QSize(50, 16777215))
+        self.checkBox_application.setChecked(False)
+
+        self.verticalLayout_9.addWidget(self.checkBox_application)
+
+
+        self.verticalLayout_8.addWidget(self.groupBox_2)
+
+        self.groupBox_4 = QGroupBox(self.tab_main)
+        self.groupBox_4.setObjectName(u"groupBox_4")
+        self.verticalLayout_10 = QVBoxLayout(self.groupBox_4)
+        self.verticalLayout_10.setObjectName(u"verticalLayout_10")
+        self.checkBox_wallpaper = QCheckBox(self.groupBox_4)
+        self.buttonGroup_source = QButtonGroup(MainForm)
+        self.buttonGroup_source.setObjectName(u"buttonGroup_source")
+        self.buttonGroup_source.setExclusive(False)
+        self.buttonGroup_source.addButton(self.checkBox_wallpaper)
+        self.checkBox_wallpaper.setObjectName(u"checkBox_wallpaper")
+
+        self.verticalLayout_10.addWidget(self.checkBox_wallpaper)
+
+        self.checkBox_backup = QCheckBox(self.groupBox_4)
+        self.buttonGroup_source.addButton(self.checkBox_backup)
+        self.checkBox_backup.setObjectName(u"checkBox_backup")
+
+        self.verticalLayout_10.addWidget(self.checkBox_backup)
+
+        self.checkBox_invalid = QCheckBox(self.groupBox_4)
+        self.buttonGroup_source.addButton(self.checkBox_invalid)
+        self.checkBox_invalid.setObjectName(u"checkBox_invalid")
+        self.checkBox_invalid.setMinimumSize(QSize(40, 0))
+        self.checkBox_invalid.setMaximumSize(QSize(50, 16777215))
+
+        self.verticalLayout_10.addWidget(self.checkBox_invalid)
+
+
+        self.verticalLayout_8.addWidget(self.groupBox_4)
+
+        self.groupBox_7 = QGroupBox(self.tab_main)
+        self.groupBox_7.setObjectName(u"groupBox_7")
+        self.verticalLayout_16 = QVBoxLayout(self.groupBox_7)
+        self.verticalLayout_16.setObjectName(u"verticalLayout_16")
+        self.comboBox_sort = QComboBox(self.groupBox_7)
+        self.comboBox_sort.addItem("")
+        self.comboBox_sort.addItem("")
+        self.comboBox_sort.addItem("")
+        self.comboBox_sort.addItem("")
+        self.comboBox_sort.addItem("")
+        self.comboBox_sort.addItem("")
+        self.comboBox_sort.setObjectName(u"comboBox_sort")
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.comboBox_sort.sizePolicy().hasHeightForWidth())
+        self.comboBox_sort.setSizePolicy(sizePolicy2)
+
+        self.verticalLayout_16.addWidget(self.comboBox_sort)
+
+        self.radioButton_positive = QRadioButton(self.groupBox_7)
+        self.buttonGroup_sort = QButtonGroup(MainForm)
+        self.buttonGroup_sort.setObjectName(u"buttonGroup_sort")
+        self.buttonGroup_sort.addButton(self.radioButton_positive)
+        self.radioButton_positive.setObjectName(u"radioButton_positive")
+        self.radioButton_positive.setChecked(True)
+
+        self.verticalLayout_16.addWidget(self.radioButton_positive)
+
+        self.radioButton_reverse = QRadioButton(self.groupBox_7)
+        self.buttonGroup_sort.addButton(self.radioButton_reverse)
+        self.radioButton_reverse.setObjectName(u"radioButton_reverse")
+
+        self.verticalLayout_16.addWidget(self.radioButton_reverse)
+
+
+        self.verticalLayout_8.addWidget(self.groupBox_7)
+
+        self.groupBox_5 = QGroupBox(self.tab_main)
+        self.groupBox_5.setObjectName(u"groupBox_5")
+        self.verticalLayout_14 = QVBoxLayout(self.groupBox_5)
+        self.verticalLayout_14.setObjectName(u"verticalLayout_14")
+        self.radioButton_big = QRadioButton(self.groupBox_5)
+        self.buttonGroup_img = QButtonGroup(MainForm)
+        self.buttonGroup_img.setObjectName(u"buttonGroup_img")
+        self.buttonGroup_img.addButton(self.radioButton_big)
+        self.radioButton_big.setObjectName(u"radioButton_big")
+        self.radioButton_big.setChecked(True)
+
+        self.verticalLayout_14.addWidget(self.radioButton_big)
+
+        self.radioButton_small = QRadioButton(self.groupBox_5)
+        self.buttonGroup_img.addButton(self.radioButton_small)
+        self.radioButton_small.setObjectName(u"radioButton_small")
+
+        self.verticalLayout_14.addWidget(self.radioButton_small)
+
+        self.label_10 = QLabel(self.groupBox_5)
+        self.label_10.setObjectName(u"label_10")
+
+        self.verticalLayout_14.addWidget(self.label_10)
+
+        self.comboBox_size = QComboBox(self.groupBox_5)
+        self.comboBox_size.addItem("")
+        self.comboBox_size.addItem("")
+        self.comboBox_size.addItem("")
+        self.comboBox_size.addItem("")
+        self.comboBox_size.setObjectName(u"comboBox_size")
+
+        self.verticalLayout_14.addWidget(self.comboBox_size)
+
+
+        self.verticalLayout_8.addWidget(self.groupBox_5)
+
+        self.groupBox_3 = QGroupBox(self.tab_main)
+        self.groupBox_3.setObjectName(u"groupBox_3")
+        self.verticalLayout_11 = QVBoxLayout(self.groupBox_3)
+        self.verticalLayout_11.setObjectName(u"verticalLayout_11")
+        self.checkBox_authorblock = QCheckBox(self.groupBox_3)
+        self.checkBox_authorblock.setObjectName(u"checkBox_authorblock")
+
+        self.verticalLayout_11.addWidget(self.checkBox_authorblock)
+
+        self.btn_dir_new = QPushButton(self.groupBox_3)
+        self.btn_dir_new.setObjectName(u"btn_dir_new")
+
+        self.verticalLayout_11.addWidget(self.btn_dir_new)
+
+        self.btn_invalid = QPushButton(self.groupBox_3)
+        self.btn_invalid.setObjectName(u"btn_invalid")
+        self.btn_invalid.setStyleSheet(u"color: rgb(255, 255, 255);\n"
+"background-color: rgb(255, 85, 0);")
+        self.btn_invalid.setCheckable(False)
+        self.btn_invalid.setAutoDefault(False)
+        self.btn_invalid.setFlat(False)
+
+        self.verticalLayout_11.addWidget(self.btn_invalid)
+
+
+        self.verticalLayout_8.addWidget(self.groupBox_3)
+
+        self.verticalSpacer_2 = QSpacerItem(20, 22, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_8.addItem(self.verticalSpacer_2)
+
+        self.label_capacity = QLabel(self.tab_main)
+        self.label_capacity.setObjectName(u"label_capacity")
+
+        self.verticalLayout_8.addWidget(self.label_capacity)
+
+
+        self.horizontalLayout_14.addLayout(self.verticalLayout_8)
+
+        self.verticalLayout_main = QVBoxLayout()
+        self.verticalLayout_main.setSpacing(0)
+        self.verticalLayout_main.setObjectName(u"verticalLayout_main")
+        self.label_error = QLabel(self.tab_main)
+        self.label_error.setObjectName(u"label_error")
+        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.label_error.sizePolicy().hasHeightForWidth())
+        self.label_error.setSizePolicy(sizePolicy3)
+        font = QFont()
+        font.setPointSize(20)
+        font.setBold(False)
+        self.label_error.setFont(font)
+        self.label_error.setScaledContents(False)
+        self.label_error.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.verticalLayout_main.addWidget(self.label_error)
+
+        self.tableWidget_main = QTableWidget(self.tab_main)
+        self.tableWidget_main.setObjectName(u"tableWidget_main")
+        self.tableWidget_main.setFrameShape(QFrame.Shape.NoFrame)
+        self.tableWidget_main.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        self.tableWidget_main.setGridStyle(Qt.PenStyle.SolidLine)
+        self.tableWidget_main.horizontalHeader().setVisible(False)
+        self.tableWidget_main.verticalHeader().setVisible(False)
+
+        self.verticalLayout_main.addWidget(self.tableWidget_main)
+
+        self.horizontalLayout_page = QHBoxLayout()
+        self.horizontalLayout_page.setObjectName(u"horizontalLayout_page")
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_page.addItem(self.horizontalSpacer)
+
+        self.btn_left = QToolButton(self.tab_main)
+        self.buttonGroup_page = QButtonGroup(MainForm)
+        self.buttonGroup_page.setObjectName(u"buttonGroup_page")
+        self.buttonGroup_page.setExclusive(False)
+        self.buttonGroup_page.addButton(self.btn_left)
+        self.btn_left.setObjectName(u"btn_left")
+        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
+        sizePolicy4.setHorizontalStretch(0)
+        sizePolicy4.setVerticalStretch(0)
+        sizePolicy4.setHeightForWidth(self.btn_left.sizePolicy().hasHeightForWidth())
+        self.btn_left.setSizePolicy(sizePolicy4)
+        self.btn_left.setPopupMode(QToolButton.ToolButtonPopupMode.DelayedPopup)
+        self.btn_left.setArrowType(Qt.ArrowType.LeftArrow)
+
+        self.horizontalLayout_page.addWidget(self.btn_left)
+
+        self.comboBox_page = QComboBox(self.tab_main)
+        self.comboBox_page.setObjectName(u"comboBox_page")
+        sizePolicy5 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+        sizePolicy5.setHorizontalStretch(0)
+        sizePolicy5.setVerticalStretch(0)
+        sizePolicy5.setHeightForWidth(self.comboBox_page.sizePolicy().hasHeightForWidth())
+        self.comboBox_page.setSizePolicy(sizePolicy5)
+
+        self.horizontalLayout_page.addWidget(self.comboBox_page)
+
+        self.btn_right = QToolButton(self.tab_main)
+        self.buttonGroup_page.addButton(self.btn_right)
+        self.btn_right.setObjectName(u"btn_right")
+        sizePolicy4.setHeightForWidth(self.btn_right.sizePolicy().hasHeightForWidth())
+        self.btn_right.setSizePolicy(sizePolicy4)
+        self.btn_right.setArrowType(Qt.ArrowType.RightArrow)
+
+        self.horizontalLayout_page.addWidget(self.btn_right)
+
+        self.label_page = QLabel(self.tab_main)
+        self.label_page.setObjectName(u"label_page")
+
+        self.horizontalLayout_page.addWidget(self.label_page)
+
+        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_page.addItem(self.horizontalSpacer_3)
+
+
+        self.verticalLayout_main.addLayout(self.horizontalLayout_page)
+
+
+        self.horizontalLayout_14.addLayout(self.verticalLayout_main)
+
+        self.widget_info = QWidget(self.tab_main)
+        self.widget_info.setObjectName(u"widget_info")
+        self.widget_info.setMinimumSize(QSize(200, 0))
+        self.widget_info.setMaximumSize(QSize(200, 16777215))
+        self.verticalLayout_12 = QVBoxLayout(self.widget_info)
+        self.verticalLayout_12.setObjectName(u"verticalLayout_12")
+        self.verticalLayout_12.setContentsMargins(-1, 0, 0, 0)
+        self.label_img = QLabel(self.widget_info)
+        self.label_img.setObjectName(u"label_img")
+        self.label_img.setMinimumSize(QSize(182, 182))
+        self.label_img.setMaximumSize(QSize(182, 182))
+        self.label_img.setPixmap(QPixmap(u"D:/Pictures/\u5934\u50cf/38519042.jpg"))
+        self.label_img.setScaledContents(True)
+
+        self.verticalLayout_12.addWidget(self.label_img)
+
+        self.label_name = QLabel(self.widget_info)
+        self.label_name.setObjectName(u"label_name")
+
+        self.verticalLayout_12.addWidget(self.label_name)
+
+        self.label_title = QLabel(self.widget_info)
+        self.label_title.setObjectName(u"label_title")
+
+        self.verticalLayout_12.addWidget(self.label_title)
+
+        self.label_note = QLabel(self.widget_info)
+        self.label_note.setObjectName(u"label_note")
+
+        self.verticalLayout_12.addWidget(self.label_note)
+
+        self.verticalSpacer_3 = QSpacerItem(20, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_12.addItem(self.verticalSpacer_3)
+
+        self.groupBox_6 = QGroupBox(self.widget_info)
+        self.groupBox_6.setObjectName(u"groupBox_6")
+        self.verticalLayout_13 = QVBoxLayout(self.groupBox_6)
+        self.verticalLayout_13.setObjectName(u"verticalLayout_13")
+        self.btn_open = QPushButton(self.groupBox_6)
+        self.btn_open.setObjectName(u"btn_open")
+        self.btn_open.setMinimumSize(QSize(0, 0))
+        self.btn_open.setMaximumSize(QSize(16777215, 16777215))
+        self.btn_open.setStyleSheet(u"color: rgb(255, 255, 255);\n"
+"background-color: rgb(85, 170, 255);")
+
+        self.verticalLayout_13.addWidget(self.btn_open)
+
+        self.horizontalLayout_15 = QHBoxLayout()
+        self.horizontalLayout_15.setObjectName(u"horizontalLayout_15")
+        self.btn_edit = QPushButton(self.groupBox_6)
+        self.btn_edit.setObjectName(u"btn_edit")
+        self.btn_edit.setMinimumSize(QSize(0, 0))
+        self.btn_edit.setMaximumSize(QSize(16777215, 16777215))
+
+        self.horizontalLayout_15.addWidget(self.btn_edit)
+
+        self.btn_capacity = QPushButton(self.groupBox_6)
+        self.btn_capacity.setObjectName(u"btn_capacity")
+
+        self.horizontalLayout_15.addWidget(self.btn_capacity)
+
+
+        self.verticalLayout_13.addLayout(self.horizontalLayout_15)
+
+        self.horizontalLayout_16 = QHBoxLayout()
+        self.horizontalLayout_16.setObjectName(u"horizontalLayout_16")
+        self.btn_repkg_file = QPushButton(self.groupBox_6)
+        self.btn_repkg_file.setObjectName(u"btn_repkg_file")
+        self.btn_repkg_file.setMinimumSize(QSize(0, 0))
+
+        self.horizontalLayout_16.addWidget(self.btn_repkg_file)
+
+        self.btn_open_dir = QPushButton(self.groupBox_6)
+        self.btn_open_dir.setObjectName(u"btn_open_dir")
+        self.btn_open_dir.setMinimumSize(QSize(0, 0))
+
+        self.horizontalLayout_16.addWidget(self.btn_open_dir)
+
+
+        self.verticalLayout_13.addLayout(self.horizontalLayout_16)
+
+
+        self.verticalLayout_12.addWidget(self.groupBox_6)
+
+
+        self.horizontalLayout_14.addWidget(self.widget_info)
+
+
+        self.verticalLayout_4.addLayout(self.horizontalLayout_14)
+
         self.tabWidget.addTab(self.tab_main, "")
-        self.tab_backup = QWidget()
-        self.tab_backup.setObjectName(u"tab_backup")
-        self.gridLayout_2 = QGridLayout(self.tab_backup)
-        self.gridLayout_2.setObjectName(u"gridLayout_2")
-        self.tabWidget.addTab(self.tab_backup, "")
         self.tab_repkg = QWidget()
         self.tab_repkg.setObjectName(u"tab_repkg")
         self.verticalLayout_5 = QVBoxLayout(self.tab_repkg)
@@ -58,13 +482,15 @@ class Ui_MainForm(object):
 
         self.btn_repkgPath = QPushButton(self.tab_repkg)
         self.btn_repkgPath.setObjectName(u"btn_repkgPath")
-        icon1 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.EditFind))
-        self.btn_repkgPath.setIcon(icon1)
+        icon3 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.EditFind))
+        self.btn_repkgPath.setIcon(icon3)
 
         self.horizontalLayout_8.addWidget(self.btn_repkgPath)
 
         self.btn_repkg = QPushButton(self.tab_repkg)
         self.btn_repkg.setObjectName(u"btn_repkg")
+        self.btn_repkg.setStyleSheet(u"color: rgb(255, 255, 255);\n"
+"background-color: rgb(85, 170, 255);")
 
         self.horizontalLayout_8.addWidget(self.btn_repkg)
 
@@ -103,8 +529,8 @@ class Ui_MainForm(object):
         self.btn_mklink_new.setMaximumSize(QSize(80, 16777215))
         self.btn_mklink_new.setStyleSheet(u"color: rgb(255, 255, 255);\n"
 "background-color: rgb(85, 170, 255);")
-        icon2 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.FolderNew))
-        self.btn_mklink_new.setIcon(icon2)
+        icon4 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.FolderNew))
+        self.btn_mklink_new.setIcon(icon4)
 
         self.horizontalLayout_4.addWidget(self.btn_mklink_new)
 
@@ -171,12 +597,16 @@ class Ui_MainForm(object):
         self.btn_mklink_create = QPushButton(self.tab_mklink)
         self.btn_mklink_create.setObjectName(u"btn_mklink_create")
         self.btn_mklink_create.setMinimumSize(QSize(240, 23))
+        self.btn_mklink_create.setStyleSheet(u"color: rgb(255, 255, 255);\n"
+"background-color: rgb(85, 85, 255);")
 
         self.horizontalLayout.addWidget(self.btn_mklink_create)
 
         self.btn_mklink_restore = QPushButton(self.tab_mklink)
         self.btn_mklink_restore.setObjectName(u"btn_mklink_restore")
         self.btn_mklink_restore.setMaximumSize(QSize(80, 16777215))
+        self.btn_mklink_restore.setStyleSheet(u"color: rgb(255, 255, 255);\n"
+"background-color: rgb(255, 170, 127);")
 
         self.horizontalLayout.addWidget(self.btn_mklink_restore)
 
@@ -210,7 +640,7 @@ class Ui_MainForm(object):
         self.btn_naslink_new.setMaximumSize(QSize(80, 16777215))
         self.btn_naslink_new.setStyleSheet(u"color: rgb(255, 255, 255);\n"
 "background-color: rgb(85, 170, 255);")
-        self.btn_naslink_new.setIcon(icon2)
+        self.btn_naslink_new.setIcon(icon4)
 
         self.horizontalLayout_10.addWidget(self.btn_naslink_new)
 
@@ -233,11 +663,11 @@ class Ui_MainForm(object):
         self.btn_backup_nas = QCommandLinkButton(self.tab_nas)
         self.btn_backup_nas.setObjectName(u"btn_backup_nas")
         self.btn_backup_nas.setMaximumSize(QSize(36, 16777215))
-        font = QFont()
-        font.setFamilies([u"Segoe UI"])
-        font.setUnderline(False)
-        self.btn_backup_nas.setFont(font)
-        self.btn_backup_nas.setIcon(icon1)
+        font1 = QFont()
+        font1.setFamilies([u"Segoe UI"])
+        font1.setUnderline(False)
+        self.btn_backup_nas.setFont(font1)
+        self.btn_backup_nas.setIcon(icon3)
 
         self.horizontalLayout_6.addWidget(self.btn_backup_nas)
 
@@ -253,11 +683,11 @@ class Ui_MainForm(object):
         self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
         self.label_nas_path = QLabel(self.tab_nas)
         self.label_nas_path.setObjectName(u"label_nas_path")
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label_nas_path.sizePolicy().hasHeightForWidth())
-        self.label_nas_path.setSizePolicy(sizePolicy)
+        sizePolicy6 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        sizePolicy6.setHorizontalStretch(0)
+        sizePolicy6.setVerticalStretch(0)
+        sizePolicy6.setHeightForWidth(self.label_nas_path.sizePolicy().hasHeightForWidth())
+        self.label_nas_path.setSizePolicy(sizePolicy6)
 
         self.horizontalLayout_9.addWidget(self.label_nas_path)
 
@@ -279,11 +709,11 @@ class Ui_MainForm(object):
         self.verticalLayout.addLayout(self.horizontalLayout_9)
 
         self.tabWidget.addTab(self.tab_nas, "")
-        self.tab = QWidget()
-        self.tab.setObjectName(u"tab")
-        self.gridLayout_5 = QGridLayout(self.tab)
+        self.tab_authorblock = QWidget()
+        self.tab_authorblock.setObjectName(u"tab_authorblock")
+        self.gridLayout_5 = QGridLayout(self.tab_authorblock)
         self.gridLayout_5.setObjectName(u"gridLayout_5")
-        self.listWidget_authorblock = QListWidget(self.tab)
+        self.listWidget_authorblock = QListWidget(self.tab_authorblock)
         self.listWidget_authorblock.setObjectName(u"listWidget_authorblock")
         self.listWidget_authorblock.setFrameShape(QFrame.Shape.StyledPanel)
         self.listWidget_authorblock.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
@@ -291,7 +721,7 @@ class Ui_MainForm(object):
 
         self.gridLayout_5.addWidget(self.listWidget_authorblock, 0, 0, 1, 1)
 
-        self.tabWidget.addTab(self.tab, "")
+        self.tabWidget.addTab(self.tab_authorblock, "")
         self.tab_set = QWidget()
         self.tab_set.setObjectName(u"tab_set")
         self.gridLayout_3 = QGridLayout(self.tab_set)
@@ -305,7 +735,7 @@ class Ui_MainForm(object):
         self.scrollArea_1.setWidgetResizable(True)
         self.scrollAreaWidgetContents_1 = QWidget()
         self.scrollAreaWidgetContents_1.setObjectName(u"scrollAreaWidgetContents_1")
-        self.scrollAreaWidgetContents_1.setGeometry(QRect(0, 0, 599, 434))
+        self.scrollAreaWidgetContents_1.setGeometry(QRect(0, 0, 983, 722))
         self.verticalLayout_2 = QVBoxLayout(self.scrollAreaWidgetContents_1)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.groupBox_dir = QGroupBox(self.scrollAreaWidgetContents_1)
@@ -332,8 +762,8 @@ class Ui_MainForm(object):
         self.btn_steamPath = QCommandLinkButton(self.groupBox_dir)
         self.btn_steamPath.setObjectName(u"btn_steamPath")
         self.btn_steamPath.setMaximumSize(QSize(36, 16777215))
-        icon3 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.SystemSearch))
-        self.btn_steamPath.setIcon(icon3)
+        icon5 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.SystemSearch))
+        self.btn_steamPath.setIcon(icon5)
         self.btn_steamPath.setIconSize(QSize(20, 20))
 
         self.horizontalLayout_1.addWidget(self.btn_steamPath, 0, Qt.AlignmentFlag.AlignHCenter|Qt.AlignmentFlag.AlignVCenter)
@@ -358,7 +788,7 @@ class Ui_MainForm(object):
         self.btn_wallpaperPath = QCommandLinkButton(self.groupBox_dir)
         self.btn_wallpaperPath.setObjectName(u"btn_wallpaperPath")
         self.btn_wallpaperPath.setMaximumSize(QSize(36, 16777215))
-        self.btn_wallpaperPath.setIcon(icon1)
+        self.btn_wallpaperPath.setIcon(icon3)
 
         self.horizontalLayout_2.addWidget(self.btn_wallpaperPath, 0, Qt.AlignmentFlag.AlignHCenter|Qt.AlignmentFlag.AlignVCenter)
 
@@ -382,8 +812,8 @@ class Ui_MainForm(object):
         self.btn_wallpaperBackupPath = QCommandLinkButton(self.groupBox_dir)
         self.btn_wallpaperBackupPath.setObjectName(u"btn_wallpaperBackupPath")
         self.btn_wallpaperBackupPath.setMaximumSize(QSize(36, 16777215))
-        self.btn_wallpaperBackupPath.setFont(font)
-        self.btn_wallpaperBackupPath.setIcon(icon1)
+        self.btn_wallpaperBackupPath.setFont(font1)
+        self.btn_wallpaperBackupPath.setIcon(icon3)
 
         self.horizontalLayout_3.addWidget(self.btn_wallpaperBackupPath, 0, Qt.AlignmentFlag.AlignHCenter|Qt.AlignmentFlag.AlignVCenter)
 
@@ -392,6 +822,34 @@ class Ui_MainForm(object):
 
 
         self.verticalLayout_2.addWidget(self.groupBox_dir)
+
+        self.groupBox_8 = QGroupBox(self.scrollAreaWidgetContents_1)
+        self.groupBox_8.setObjectName(u"groupBox_8")
+        self.verticalLayout_17 = QVBoxLayout(self.groupBox_8)
+        self.verticalLayout_17.setObjectName(u"verticalLayout_17")
+        self.checkBox_dir = QCheckBox(self.groupBox_8)
+        self.checkBox_dir.setObjectName(u"checkBox_dir")
+
+        self.verticalLayout_17.addWidget(self.checkBox_dir)
+
+        self.label_11 = QLabel(self.groupBox_8)
+        self.label_11.setObjectName(u"label_11")
+
+        self.verticalLayout_17.addWidget(self.label_11)
+
+        self.btn_restart = QPushButton(self.groupBox_8)
+        self.btn_restart.setObjectName(u"btn_restart")
+        self.btn_restart.setMaximumSize(QSize(200, 16777215))
+        self.btn_restart.setStyleSheet(u"color: rgb(255, 255, 255);\n"
+"background-color: rgb(255, 85, 0);")
+        self.btn_restart.setCheckable(False)
+        self.btn_restart.setAutoDefault(False)
+        self.btn_restart.setFlat(False)
+
+        self.verticalLayout_17.addWidget(self.btn_restart)
+
+
+        self.verticalLayout_2.addWidget(self.groupBox_8)
 
         self.groupBox = QGroupBox(self.scrollAreaWidgetContents_1)
         self.groupBox.setObjectName(u"groupBox")
@@ -408,6 +866,8 @@ class Ui_MainForm(object):
         self.btn_unlock_hidden_achievements = QPushButton(self.groupBox)
         self.btn_unlock_hidden_achievements.setObjectName(u"btn_unlock_hidden_achievements")
         self.btn_unlock_hidden_achievements.setMaximumSize(QSize(80, 16777215))
+        self.btn_unlock_hidden_achievements.setStyleSheet(u"color: rgb(255, 255, 255);\n"
+"background-color: rgb(85, 170, 255);")
 
         self.horizontalLayout_11.addWidget(self.btn_unlock_hidden_achievements)
 
@@ -451,6 +911,10 @@ class Ui_MainForm(object):
         self.retranslateUi(MainForm)
 
         self.tabWidget.setCurrentIndex(0)
+        self.comboBox_sort.setCurrentIndex(0)
+        self.comboBox_size.setCurrentIndex(2)
+        self.btn_invalid.setDefault(False)
+        self.btn_restart.setDefault(False)
 
 
         QMetaObject.connectSlotsByName(MainForm)
@@ -458,8 +922,56 @@ class Ui_MainForm(object):
 
     def retranslateUi(self, MainForm):
         MainForm.setWindowTitle(QCoreApplication.translate("MainForm", u"Wallpaper Engine Tools", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_main), QCoreApplication.translate("MainForm", u"\u5df2\u8ba2\u9605", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_backup), QCoreApplication.translate("MainForm", u"\u5907\u4efd", None))
+        self.lineEdit_search.setText("")
+        self.lineEdit_search.setPlaceholderText(QCoreApplication.translate("MainForm", u"\u641c\u7d22", None))
+        self.btn_search.setText(QCoreApplication.translate("MainForm", u"...", None))
+        self.label_filter.setText(QCoreApplication.translate("MainForm", u"\u7b5b\u9009\u7ed3\u679c\uff08 0 \u4e2a\u4e2d\u6709 0 \u4e2a\uff09", None))
+        self.groupBox_2.setTitle(QCoreApplication.translate("MainForm", u"\u7c7b\u578b", None))
+        self.checkBox_scene.setText(QCoreApplication.translate("MainForm", u"\u573a\u666f", None))
+        self.checkBox_video.setText(QCoreApplication.translate("MainForm", u"\u89c6\u9891", None))
+        self.checkBox_web.setText(QCoreApplication.translate("MainForm", u"\u7f51\u9875", None))
+        self.checkBox_application.setText(QCoreApplication.translate("MainForm", u"\u5e94\u7528", None))
+        self.groupBox_4.setTitle(QCoreApplication.translate("MainForm", u"\u6765\u6e90", None))
+        self.checkBox_wallpaper.setText(QCoreApplication.translate("MainForm", u"\u521b\u610f\u5de5\u574a", None))
+        self.checkBox_backup.setText(QCoreApplication.translate("MainForm", u"\u6211\u7684\u58c1\u7eb8", None))
+        self.checkBox_invalid.setText(QCoreApplication.translate("MainForm", u"\u5931\u6548", None))
+        self.groupBox_7.setTitle(QCoreApplication.translate("MainForm", u"\u6392\u5e8f", None))
+        self.comboBox_sort.setItemText(0, QCoreApplication.translate("MainForm", u"\u540d\u79f0", None))
+        self.comboBox_sort.setItemText(1, QCoreApplication.translate("MainForm", u"\u8bc4\u7ea7", None))
+        self.comboBox_sort.setItemText(2, QCoreApplication.translate("MainForm", u"\u6536\u85cf", None))
+        self.comboBox_sort.setItemText(3, QCoreApplication.translate("MainForm", u"\u6587\u4ef6\u5927\u5c0f", None))
+        self.comboBox_sort.setItemText(4, QCoreApplication.translate("MainForm", u"\u8ba2\u9605\u65e5\u671f", None))
+        self.comboBox_sort.setItemText(5, QCoreApplication.translate("MainForm", u"\u6700\u8fd1\u66f4\u65b0", None))
+
+        self.radioButton_positive.setText(QCoreApplication.translate("MainForm", u"\u6b63\u5e8f", None))
+        self.radioButton_reverse.setText(QCoreApplication.translate("MainForm", u"\u5012\u53d9", None))
+        self.groupBox_5.setTitle(QCoreApplication.translate("MainForm", u"\u67e5\u770b", None))
+        self.radioButton_big.setText(QCoreApplication.translate("MainForm", u"\u5927\u56fe\u6807", None))
+        self.radioButton_small.setText(QCoreApplication.translate("MainForm", u"\u5c0f\u56fe\u6807", None))
+        self.label_10.setText(QCoreApplication.translate("MainForm", u"\u6bcf\u9875\u663e\u793a\u6570", None))
+        self.comboBox_size.setItemText(0, QCoreApplication.translate("MainForm", u"10", None))
+        self.comboBox_size.setItemText(1, QCoreApplication.translate("MainForm", u"20", None))
+        self.comboBox_size.setItemText(2, QCoreApplication.translate("MainForm", u"30", None))
+        self.comboBox_size.setItemText(3, QCoreApplication.translate("MainForm", u"50", None))
+
+        self.groupBox_3.setTitle(QCoreApplication.translate("MainForm", u"\u64cd\u4f5c", None))
+        self.checkBox_authorblock.setText(QCoreApplication.translate("MainForm", u"\u62c9\u9ed1\u5173\u8054", None))
+        self.btn_dir_new.setText(QCoreApplication.translate("MainForm", u"\u65b0\u589e\u6587\u4ef6\u5939", None))
+        self.btn_invalid.setText(QCoreApplication.translate("MainForm", u"\u5220\u9664\u5931\u6548\u8ba2\u9605", None))
+        self.label_capacity.setText(QCoreApplication.translate("MainForm", u"\u5bb9\u91cf\uff1a0G", None))
+        self.label_error.setText(QCoreApplication.translate("MainForm", u"\u60a8\u672a\u5b89\u88c5Wallpaper Engine", None))
+        self.label_page.setText(QCoreApplication.translate("MainForm", u"\u5171 1 \u9875", None))
+        self.label_img.setText("")
+        self.label_name.setText(QCoreApplication.translate("MainForm", u"name", None))
+        self.label_title.setText(QCoreApplication.translate("MainForm", u"title", None))
+        self.label_note.setText(QCoreApplication.translate("MainForm", u"note", None))
+        self.groupBox_6.setTitle(QCoreApplication.translate("MainForm", u"\u64cd\u4f5c", None))
+        self.btn_open.setText(QCoreApplication.translate("MainForm", u"\u6253\u5f00\u8d44\u6e90\u7ba1\u7406\u5668", None))
+        self.btn_edit.setText(QCoreApplication.translate("MainForm", u"\u4fee\u6539", None))
+        self.btn_capacity.setText(QCoreApplication.translate("MainForm", u"\u91cd\u65b0\u83b7\u53d6\u5927\u5c0f", None))
+        self.btn_repkg_file.setText(QCoreApplication.translate("MainForm", u"\u63d0\u53d6PKG", None))
+        self.btn_open_dir.setText(QCoreApplication.translate("MainForm", u"\u6253\u5f00\u8f93\u51fa", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_main), QCoreApplication.translate("MainForm", u"\u58c1\u7eb8\u7ba1\u7406", None))
         self.lineEdit_repkg.setPlaceholderText(QCoreApplication.translate("MainForm", u"\u62d6\u5165\u9700\u8981\u63d0\u53d6\u7684PKG/MPKG\u6587\u4ef6", None))
         self.btn_repkgPath.setText("")
         self.btn_repkg.setText(QCoreApplication.translate("MainForm", u"\u63d0\u53d6", None))
@@ -488,7 +1000,7 @@ class Ui_MainForm(object):
         self.btn_naslink_create.setText(QCoreApplication.translate("MainForm", u"\u6279\u91cf\u751f\u6210\u5feb\u6377\u65b9\u5f0f", None))
         self.btn_naslink_remove.setText(QCoreApplication.translate("MainForm", u"\u79fb\u9664", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_nas), QCoreApplication.translate("MainForm", u"NAS\u5907\u4efd", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QCoreApplication.translate("MainForm", u"\u62c9\u9ed1\u540d\u5355", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_authorblock), QCoreApplication.translate("MainForm", u"\u62c9\u9ed1\u540d\u5355", None))
         self.groupBox_dir.setTitle(QCoreApplication.translate("MainForm", u"\u8f6f\u4ef6\u76ee\u5f55", None))
         self.label.setText(QCoreApplication.translate("MainForm", u"Steam\u5b89\u88c5\u4f4d\u7f6e", None))
         self.lineEdit_steamPath.setPlaceholderText(QCoreApplication.translate("MainForm", u"\u4f8b\uff1aC:\\Program Files (x86)\\Steam", None))
@@ -499,6 +1011,11 @@ class Ui_MainForm(object):
         self.label_4.setText(QCoreApplication.translate("MainForm", u"\u5907\u4efd\u4f4d\u7f6e", None))
         self.lineEdit_wallpaperBackupPath.setPlaceholderText(QCoreApplication.translate("MainForm", u"\u4f8b\uff1aC:\\Program Files (x86)\\Steam\\steamapps\\common\\wallpaper_engine\\projects\\backup", None))
         self.btn_wallpaperBackupPath.setText("")
+        self.groupBox_8.setTitle(QCoreApplication.translate("MainForm", u"\u7f13\u5b58", None))
+        self.checkBox_dir.setText(QCoreApplication.translate("MainForm", u"\u81ea\u5b9a\u4e49\u6587\u4ef6\u5939\uff08\u53d6\u6d88\u52fe\u9009\u540e\u4e0b\u6b21\u91cd\u542f\u540c\u6b65Wallpaper\u6587\u4ef6\u5939\u5206\u7c7b\uff09", None))
+        self.label_11.setText(QCoreApplication.translate("MainForm", u"\u65e0\u6cd5\u8bc6\u522b\u5230Wallpaper\u66f4\u65b0\u64cd\u4f5c\u3002\n"
+"\u7f3a\u5931\u90e8\u5206\u58c1\u7eb8\u53ef\u4ee5\u5173\u95edWallpaper\u540e\u7b49\u5f85\u4e00\u6bb5\u65f6\u95f4\u65b0\u6570\u636e\u751f\u6210\uff0c\u518d\u5c1d\u8bd5\u6b64\u64cd\u4f5c\u3002", None))
+        self.btn_restart.setText(QCoreApplication.translate("MainForm", u"\u5f3a\u5236\u5237\u65b0", None))
         self.groupBox.setTitle(QCoreApplication.translate("MainForm", u"\u89e3\u9501\u9690\u85cf\u6210\u5c31\u300c30\u6761\u547d\u300d", None))
         self.label_9.setText(QCoreApplication.translate("MainForm", u"\u6253\u5f00\u58c1\u7eb8\u8bbe\u7f6e\uff0c\u5207\u6362\u5230\u5173\u4e8e\u9875\u9762\uff0c\u70b9\u51fb\u89e3\u9501\n"
 "\n"

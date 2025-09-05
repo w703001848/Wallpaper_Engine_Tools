@@ -1,7 +1,7 @@
 import os, logging
 import shutil
 
-from PySide6.QtWidgets import QInputDialog
+from PySide6.QtWidgets import QInputDialog, QListWidget
 
 from .main import openMessageDialog, openStartfile, openDirDialog
 from .Config import config
@@ -24,7 +24,7 @@ def createSymbolicLink(path_old, path_new):
     return False
 
 # 软链接回退
-def backSymbolicLink(path_old, path_new):
+def backSymbolicLink(path_old):
     try:
         openStartfile(os.path.dirname(path_old))
         if os.path.exists(path_old):
@@ -77,3 +77,11 @@ def mklinkNew():
             mklinkList.append(obj)
             return obj
     return False
+        
+# Mklink列表数据加载
+def updateMklinkList(listWidget: QListWidget):
+    if len(config["mklinkList"]) != listWidget.count():
+        print('Mklink列表加载数据')
+        for item in config["mklinkList"]:
+            listWidget.addItem(f"标注:{item['name']}\n{item['path']}\n{item['path_new'] or '未生成'}")
+        listWidget.setCurrentRow(1) # 选中

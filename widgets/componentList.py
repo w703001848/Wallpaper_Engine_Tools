@@ -7,7 +7,7 @@ from .Ui_list import Ui_ListWidget
 
 from .componentListItem import MyWindow as Ui_Item
 
-from modules.Config import config, set_config, temp_workshopcache, get_backupDirs
+from modules.Config import config, setConfig, temp_workshopcache, get_backupDirs
 from modules.main import timer, dirSizeToStr
 
 class MyWindow(QWidget, Ui_ListWidget):
@@ -20,7 +20,7 @@ class MyWindow(QWidget, Ui_ListWidget):
         self.total_size = 0 # 总数量
         self.filter_total_size = 0 # 筛选后总数量
         self.filterSize = [10, 20, 30, 50]
-        self.sortCurrent = ['title', 'favorite', 'filesize', 'subscriptiondate', 'updatedate']
+        self.sortCurrent = ["title", "ratingrounded", "favorite", "filesize", "subscriptiondate", "updatedate"]
         self.sort = {
             "isCheckedScene": config["isCheckedScene"],
             "isCheckedVideo": config["isCheckedVideo"],
@@ -159,7 +159,7 @@ class MyWindow(QWidget, Ui_ListWidget):
     def handleFilterGroup(self, event):
         print(f"筛选组 {event.keyType} {event.isChecked()}")
         self.sort[event.keyType] = event.isChecked()
-        set_config(event.keyType, event.isChecked())
+        setConfig(event.keyType, event.isChecked())
 
         with timer("加载列表耗时"):
             self.refreshData()
@@ -167,14 +167,14 @@ class MyWindow(QWidget, Ui_ListWidget):
     # 数量选择
     def handleSizeSelect(self, index):
         self.sort["filterSize"] = self.filterSize[index]
-        set_config("filterSize", self.sort["filterSize"])
+        setConfig("filterSize", self.sort["filterSize"])
         print(f'数量选择 index:{index} filterSize:{self.sort["filterSize"]}')
         self.setPage()
 
     # 排序选择
     def handleSortSelect(self, index):
         self.sort["sortCurrent"] = self.sortCurrent[index]
-        set_config("sortCurrent", self.sort["sortCurrent"])
+        setConfig("sortCurrent", self.sort["sortCurrent"])
         print(f'排序选择 index:{index} sortCurrent:{self.sort["sortCurrent"]}')
         self.setData()
     
