@@ -7,7 +7,7 @@ from .Ui_list import Ui_ListWidget
 
 from .componentListItem import MyWindow as Ui_Item
 
-from modules.Config import temp_workshopcache, config, set_config
+from modules.Config import config, set_config, temp_workshopcache, get_backupDirs
 from modules.main import timer, dirSizeToStr
 
 class MyWindow(QWidget, Ui_ListWidget):
@@ -34,7 +34,7 @@ class MyWindow(QWidget, Ui_ListWidget):
         
         with timer("初始化耗时"):
             self.initPage()
-            self.update(True)
+            self.refreshData(True)
 
     
     def initPage(self):
@@ -44,41 +44,47 @@ class MyWindow(QWidget, Ui_ListWidget):
         self.checkBox_web.keyType = "isCheckedWeb"
         self.checkBox_application.keyType = "isCheckedApplication"
         self.checkBox_invalid.keyType = "isCheckedInvalid"
-        self.checkBox_scene.setChecked(self.sort["isCheckedScene"])
-        self.checkBox_video.setChecked(self.sort["isCheckedVideo"])
-        self.checkBox_web.setChecked(self.sort["isCheckedWeb"])
-        self.checkBox_application.setChecked(self.sort["isCheckedApplication"])
-        self.checkBox_invalid.setChecked(self.sort["isCheckedInvalid"])
         self.comboBox_sort.currentIndexChanged.connect(self.handleSortSelect)
         self.comboBox_size.currentIndexChanged.connect(self.handleSizeSelect)
         self.comboBox_page.currentIndexChanged.connect(self.handlePageSelect)
         self.btn_left.keyType = "sub"
-        self.btn_left.setVisible(False)
         self.btn_right.keyType = "add"
+        self.btn_left.setVisible(False)
         self.buttonGroup_page.buttonClicked.connect(self.handlePageBtn)
         self.buttonGroup_filter.buttonClicked.connect(self.handleFilterGroup)
         self.tableWidget_main.horizontalHeader().setStretchLastSection(True) # 表格自适应
         self.tableWidget_main.horizontalHeader().setVisible(False) # 隐藏头
         self.tableWidget_main.verticalHeader().setVisible(False) # 隐藏侧边
         self.tableWidget_main.setColumnCount(1)
+        self.loadData(True)
 
-    # 计算总数量和总容量（计算一次）
-    def getSizeAndCapacity(self):
-        total_capacity = 0
-        for obj in self.data:
-            total_capacity += obj["filesize"]
-        print(f"总容量：{total_capacity}")
-        self.label_capacity.setText(f"容量：{dirSizeToStr(total_capacity)}")
-        self.total_size = len(self.data)
-        print(f"工坊壁纸缓存合未知项目总数量：{self.total_size}")
+    def loadData(self, isFirst = False):
+        print('loadData')
+        # 对比旧数据
+        这里需要赋值
+        self.sort = {
+            "isCheckedScene": config["isCheckedScene"],
+            "isCheckedVideo": config["isCheckedVideo"],
+            "isCheckedWeb": config["isCheckedWeb"],
+            "isCheckedApplication": config["isCheckedApplication"],
+            "isCheckedInvalid": config["isCheckedInvalid"],
+            "filterSize": config["filterSize"],
+            "sortCurrent": config["sortCurrent"], # 订阅日期: subscriptiondate
+        }
+        self.checkBox_scene.setChecked(config["isCheckedScene"])
+        self.checkBox_video.setChecked(config["isCheckedVideo"])
+        self.checkBox_web.setChecked(config["isCheckedWeb"])
+        self.checkBox_application.setChecked(config["isCheckedApplication"])
+        self.checkBox_invalid.setChecked(config["isCheckedInvalid"])
 
-    def update(self, isFirst = False):
+    def refreshData(self, isFirst = False):
         print('update')
         self.page = 1
         if self.keyType == 'main':
             self.data = temp_workshopcache
         elif self.keyType == 'backup':
-            # data = temp_workshopcache
+            self.data = get_backupDirs()
+            self.sort["isCheckedInvalid"] = True
             if isFirst:
                 self.checkBox_invalid.setVisible(False)
                 self.btn_invalid.setVisible(False)
@@ -98,7 +104,9 @@ class MyWindow(QWidget, Ui_ListWidget):
             elif self.sort["isCheckedApplication"] and keyType == "application":
                 return True
             else:
-                if self.sort["isCheckedInvalid"] and (item["authorsteamid"] == ""):
+                if self.keyType == 'main' and self.sort["isCheckedInvalid"] and (item["authorsteamid"] == ""):
+                    return True
+                elif self.sort["isCheckedInvalid"] and self.keyType == '':
                     return True
                 else:
                     return False
@@ -154,7 +162,7 @@ class MyWindow(QWidget, Ui_ListWidget):
         set_config(event.keyType, event.isChecked())
 
         with timer("加载列表耗时"):
-            self.update()
+            self.refreshData()
     
     # 数量选择
     def handleSizeSelect(self, index):
@@ -203,6 +211,16 @@ class MyWindow(QWidget, Ui_ListWidget):
             print(f"setBtnPage left ok num:{num} total_page:{self.total_page}")
             self.btn_left.setVisible(True)
         self.page = num
+
+    # 计算总数量和总容量（计算一次）
+    def getSizeAndCapacity(self):
+        total_capacity = 0
+        for obj in self.data:
+            total_capacity += obj["filesize"]
+        print(f"总容量：{total_capacity}")
+        self.label_capacity.setText(f"容量：{dirSizeToStr(total_capacity)}")
+        self.total_size = len(self.data)
+        print(f"工坊壁纸缓存合未知项目总数量：{self.total_size}")
 
 if __name__ == '__main__':
     app = QApplication([])

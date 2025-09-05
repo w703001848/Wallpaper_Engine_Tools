@@ -67,6 +67,12 @@
        </item>
        <item>
         <widget class="QPushButton" name="btn_name_edit">
+         <property name="minimumSize">
+          <size>
+           <width>40</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="maximumSize">
           <size>
            <width>40</width>
@@ -80,9 +86,15 @@
        </item>
        <item>
         <widget class="QPushButton" name="btn_open">
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="maximumSize">
           <size>
-           <width>80</width>
+           <width>60</width>
            <height>16777215</height>
           </size>
          </property>
@@ -104,6 +116,12 @@
        </item>
        <item>
         <widget class="QPushButton" name="btn_title_edit">
+         <property name="minimumSize">
+          <size>
+           <width>40</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="maximumSize">
           <size>
            <width>40</width>
@@ -117,9 +135,15 @@
        </item>
        <item>
         <widget class="QPushButton" name="btn_RePKG">
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="maximumSize">
           <size>
-           <width>80</width>
+           <width>60</width>
            <height>16777215</height>
           </size>
          </property>

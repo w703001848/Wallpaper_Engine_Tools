@@ -66,23 +66,27 @@ class MyWindow(QWidget, Ui_MainForm):
     def tabChange(self):
         self.tabRepkgCurrent = False
         if self.tabWidget.currentIndex() == 0: # 壁纸加载
+            obj = Ui_List('main')
             if self.tabMainError: # 防止重复加载
                 if config['mklinkList'][0]["path"]:
-                    obj = Ui_List('main')
                     objChildren = self.tab_main.children()
                     objChildren[0].addWidget(obj)
                 else:
                     self.addLabelError(self.tab_main)
                 self.tabMainError = False
+            else:
+                obj.loadData()
         elif self.tabWidget.currentIndex() == 1: # 备份壁纸加载
+            obj2 = Ui_List('backup')
             if self.tabBackError: # 防止重复加载
                 if config["backupPath"]:
-                    obj2 = Ui_List('backup')
                     objChildren = self.tab_backup.children()
                     objChildren[0].addWidget(obj2)
                 else:
                     self.addLabelError(self.tab_backup)
                 self.tabBackError = False
+            else:
+                obj2.loadData()
         elif self.tabWidget.currentIndex() == 2: # repkg加载
             self.tabRepkgCurrent = True
             updataRepkg(config["repkgPath"], self.lineEdit_repkg, self.tableWidget_repkg)

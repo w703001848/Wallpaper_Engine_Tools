@@ -173,33 +173,7 @@ def get_workshopcache():
                         with open(project_path, encoding="utf-8") as f1:
                             data = json.load(f1) # 从文件读取json并反序列化
                             size = getDirSize(dir_path)
-                            temp_workshopcache.append({
-                                "allowmobileupload" : False,
-                                "authorsteamid" : '',
-                                "favorite" : False,
-                                "file" : os.path.join(dir_path, data["file"]),
-                                "filesize" : size,
-                                "filesizelabel" : dirSizeToStr(size),
-                                "hasrating" : False,
-                                "ispreset" : False,
-                                "local" : False,
-                                "official" : False,
-                                "preview" : os.path.join(dir_path, data["preview"]),
-                                "previewsmall" : os.path.join(dir_path, data["preview"]),
-                                "project" : project_path,
-                                "rating" : 0,
-                                "ratingrounded" : 5.0,
-                                "status" : '',
-                                "subscriptiondate" : int(time.time()),
-                                "tags" : ','.join(data["tags"]),
-                                "title" : data["title"],
-                                "type" : data["type"],
-                                "updatedate" : int(time.time()),
-                                "workshopid" : item,
-                                "workshopurl" : '',
-
-                                "description" : data["description"] if "description" in data else None,
-                            }) 
+                            temp_workshopcache.append(getProjectJson(dir_path, item, project_path, data, size)) 
                     else:
                         # 工坊文件夹存在，但缺少project.json文件，有空开发转移到备份文件夹
                         # 备份文件夹项目，每次打开更新时间戳，大小计算
@@ -208,6 +182,50 @@ def get_workshopcache():
     except Exception as e:
         logging.error(f"获取WallpaperEngine 工坊壁纸缓存并读取: {e}")
     return False
+        
+# 获取文件夹内项目列表
+def get_backupDirs():
+    list = []
+    backupPath = config['backupPath']
+    if os.path.exists(backupPath):
+        for item in os.listdir(backupPath):
+            dir_path = os.path.join(backupPath, item)
+            if os.path.exists(dir_path):
+                project_path = os.path.join(dir_path, 'project.json')
+                with open(project_path, encoding="utf-8") as f1:
+                    data = json.load(f1) # 从文件读取json并反序列化
+                    size = getDirSize(dir_path) if 'filesize' in data else 0
+                    list.append(getProjectJson(dir_path, item, project_path, data, size))
+    return list
+
+def getProjectJson(dir_path, item, project_path, data, size):
+    return {
+        "allowmobileupload" : False,
+        "authorsteamid" : '',
+        "favorite" : False,
+        "file" : os.path.join(dir_path, data["file"] if "file" in data else ""),
+        "filesize" : size,
+        "filesizelabel" : dirSizeToStr(size),
+        "hasrating" : False,
+        "ispreset" : False,
+        "local" : False,
+        "official" : False,
+        "preview" : os.path.join(dir_path, data["preview"]),
+        "previewsmall" : os.path.join(dir_path, data["preview"]),
+        "project" : project_path,
+        "rating" : 0,
+        "ratingrounded" : 5.0,
+        "status" : '',
+        "subscriptiondate" : int(time.time()),
+        "tags" : ','.join(data["tags"] if "tags" in data else []),
+        "title" : data["title"],
+        "type" : data["type"] if "type" in data else "",
+        "updatedate" : int(time.time()),
+        "workshopid" : item,
+        "workshopurl" : '',
+
+        "description" : data["description"] if "description" in data else None,
+    }
 
 # 获取WallpaperEngine 图片缓存位置
 def get_wallpaper_ui_thumbnails(name): 

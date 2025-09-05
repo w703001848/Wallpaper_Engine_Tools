@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'listitem.ui'
+## Form generated from reading UI file 'listItem.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.2
 ##
@@ -49,13 +49,15 @@ class Ui_ItemFrame(object):
 
         self.btn_name_edit = QPushButton(ItemFrame)
         self.btn_name_edit.setObjectName(u"btn_name_edit")
+        self.btn_name_edit.setMinimumSize(QSize(40, 0))
         self.btn_name_edit.setMaximumSize(QSize(40, 16777215))
 
         self.horizontalLayout_2.addWidget(self.btn_name_edit)
 
         self.btn_open = QPushButton(ItemFrame)
         self.btn_open.setObjectName(u"btn_open")
-        self.btn_open.setMaximumSize(QSize(80, 16777215))
+        self.btn_open.setMinimumSize(QSize(60, 0))
+        self.btn_open.setMaximumSize(QSize(60, 16777215))
 
         self.horizontalLayout_2.addWidget(self.btn_open)
 
@@ -71,13 +73,15 @@ class Ui_ItemFrame(object):
 
         self.btn_title_edit = QPushButton(ItemFrame)
         self.btn_title_edit.setObjectName(u"btn_title_edit")
+        self.btn_title_edit.setMinimumSize(QSize(40, 0))
         self.btn_title_edit.setMaximumSize(QSize(40, 16777215))
 
         self.horizontalLayout_3.addWidget(self.btn_title_edit)
 
         self.btn_RePKG = QPushButton(ItemFrame)
         self.btn_RePKG.setObjectName(u"btn_RePKG")
-        self.btn_RePKG.setMaximumSize(QSize(80, 16777215))
+        self.btn_RePKG.setMinimumSize(QSize(60, 0))
+        self.btn_RePKG.setMaximumSize(QSize(60, 16777215))
 
         self.horizontalLayout_3.addWidget(self.btn_RePKG)
 

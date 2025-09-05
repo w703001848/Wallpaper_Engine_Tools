@@ -119,19 +119,6 @@ def openDirDialog(path=None, title ="选择一个文件夹", funOK=func, funCanc
     else:
         funCancel()
         return False
-        
-# 获取文件夹内项目列表
-def getDirList(path, isSize=False):
-    list = []
-    for item in os.listdir(path):
-        obj = {
-            "name": item,
-            "path": os.path.join(path, item) # 结合目录名与文件名
-        }
-        obj['size'] = getDirSize(obj['path']) if isSize else 0
-        list.append(obj)
-        
-    return list
     
 # 文件夹容量计算
 def getDirSize(folder_path, isTop = True):
