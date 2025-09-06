@@ -122,8 +122,8 @@ def openDirDialog(path=None, title ="选择一个文件夹", funOK=func, funCanc
     
 # 文件夹容量计算
 def getDirSize(folder_path, isTop = True):
-    if isTop:
-        logging.warning('开启文件夹容量计算，占用性能建议关闭')
+    # if isTop:
+    #     logging.warning('开启文件夹容量计算，占用性能建议关闭')
     total_size = 0
     with os.scandir(folder_path) as entries:
         for entry in entries:

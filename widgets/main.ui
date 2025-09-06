@@ -24,7 +24,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>../img/Management.ico</normaloff>../img/Management.ico</iconset>
+    <normaloff>../img/dir.ico</normaloff>../img/dir.ico</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
@@ -320,9 +320,6 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
-                <property name="currentIndex">
-                 <number>0</number>
-                </property>
                 <item>
                  <property name="text">
                   <string>名称</string>
@@ -419,9 +416,6 @@
               </item>
               <item>
                <widget class="QComboBox" name="comboBox_size">
-                <property name="currentIndex">
-                 <number>2</number>
-                </property>
                 <item>
                  <property name="text">
                   <string>10</string>
@@ -715,6 +709,15 @@ background-color: rgb(255, 85, 0);</string>
              <widget class="QLabel" name="label_note">
               <property name="text">
                <string>note</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_12">
+              <property name="text">
+               <string>备份文件夹单个项目，
+每次修改更新时间戳，
+大小计算</string>
               </property>
              </widget>
             </item>
@@ -1625,11 +1628,8 @@ background-color: rgb(85, 170, 255);</string>
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_page">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
+  <buttongroup name="buttonGroup_sort"/>
+  <buttongroup name="buttonGroup_img"/>
   <buttongroup name="buttonGroup_type">
    <property name="exclusive">
     <bool>false</bool>
@@ -1640,7 +1640,10 @@ background-color: rgb(85, 170, 255);</string>
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroup_sort"/>
-  <buttongroup name="buttonGroup_img"/>
+  <buttongroup name="buttonGroup_page">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
  </buttongroups>
 </ui>

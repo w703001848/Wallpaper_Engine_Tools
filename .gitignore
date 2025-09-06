@@ -2,6 +2,7 @@ config.json
 # filtered-images
 # ideal-images
 output
+排除
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

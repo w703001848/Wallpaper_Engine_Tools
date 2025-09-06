@@ -7,9 +7,10 @@ from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QApplication, QWidget, QLabel
 # 加载模板
 from widgets.Ui_main import Ui_MainForm
+from widgets.componentListItem import MyWindow as Ui_Item
 # 功能模块
 from modules.main import Debouncer, timer, Unlock_hidden_achievements, dirSizeToStr, openFileDialog, openDirDialog, openMessageDialog, openStartfile
-from modules.Config import config, temp_workshop, temp_authorblocklistnames, setSteamPath, setWallpaperPath, setWallpaperBackupPath, setConfig, saveConfig
+from modules.Config import config, temp_authorblocklistnames, getWorkshop, setSteamPath, setWallpaperPath, setWallpaperBackupPath, setConfig, saveConfig
 from modules.RePKG import runRepkg, followWork, updateRepkgData
 from modules.Mklink import mklinkCreate, mklinkNew, mklinkBack, updateMklinkList
 
@@ -124,7 +125,7 @@ class MyWindow(QWidget, Ui_MainForm):
             "displaySize": config["displaySize"], # 显示大小
         }
 
-        if not config['mklinkList'][0]["path"]:
+        if not config['mklinkList'][0]["path"] or not config['mklinkList'][1]["path"]:
             self.tableWidget_main.setVisible(False)
             return
 
@@ -157,12 +158,13 @@ class MyWindow(QWidget, Ui_MainForm):
 
         # 筛选组 类型
         def handleGroupFilter(event):
-            print(f"筛选组 类型 {event.keyType} {event.isChecked()}")
+            print(f"筛选组 来源 类型 {event.keyType} {event.isChecked()}")
             self.sort[event.keyType] = event.isChecked()
             setConfig(event.keyType, event.isChecked())
-            # with timer("加载列表耗时"):
-            #     self.loadData()
+            with timer("加载列表耗时"):
+                self.filterData()
         self.buttonGroup_type.buttonClicked.connect(handleGroupFilter) # 类型
+        self.buttonGroup_source.buttonClicked.connect(handleGroupFilter) # 来源
         self.checkBox_scene.keyType = "isCheckedScene"
         self.checkBox_video.keyType = "isCheckedVideo"
         self.checkBox_web.keyType = "isCheckedWeb"
@@ -171,13 +173,6 @@ class MyWindow(QWidget, Ui_MainForm):
         self.checkBox_video.setChecked(self.sort["isCheckedVideo"])
         self.checkBox_web.setChecked(self.sort["isCheckedWeb"])
         self.checkBox_application.setChecked(self.sort["isCheckedApplication"])
-
-        # 筛选组 来源
-        def handleGroupFilter2(event):
-            print(f"筛选组 来源 {event.keyType} {event.isChecked()}")
-            self.sort[event.keyType] = event.isChecked()
-            setConfig(event.keyType, event.isChecked())
-        self.buttonGroup_source.buttonClicked.connect(handleGroupFilter2) # 来源
         self.checkBox_wallpaper.keyType = "isCheckedWallpaper"
         self.checkBox_backup.keyType = "isCheckedBackup"
         self.checkBox_invalid.keyType = "isCheckedInvalid"
@@ -185,29 +180,21 @@ class MyWindow(QWidget, Ui_MainForm):
         self.checkBox_backup.setChecked(self.sort["isCheckedBackup"])
         self.checkBox_invalid.setChecked(self.sort["isCheckedInvalid"])
 
-        # 黑名单关联
-        def handleAuthorblockClick(isChecked):
-            print(f"黑名单关联 {isChecked}")
-            self.sort["isCheckedAuthorblock"] = isChecked
-            setConfig("isCheckedAuthorblock", isChecked)
-        self.checkBox_authorblock.clicked.connect(handleAuthorblockClick)
-        self.checkBox_authorblock.keyType = "isCheckedAuthorblock"
-        self.checkBox_authorblock.setChecked(self.sort["isCheckedAuthorblock"])
-
         # 排序选择
         def handleSortSelect(index):
             self.sort["sortCurrent"] = self.sortCurrent[index]
             setConfig("sortCurrent", self.sort["sortCurrent"])
             print(f'排序选择 index:{index} sortCurrent:{self.sort["sortCurrent"]}')
-            # self.refreshData()
+            self.refreshData() # 数据刷新入口都在这
         self.comboBox_sort.currentIndexChanged.connect(handleSortSelect)
+        self.comboBox_sort.setCurrentIndex(4)
 
         # 排序
         def handleGroupSort(event):
             print(f"排序 keyType:{event.keyType}")
             self.sort["sortReverse"] = event.keyType == 'reverse'
             setConfig("sortReverse", self.sort["sortReverse"])
-            # self.refreshData()
+            self.refreshData() # 数据刷新入口都在这
         self.buttonGroup_sort.buttonClicked.connect(handleGroupSort) # 排序
         self.radioButton_positive.keyType = 'positive'
         self.radioButton_reverse.keyType = 'reverse'
@@ -217,7 +204,7 @@ class MyWindow(QWidget, Ui_MainForm):
             print(f"查看大小 keyType:{event.keyType}")
             self.sort["displaySize"] = event.keyType
             setConfig("displaySize", self.sort["displaySize"])
-            # self.refreshData()
+            self.refreshData() # 数据刷新入口都在这
         self.buttonGroup_img.buttonClicked.connect(handleGroupImg) # 查看大小
         self.radioButton_big.keyType = 'big'
         self.radioButton_small.keyType = 'small'
@@ -227,15 +214,16 @@ class MyWindow(QWidget, Ui_MainForm):
             self.sort["filterSize"] = self.filterSize[index]
             setConfig("filterSize", self.sort["filterSize"])
             print(f'数量选择 index:{index} filterSize:{self.sort["filterSize"]}')
-            # self.refreshData()
+            self.calculateQuantity() # 刷新页面数量
         self.comboBox_size.currentIndexChanged.connect(handleSizeSelect)
+        self.comboBox_size.setCurrentIndex(2)
 
         # 页选择
         def handlePageSelect(index):
             self.page = index + 1
             print(f"页选择 index:{index} page:{self.page}")
             self.redrawBtn(self.page)
-            self.loadData() # 数据刷新入口都在这
+            self.refreshData() # 数据刷新入口都在这
         self.comboBox_page.currentIndexChanged.connect(handlePageSelect)
         # 页切换按钮
         def handleGroupPage(event):
@@ -251,52 +239,93 @@ class MyWindow(QWidget, Ui_MainForm):
         self.btn_right.keyType = "add"
         self.btn_left.setVisible(False)
 
+        # 黑名单关联
+        def handleAuthorblockClick(isChecked):
+            print(f"黑名单关联 {isChecked}")
+            self.sort["isCheckedAuthorblock"] = isChecked
+            setConfig("isCheckedAuthorblock", isChecked)
+        self.checkBox_authorblock.clicked.connect(handleAuthorblockClick)
+        self.checkBox_authorblock.keyType = "isCheckedAuthorblock"
+        self.checkBox_authorblock.setChecked(self.sort["isCheckedAuthorblock"])
+
     # 加载数据
     def loadData(self, isFirst = False):
         print('loadData')
         self.page = 1
-        self.data = temp_workshop
+        self.workshop = getWorkshop()
         if isFirst:
             # 计算总数量和总容量（计算一次）
             total_capacity = 0
-            for obj in self.data:
+            for obj in self.workshop:
+                # print(f'{obj["workshopid"]} : {obj["filesize"]}')
                 total_capacity += obj["filesize"]
             print(f"总容量：{total_capacity}")
             self.label_capacity.setText(f"容量：{dirSizeToStr(total_capacity)}")
-            self.total_size = len(self.data)
+            self.total_size = len(self.workshop)
             print(f"工坊壁纸缓存合未知项目总数量：{self.total_size}")
-        
+        self.filterData()
+
+    # 筛选数据
+    def filterData(self):
         # 筛选来源
-        def filterData(obj):
-            keySource = obj["source"].lower()
-            
+        def filterSource(obj):
+            # 筛选失效
+            def filterInvalid():
+                nonlocal obj
+                if obj["invalid"]:
+                    return self.sort["isCheckedInvalid"]
+                else:
+                    return True
             # 筛选类型
             def filterType():
                 nonlocal obj
-                keyType = obj["type"].lower()
-                if self.sort["isCheckedScene"] and keyType == "scene":
-                    return True
-                elif self.sort["isCheckedVideo"] and keyType == "video":
-                    return True
-                elif self.sort["isCheckedWeb"] and keyType == "web":
-                    return True
-                elif self.sort["isCheckedApplication"] and keyType == "application":
-                    return True
+                if "type" in obj:
+                    keyType = obj["type"].lower()
+                    if self.sort["isCheckedScene"] and keyType == "scene":
+                        return filterInvalid()
+                    elif self.sort["isCheckedVideo"] and keyType == "video":
+                        return filterInvalid()
+                    elif self.sort["isCheckedWeb"] and keyType == "web":
+                        return filterInvalid()
+                    elif self.sort["isCheckedApplication"] and keyType == "application":
+                        return filterInvalid()
+                    elif keyType == "dir":
+                        return filterInvalid()
                 return False
-            
-            if self.sort["isCheckedWallpaper"] and keySource == "wallpaper":
-                return filterType()
-            elif self.sort["isCheckedBackup"] and keySource == "backup":
-                return filterType()
-            elif self.sort["isCheckedInvalid"] and keySource == "invalid":
-                return filterType()
+            try:
+                keySource = obj["source"].lower()
+                # if keySource == "wallpaper":
+                #     if self.sort["isCheckedWallpaper"]:
+                #         return filterType()
+                #     else:
+                #         return False
+                # elif keySource == "backup":
+                
+                if self.sort["isCheckedWallpaper"] and keySource == "wallpaper":
+                    if self.sort["isCheckedInvalid"] and obj["invalid"]:
+                        return True
+                    else:
+                        return filterType()
+                elif self.sort["isCheckedBackup"] and keySource == "backup":
+                    if self.sort["isCheckedInvalid"] and obj["invalid"]:
+                        return True
+                    else:
+                        return filterType()
+                elif not self.sort["isCheckedWallpaper"] and not self.sort["isCheckedBackup"]:
+                    return self.sort["isCheckedInvalid"] and obj["invalid"]
+            except Exception as e:
+                logging.error(f"筛选来源{e}: {obj}")
+            # if config['isDevelopment']:
+            #     print(f'不符合筛选排除: {obj["source"]} {obj["workshopid"]}')
             return False
-        print(f"筛选前长度：{len(self.data)}")
-        self.data = list(filter(filterData, self.data))
+        print(f"筛选前长度：{len(self.workshop)}")
+        self.data = list(filter(filterSource, self.workshop))
         self.filter_total_size = len(self.data) # 筛选后长度
         self.label_filter.setText(f"筛选结果（ {self.total_size} 个中有 {self.filter_total_size} 个）")
+        self.calculateQuantity()
 
-        # 重新计算总页数
+    # 重新计算总页数
+    def calculateQuantity(self):
         print(f'重新计算总页数calculateQuantity {self.filter_total_size}')
         self.total_page = math.ceil(self.filter_total_size / self.sort["filterSize"])
         self.label_page.setText(f"共 {self.total_page} 页")
@@ -306,13 +335,12 @@ class MyWindow(QWidget, Ui_MainForm):
             pageData.append(str(i+1))
         model.setStringList(pageData)
         self.comboBox_page.setModel(model) # ？会触发刷新数据
-        self.redrawBtn(self.page)
 
     # 设置列表数据
     def refreshData(self):
         print(f'refreshData {len(self.data)}')
         # 排序(除了名称倒序，其他都是正序)
-        self.data.sort(key=lambda x:x[self.sort["sortCurrent"]], reverse = self.sort["sortCurrent"] != 'title')
+        self.data.sort(key=lambda x:x[self.sort["sortCurrent"]], reverse = self.sort["sortReverse"])
 
         self.tableWidget_main.setRowCount(0)
         if self.total_page == self.page:
@@ -329,7 +357,7 @@ class MyWindow(QWidget, Ui_MainForm):
             end = None
         for index, item in enumerate(self.data[start:end]): # 截取功能要浅拷贝处理，否则会加载上次截取
             self.tableWidget_main.setRowHeight(index, 140)
-            boxItem = Ui_Item(self.keyType)
+            boxItem = Ui_Item()
             boxItem.setData(item)
             self.tableWidget_main.setCellWidget(index, 0, boxItem)
 

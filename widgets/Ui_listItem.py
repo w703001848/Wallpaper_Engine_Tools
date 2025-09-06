@@ -32,7 +32,7 @@ class Ui_ItemFrame(object):
         self.label_img.setObjectName(u"label_img")
         self.label_img.setMinimumSize(QSize(120, 120))
         self.label_img.setMaximumSize(QSize(120, 120))
-        self.label_img.setPixmap(QPixmap(u"../img/Management.ico"))
+        self.label_img.setPixmap(QPixmap(u"../img/dir.png"))
         self.label_img.setScaledContents(True)
         self.label_img.setAlignment(Qt.AlignmentFlag.AlignCenter)
 

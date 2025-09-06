@@ -31,7 +31,7 @@ class Ui_MainForm(object):
         MainForm.resize(1024, 768)
         MainForm.setMinimumSize(QSize(1024, 768))
         icon = QIcon()
-        icon.addFile(u"../img/Management.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon.addFile(u"../img/dir.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         MainForm.setWindowIcon(icon)
         self.gridLayout = QGridLayout(MainForm)
         self.gridLayout.setObjectName(u"gridLayout")
@@ -407,6 +407,11 @@ class Ui_MainForm(object):
         self.label_note.setObjectName(u"label_note")
 
         self.verticalLayout_12.addWidget(self.label_note)
+
+        self.label_12 = QLabel(self.widget_info)
+        self.label_12.setObjectName(u"label_12")
+
+        self.verticalLayout_12.addWidget(self.label_12)
 
         self.verticalSpacer_3 = QSpacerItem(20, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
@@ -911,8 +916,6 @@ class Ui_MainForm(object):
         self.retranslateUi(MainForm)
 
         self.tabWidget.setCurrentIndex(0)
-        self.comboBox_sort.setCurrentIndex(0)
-        self.comboBox_size.setCurrentIndex(2)
         self.btn_invalid.setDefault(False)
         self.btn_restart.setDefault(False)
 
@@ -965,6 +968,9 @@ class Ui_MainForm(object):
         self.label_name.setText(QCoreApplication.translate("MainForm", u"name", None))
         self.label_title.setText(QCoreApplication.translate("MainForm", u"title", None))
         self.label_note.setText(QCoreApplication.translate("MainForm", u"note", None))
+        self.label_12.setText(QCoreApplication.translate("MainForm", u"\u5907\u4efd\u6587\u4ef6\u5939\u5355\u4e2a\u9879\u76ee\uff0c\n"
+"\u6bcf\u6b21\u4fee\u6539\u66f4\u65b0\u65f6\u95f4\u6233\uff0c\n"
+"\u5927\u5c0f\u8ba1\u7b97", None))
         self.groupBox_6.setTitle(QCoreApplication.translate("MainForm", u"\u64cd\u4f5c", None))
         self.btn_open.setText(QCoreApplication.translate("MainForm", u"\u6253\u5f00\u8d44\u6e90\u7ba1\u7406\u5668", None))
         self.btn_edit.setText(QCoreApplication.translate("MainForm", u"\u4fee\u6539", None))

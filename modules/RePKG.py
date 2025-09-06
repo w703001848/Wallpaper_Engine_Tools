@@ -12,7 +12,7 @@ imageSuffix = ["bmp", "jpg", "png", "tif", "gif", "pcx", "tga", "exif",
                     "ai", "raw", "WMF", "webp", "avif", "apng"]
 filter_size_criteria = 500
 pathExecuted = "" # 提取地址
-
+chdir = os.getcwd()
 # # 使用方式
 # def processItem(path):
 #     res = runRepkg(path)
@@ -27,9 +27,10 @@ pathExecuted = "" # 提取地址
 
 # 运行RePKG命令，提取文件到output文件夹
 def runRepkg(path):
-    global pathExecuted
+    global pathExecuted, chdir
     try:
         # 修改工作目录
+        os.chdir(chdir)
         if os.path.exists(output):
             clearDir(output)
             # os.removedirs(output)
@@ -38,7 +39,6 @@ def runRepkg(path):
     except Exception as e:
         logging.error(f"error 请检查路径是否正确: {e}")
         return False
-    os.chdir(os.getcwd())
     print("\n{:*^150}\n".format("已完成pkg文件提取"))  
     return True
 
@@ -70,7 +70,8 @@ def followWork():
 
 # 清理文件
 def clearDir(*dirs):
-    chdir = os.getcwd()
+    global chdir
+    # chdir = os.getcwd()
     for dir in dirs:
         os.chdir(os.path.join(chdir, dir))
         for file in os.listdir("./"):

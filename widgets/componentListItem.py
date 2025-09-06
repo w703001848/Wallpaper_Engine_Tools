@@ -4,16 +4,15 @@ from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QApplication, QWidget
 from .Ui_listItem import Ui_ItemFrame
 
-from modules.RePKG import processItem
+from modules.RePKG import runRepkg, followWork
 
 class MyWindow(QWidget, Ui_ItemFrame):
-    def __init__(self, keyType):
+    def __init__(self):
         super().__init__()
         self.setupUi(self)
         self.btn_RePKG.setVisible(False)
-        if keyType == 'main':
-            self.btn_name_edit.setVisible(False)
-            self.btn_title_edit.setVisible(False)
+            # self.btn_name_edit.setVisible(False)
+            # self.btn_title_edit.setVisible(False)
 
     # 设置数据
     def setData(self, data):
@@ -21,11 +20,15 @@ class MyWindow(QWidget, Ui_ItemFrame):
         self.label_title.setText(data['title'])
         imgPath = data["preview"]
         isImgPath = os.path.isfile(imgPath)
-        self.label_img.setPixmap(QPixmap(imgPath if isImgPath else './img/Management.ico'))
+        self.label_img.setPixmap(QPixmap(imgPath if isImgPath else './img/dir.png'))
         # if 'type' in data:
         if data['type'].lower() == 'scene':
             self.btn_RePKG.setVisible(True)
-            self.btn_RePKG.clicked.connect(lambda: processItem(data["file"], True))
+            def handleRepkgClick():
+                res = runRepkg(data["file"])
+                if res:
+                    res = followWork()
+            self.btn_RePKG.clicked.connect(handleRepkgClick)
         self.btn_open.clicked.connect(lambda: os.startfile(os.path.dirname(data["preview"])))
         # if 'description' in data:
         #     try:

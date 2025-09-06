@@ -6,6 +6,7 @@ import winreg as reg
 from .main import checkEnvironment, getDirSize, dirSizeToStr
 
 version = "1.2"
+chair_path = os.getcwd() # 当前工作目录
 config_path = os.path.join(os.getcwd(), 'config.json')
 
 # 首次执行初始化config
@@ -34,24 +35,27 @@ config = {
     "isCheckedWeb": True, # 网页
     "isCheckedApplication": True, # 应用
     "isCheckedWallpaper": True, # 工坊
-    "isCheckedBackup": True, # 备份
+    "isCheckedBackup": False, # 备份
     "isCheckedInvalid": True, # 失效
     "isCheckedAuthorblock": True, # 黑名单
     "sortCurrent": "subscriptiondate", # 订阅日期
-    "sortReverse": True, # 排序 正序
+    "sortReverse": False, # 排序 正序
     "filterSize": 30, # 分页
     "displaySize": "small", # 显示大小
-    "workshop": [], # 工坊壁纸数据
     "isFolders": True, # 是否开启同步wallpaper壁纸分类数据
-    "folders": [], # 壁纸分类数据
+    "folders": [], # 工坊分类数据
+    "unWorkshop": [], # 工坊失效壁纸
+    "unWorkshopProject": [], # 工坊缺少project.json文件夹
+    "workshopBackup": [], # 工坊壁纸备份数据
+    "unBackupProject": [], # 备份缺少project.json文件夹
 }
 
-temp_workshop = [] # 壁纸数据（已整合）
 temp_authorblocklistnames = [] # 拉黑名单
+temp_dependency = [] # 父级关联项目
 
 # 下标获取参数
-def __getitem__(key):
-    return config[key]
+# def __getitem__(key):
+#     return config[key]
 
 # 读取config.json
 def get_config(): 
@@ -163,107 +167,267 @@ def get_workshopcache():
     try:
         with open(os.path.join(os.path.dirname(config["wallpaperPath"]), 'bin/workshopcache.json'), encoding="utf-8") as f1:
             res = json.load(f1) # 从文件读取json并反序列化
-            temp_workshopcache = res["wallpapers"]
-            wallpaper_steam_path = config['mklinkList'][0]["path"]
-            if not os.path.exists(wallpaper_steam_path):
-                raise Exception("文件夹不存在!", wallpaper_steam_path)
-            for item in os.listdir(wallpaper_steam_path):
-                # 判断文件夹是否包含在工坊壁纸缓存
-                if not len(list(filter(lambda obj: obj['workshopid'] == item, temp_workshopcache))):
-                    dir_path = os.path.join(wallpaper_steam_path, item)
-                    project_path = os.path.join(dir_path, 'project.json')
-                    if os.path.exists(project_path):
-                        logging.warning(f"查询到工坊壁纸目录未知项目加入工坊! {project_path}")
-                        with open(project_path, encoding="utf-8") as f1:
-                            data = json.load(f1) # 从文件读取json并反序列化
-                            temp_workshopcache.append(getProjectJson(dir_path, item, project_path, data)) 
-                        return temp_workshopcache
-                    else:
-                        # 工坊文件夹存在，但缺少project.json文件，有空开发转移到备份文件夹
-                        # 备份文件夹项目，每次打开更新时间戳，大小计算
-                        logging.warning(f"查询到工坊壁纸目录未知项目加入工坊，project.json不存在! {project_path}")
-                        return False
+            return res["wallpapers"]
     except Exception as e:
         logging.error(f"获取WallpaperEngine 工坊壁纸缓存并读取: {e}")
-    return False
-        
-# 获取文件夹内项目列表
-def get_backupDirs():
-    list = []
-    backupPath = config['backupPath']
-    if os.path.exists(backupPath):
-        for item in os.listdir(backupPath):
-            dir_path = os.path.join(backupPath, item)
-            if os.path.exists(dir_path):
-                project_path = os.path.join(dir_path, 'project.json')
-                with open(project_path, encoding="utf-8") as f1:
-                    data = json.load(f1) # 从文件读取json并反序列化
-                    list.append(getProjectJson(dir_path, item, project_path, data))
-    return list
-
-def getProjectJson(dir_path, item, project_path, data):
-    obj = {
-        "allowmobileupload" : False,
-        "authorsteamid" : '',
-        "favorite" : False,
-        "hasrating" : False,
-        "ispreset" : False,
-        "local" : False,
-        "official" : False,
-        "preview" : os.path.join(dir_path, data["preview"]),
-        "previewsmall" : os.path.join(dir_path, data["preview"]),
-        "project" : project_path,
-        "rating" : 0,
-        "ratingrounded" : 5.0,
-        "status" : '',
-        "subscriptiondate" : int(time.time()),
-        "tags" : ','.join(data["tags"] if "tags" in data else []),
-        "title" : data["title"],
-        "type" : data["type"] if "type" in data else "",
-        "updatedate" : int(time.time()),
-        "workshopid" : item,
-        "workshopurl" : '',
-
-        # "filesize" : size,
-        # "filesizelabel" : dirSizeToStr(size),
-        # "description" : data["description"] if "description" in data else "",
-    }
-    isEditProject = False # 是否启用写入
-    # 判断需要的字段是否更新project.json
-    if 'filesize' in data:
-        obj["filesize"] = data["filesize"]
-        obj["filesizelabel"] = data["filesizelabel"]
-    else:
-        obj["filesize"] = getDirSize(dir_path)
-        obj["filesize"] = dirSizeToStr(obj["filesize"])
-        isEditProject = True
-    if 'file' in data:
-        obj["file"] = data["file"]
-    else:
-        obj["file"] = "" # "os.path.join(dir_path, data["file"] if "file" in data else "")"
-        isEditProject = True
-    if 'description' in data:
-        obj["description"] = data["description"]
-    else:
-        obj["description"] = ""
-        isEditProject = True
-    # if isEditProject:
-    #     try:
-    #         with open(project_path, mode='wt', encoding="utf-8") as f1:
-    #             json.dump(obj, f1) # 将json写入文件
-    #             print("保存project_path")
-    #     except Exception as e:
-    #         logging.warning(f"写入project.json: {e}")
-    return obj
+    return []
 
 # 获取WallpaperEngine 图片缓存位置
 def get_wallpaper_ui_thumbnails(name): 
     return os.path.join(config['uiThumbnails'], name)
 
+# 新增壁纸缓存
+def get_project_json(source, invalid, dir_name, dir_path, data, project_path):
+    global temp_dependency # 父级关联项目
+    obj = None
+    # def generateProject():
+    if data is None:
+        size = getDirSize(dir_path)
+        img = os.path.join(chair_path, "img\\dir.png")
+        obj = {
+            "allowmobileupload" : False,
+            "authorsteamid" : "",
+            "dependency": "", # 父级壁纸
+            "favorite" : False,
+            "file": "",
+            "filesize": size,
+            "filesizelabel": dirSizeToStr(size),
+            "hasrating" : False,
+            "ispreset" : False,
+            "local" : False,
+            "official" : False,
+            "preview" : img,
+            "previewsmall" : img,
+            "project" : project_path,
+            "rating" : 0,
+            "ratingrounded" : 5.0,
+            "status" : "",
+            "subscriptiondate" : int(time.time()),
+            "tags" : "",
+            "title" : dir_name,
+            "type" : "dir",
+            "updatedate" : int(time.time()),
+            "workshopid" : dir_name,
+            "workshopurl" : "",
+            "invalid": invalid, # 自增，用于判断失效
+            "source": source, # 自增，用于判断来源
+        }
+    else:
+        obj = data
+        obj["allowmobileupload"] = False
+        obj["authorsteamid"] = ""
+        obj["favorite"] = True
+        if "file" in data:
+            obj["file"] = os.path.join(dir_path, data["file"])
+        else: 
+            obj["file"] = ""
+        obj["filesize"] = getDirSize(dir_path)
+        obj["filesizelabel"] = dirSizeToStr(obj["filesize"])
+        obj["hasrating"] = False
+        obj["ispreset"] = False
+        obj["local"] = False
+        obj["official"] = False
+        obj["preview"] = os.path.join(dir_path, data["preview"])
+        obj["previewsmall"] = obj["preview"]
+        obj["project"] = project_path
+        obj["rating"] = 0
+        obj["ratingrounded"] = 5.0
+        obj["status"] = ''
+        obj["subscriptiondate"] = int(time.time())
+        if "tags" in data:
+            obj["tags"] = ','.join(data["tags"])
+        else:
+            obj["tags"] = []
+        if "type" in data:
+            obj["type"] = data["type"]
+        elif "dependency" in data:
+            for itemDependency in temp_dependency:
+                if itemDependency["workshopid"] == data["dependency"]:
+                    obj["type"] = itemDependency["type"]
+                    break
+        else:
+            obj["type"] = "Web"
+        obj["updatedate"] = int(time.time())
+        obj["workshopid"] = dir_name
+        obj["workshopurl"] = os.path.join("steam://url/CommunityFilePage", dir_name)
+        obj["invalid"] = invalid
+        obj["source"] = source
+    return obj
+
 # 参数有发布id，后期可查看是否黑名单。
 # 包含项目详细信息和图片缓存等
-def get_workshop():
-    pass
+def getWorkshop():
+    global temp_dependency # 父级关联项目
+
+    temp_workshopcache = get_workshopcache()
+    # temp_workshopcache = []
+    un_workshop = config['unWorkshop'] # 工坊失效壁纸
+    un_project = config["unWorkshopProject"] # 工坊缺少project.json文件夹
+
+    workshopBackup = config["workshopBackup"] # 工坊壁纸备份数据
+    un_backup = config["unBackupProject"] # 备份缺少project.json文件夹
+
+    wallpaper_steam_path = config['mklinkList'][0]["path"]
+    backupPath = config["backupPath"]
+
+    # 如果存在父级关联工坊壁纸缓存查询提取
+    def search_workshopcache_dependency(obj):
+        if "dependency" in obj:
+            for item in temp_workshopcache:
+                if item["workshopid"] == obj["dependency"]:
+                    temp_dependency.append(item)
+                    break
+
+    if os.path.exists(wallpaper_steam_path):
+
+        # 清理缓存里工坊失效文件夹是否还存在
+        if len(un_workshop):
+            print(f"清理工坊失效壁纸、文件夹缓存：{len(un_workshop)}")
+            count = 0
+            while count < len(un_workshop): # 涉及删除操作用while
+                item = un_workshop[count]
+                if not os.path.exists(item["workshopid"]):
+                    logging.warning(f'工坊未找到{item["workshopid"]}')
+                    del un_workshop[count]
+                else:
+                    count += 1
+
+        # 清理缓存里缺少project.json文件夹是否还存在
+        if len(un_project):
+            print(f"清理工坊失效壁纸、文件夹缓存：{len(un_project)}")
+            count = 0
+            while count < len(un_project): # 涉及删除操作用while
+                item = un_project[count]
+                if not os.path.exists(item["workshopid"]):
+                    logging.warning(f'未找到{item["workshopid"]}')
+                    del un_project[count]
+                else:
+                    count += 1
+
+        # 整合工坊数据
+        workshop_dir = os.listdir(wallpaper_steam_path)
+        # 排除缓存中的文件夹，减少计算量
+        count = 0
+        while count < len(workshop_dir):
+            dir_name = workshop_dir[count]
+            if len(list(filter(lambda item: item['workshopid'] == dir_name, un_project))):
+                del workshop_dir[count]
+            else:
+                count += 1
+        # 筛选是否已标记为工坊缓存，减少计算量
+        for item in temp_workshopcache:
+            item["invalid"] = False # 初始化失效
+            item["source"] = 'wallpaper' # 初始化来源
+            # 如果存在父级关联就查询提取
+            search_workshopcache_dependency(item)
+
+            # 判断工坊缓存是否存在文件夹
+            count = 0
+            while count < len(workshop_dir):
+                dir_name = workshop_dir[count]
+                if dir_name == item["workshopid"]:
+                    del workshop_dir[count]
+                    break
+                else:
+                    count += 1
+        # 多出的文件夹载入工坊失效壁纸、文件夹缓存
+        print(f"工坊缓存未识别：{len(workshop_dir)}")
+        for dir_name in workshop_dir:
+            dir_path = os.path.join(wallpaper_steam_path, dir_name)
+            if not os.path.isdir(dir_path):
+                logging.warning(f"工坊缓存文件夹 存在无法识别文件：{dir_path}")
+                continue
+            # 判断文件是否存已记录再工坊失效缓夹存中
+            if len(list(filter(lambda item: item['workshopid'] == dir_name, un_workshop))):
+                continue
+            if len(list(filter(lambda item: item['workshopid'] == dir_name, un_project))):
+                continue
+            project_path = os.path.join(dir_path, "project.json")
+            if os.path.exists(project_path):
+                try:
+                    with open(project_path, encoding="utf-8") as f1:
+                        data = json.load(f1) # 从文件读取json并反序列化
+                        un_workshop.append(get_project_json('wallpaper', True, dir_name, dir_path, data, project_path))
+                    logging.warning(f"工坊壁纸目录未知项目加入工坊: {project_path}")
+                except Exception as e:
+                    un_project.append(get_project_json('wallpaper', True, dir_name, dir_path, None, project_path))
+                    logging.error(f"提取工坊壁纸project.json无法识别: {dir_name} {e}")
+            else:
+                # 工坊文件夹存在，但缺少project.json文件，有空开发转移到备份文件夹
+                un_project.append(get_project_json('wallpaper', True, dir_name, dir_path, None, project_path))
+                logging.warning(f"查询到工坊壁纸目录未知项目加入工坊，project.json不存在! {project_path}")
+    else:
+        logging.warning("工坊文件夹不存在!跳过查询", wallpaper_steam_path)
+    
+    if os.path.exists(backupPath):
+        # 整合备份失效壁纸、文件夹
+        # 清理缓存里备份缺少project.json文件夹是否还存在
+        if len(un_backup):
+            print(f"清理备份缺少project.json文件夹缓存：{len(un_backup)}")
+            count = 0
+            while count < len(un_backup): # 涉及删除操作用while
+                item = un_backup[count]
+                if not os.path.exists(item["workshopid"]):
+                    logging.warning(f'备份未找到{item["workshopid"]}')
+                    del un_backup[count]
+                else:
+                    count += 1
+        # 清理缓存里备份文件夹是否还存在
+        workshopBackup = config["workshopBackup"]
+        if len(workshopBackup):
+            print(f"清理备份缓存：{len(workshopBackup)}")
+            count = 0
+            while count < len(workshopBackup): # 涉及删除操作用while
+                item = workshopBackup[count]
+                if not os.path.exists(item["workshopid"]):
+                    logging.warning(f'备份未找到{item["workshopid"]}')
+                    del workshopBackup[count]
+                else:
+                    count += 1
+
+        backup_dir = os.listdir(backupPath)
+        # 整合工坊备份数据
+        print(f"backupDir输出：{len(backup_dir)}")
+        # 筛选是否已加入缓存，减少计算量
+        count = 0
+        while count < len(backup_dir):
+            dir_name = backup_dir[count]
+            # 筛选文件夹是否存已记录再备份缺失project.json缓存中
+            if len(list(filter(lambda item: item['workshopid'] == dir_name, un_backup))):
+                del backup_dir[count]
+            # 筛选文件夹是否存已记录再备份缓存中
+            elif len(list(filter(lambda item: item['workshopid'] == dir_name, workshopBackup))):
+                del backup_dir[count]
+            else:
+                count += 1
+        # 需要存入备份缓存的项目：
+        print(f"需要存入备份缓存的项目：{len(backup_dir)}")
+        for dir_name in backup_dir:
+            dir_path = os.path.join(backupPath, dir_name)
+            if not os.path.isdir(dir_path):
+                logging.warning(f"备份文件夹 存在无法识别文件：{dir_path}")
+                continue
+            project_path = os.path.join(dir_path, "project.json")
+            if os.path.exists(project_path):
+                try:
+                    with open(project_path, encoding="utf-8") as f1:
+                        data = json.load(f1) # 从文件读取json并反序列化
+                        search_workshopcache_dependency(data)
+                        workshopBackup.append(get_project_json('backup', False, dir_name, dir_path, data, project_path))
+                    # logging.warning(f"备份缓存新增: {project_path}")
+                except Exception as e:
+                    logging.error(f"备份project.json无法识别: {dir_name} {e}")
+                    un_backup.append(get_project_json('backup', True, dir_name, dir_path, None, project_path))
+            else:
+                # 工坊文件夹存在，但缺少project.json文件，有空开发转移到备份文件夹
+                logging.warning(f"查询到备份缺失project.json文件夹加入备份缓存: {project_path}")
+                un_backup.append(get_project_json('backup', True, dir_name, dir_path, None, project_path))
+    else:
+        logging.warning("备份文件夹不存在!跳过查询", backupPath)
+
+    print(f'父级关联缓存：{len(temp_dependency)}')
+    # print(temp_dependency)
+    return temp_workshopcache + un_workshop + un_project + workshopBackup + un_backup # 壁纸数据（已整合）
 
 # 修改Steam安装位置
 def setSteamPath(path):
@@ -315,6 +479,5 @@ if not config['wallpaperPath']:
 if config['wallpaperPath']:
     # 获取wallpaper_config数据
     get_wallpaper_config()
-    # get_workshopcache()
 
 print(f"版本:{version}")
