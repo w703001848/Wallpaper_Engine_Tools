@@ -84,7 +84,7 @@ def clearDir(*dirs):
     os.chdir(chdir)
 
 temp_repkg_img_list = [] # 存放临时数据
-def updateRepkgData(tableWidget: QTableWidget, windowWidth = 640, update = True):
+def updateRepkgData(tableWidget: QTableWidget, update = True):
     global temp_repkg_img_list
     # 更新数据
     if update:
@@ -97,7 +97,7 @@ def updateRepkgData(tableWidget: QTableWidget, windowWidth = 640, update = True)
             temp_repkg_img_list.append(os.path.join(dirPath, item))
 
     # repkg图表生成
-    size, colMax = calculateQuantity(windowWidth, 3)
+    size, colMax = calculateQuantity(tableWidget.size().width() - 16, 3)
     tableWidget.setColumnCount(colMax)
     tableWidget.clearContents() # 清空
     tableWidget.setRowCount(math.ceil(len(temp_repkg_img_list) / colMax))
@@ -112,13 +112,13 @@ def updateRepkgData(tableWidget: QTableWidget, windowWidth = 640, update = True)
     row = 0 # 计数行
     col = 0 # 计数列
     for index, imgPath in enumerate(temp_repkg_img_list):
-        boxItem = QLabel()
-        # boxItem.setMinimumSize(QSize(size, size))
-        boxItem.setMaximumSize(QSize(size, size))
-        # boxItem.setScaledContents(True)
-        boxItem.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        boxItem.setPixmap(QPixmap(imgPath).scaled(size, size, Qt.KeepAspectRatio, Qt.SmoothTransformation))
-        tableWidget.setCellWidget(row, col, boxItem)
+        itemBox = QLabel()
+        # itemBox.setMinimumSize(QSize(size, size))
+        itemBox.setMaximumSize(QSize(size, size))
+        # itemBox.setScaledContents(True)
+        itemBox.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        itemBox.setPixmap(QPixmap(imgPath).scaled(size, size, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+        tableWidget.setCellWidget(row, col, itemBox)
         
         col += 1
         if col >= colMax:
@@ -126,12 +126,12 @@ def updateRepkgData(tableWidget: QTableWidget, windowWidth = 640, update = True)
             row += 1
             tableWidget.setRowHeight(row, size)
 
-def calculateQuantity(windowWidth, colMax):
-    size = int((windowWidth - 62) / colMax)
+def calculateQuantity(widgetWidth, colMax):
+    size = int(widgetWidth / colMax)
     if size > 240:
-        size, colMax = calculateQuantity(windowWidth, colMax + 1)
+        size, colMax = calculateQuantity(widgetWidth, colMax + 1)
     # elif size < 180:
     #     colMax = colMax - 1
-    #     size, _ = calculateQuantity(windowWidth, colMax)
+    #     size, _ = calculateQuantity(widgetWidth, colMax)
     print(f"Repkg更新 图size:{size} 列:{colMax}")
     return size, colMax

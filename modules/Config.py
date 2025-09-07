@@ -18,7 +18,7 @@ config = {
     "wallpaperPath": "", # wallpaper地址
     "backupPath": "", # wallpaper备份地址
     "uiThumbnails": "", # wallpaper图片缓存位置
-    "repkgPath": "", # 记录上次提取RePKG路径
+    "repkgPath": "E:/wallpaper_engine_backup1/[scene]2871049687/scene.pkg", # 记录上次提取RePKG路径
     # "isCheckedRePKGClear": False, # 是否清空RePKG上次输出
     "mklinkList": [{
         "name": "订阅",
@@ -41,7 +41,7 @@ config = {
     "sortCurrent": "subscriptiondate", # 订阅日期
     "sortReverse": False, # 排序 正序
     "filterSize": 30, # 分页
-    "displaySize": "small", # 显示大小
+    "displaySize": 160, # 显示大小
     "isFolders": True, # 是否开启同步wallpaper壁纸分类数据
     "folders": [], # 工坊分类数据
     "unWorkshop": [], # 工坊失效壁纸
@@ -173,8 +173,8 @@ def get_workshopcache():
     return []
 
 # 获取WallpaperEngine 图片缓存位置
-def get_wallpaper_ui_thumbnails(name): 
-    return os.path.join(config['uiThumbnails'], name)
+# def get_wallpaper_ui_thumbnails(name): 
+#     return os.path.join(config['uiThumbnails'], name)
 
 # 新增壁纸缓存
 def get_project_json(source, invalid, dir_name, dir_path, data, project_path):
@@ -387,7 +387,7 @@ def getWorkshop():
 
         backup_dir = os.listdir(backupPath)
         # 整合工坊备份数据
-        print(f"backupDir输出：{len(backup_dir)}")
+        print(f"备份文件夹列表长度：{len(backup_dir)}")
         # 筛选是否已加入缓存，减少计算量
         count = 0
         while count < len(backup_dir):

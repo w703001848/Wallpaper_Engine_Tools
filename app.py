@@ -2,8 +2,8 @@ import os, atexit, pyperclip
 import sys, subprocess
 import logging, json, math
 # PySide6组件调用
-from PySide6.QtCore import Qt, QStringListModel
-from PySide6.QtGui import QFont
+from PySide6.QtCore import Qt, QSize, QStringListModel
+from PySide6.QtGui import QPixmap, QFont
 from PySide6.QtWidgets import QApplication, QWidget, QLabel
 # 加载模板
 from widgets.Ui_main import Ui_MainForm
@@ -20,29 +20,51 @@ class MyWindow(QWidget, Ui_MainForm):
         super().__init__()
         self.setupUi(self)
 
+        # 监听退出保存config
+        atexit.register(saveConfig)
+
         with timer("初始化耗时"):
             self.initPage()
             self.initMain()
+            self.initMainRight()
             self.initRepkg()
             self.initMklink()
             # self.initNaslink()
             self.initAuthorblock()
 
             # 加载数据
-            # self.tabChange()
             self.loadData(True)
-            
-        # 监听退出保存config
-        atexit.register(saveConfig)
-
-    def func(self, *args, **kwargs):
-        print(11112)
-        pass
 
     # 初始化界面
     def initPage(self):
+        # 窗口大小变化防抖
+        self.windowWidth = self.size().width() # 记录窗口大小
+        def resizeWindow():
+            print(f"窗口大小已更新为: {self.size().width()}x{self.size().height()}")
+            if self.tabWidget.currentIndex() == 0:
+                self.refreshTable()
+            if self.tabWidget.currentIndex() == 1:
+                updateRepkgData(self.tableWidget_repkg, False)
+        self.windowDebouncer = Debouncer(resizeWindow, 350)
+
         # tab页切换
-        self.tabWidget.currentChanged.connect(self.tabChange)
+        def tabChange():
+            index = self.tabWidget.currentIndex()
+            if index == 1: # repkg加载
+                # repkg列表更新
+                path = config["repkgPath"]
+                print(f"repkg加载{os.linesep}提取地址:{self.lineEdit_repkg.text()}{os.linesep}上次提取:{path}")
+                if path != '' and self.lineEdit_repkg.text() != path: # 防止重复刷新
+                    # Repkg刷新
+                    self.lineEdit_repkg.setText(path)
+                    updateRepkgData(self.tableWidget_repkg)
+            elif index == 2: # Mklink加载
+                updateMklinkList(self.listWidget_mklink)
+            elif index == 3: # NAS备份加载
+                pass
+            elif index == 4: # 黑名单加载
+                self.get_addauthorblock_list()
+        self.tabWidget.currentChanged.connect(tabChange)
 
         # 获取steam地址
         steam_path = config["steamPath"]
@@ -103,6 +125,7 @@ class MyWindow(QWidget, Ui_MainForm):
 
     # 初始化壁纸
     def initMain(self):
+        self.workshop = [] # 工坊数据
         self.data = [] # 列表数据
         self.page = 1 # 当前页
         self.total_page = 1 # 总页数
@@ -124,6 +147,8 @@ class MyWindow(QWidget, Ui_MainForm):
             "filterSize": config["filterSize"],
             "displaySize": config["displaySize"], # 显示大小
         }
+        self.captureStart = None
+        self.captureEnd = None
 
         if not config['mklinkList'][0]["path"] or not config['mklinkList'][1]["path"]:
             self.tableWidget_main.setVisible(False)
@@ -133,7 +158,13 @@ class MyWindow(QWidget, Ui_MainForm):
         self.tableWidget_main.horizontalHeader().setStretchLastSection(True) # 表格自适应
         # self.tableWidget_main.horizontalHeader().setVisible(False) # 隐藏头
         # self.tableWidget_main.verticalHeader().setVisible(False) # 隐藏侧边
+        self.tableWidget_main.resizeColumnsToContents() # 列宽自动调整
         self.tableWidget_main.setColumnCount(1)
+
+        # 表格点击（重复点击不会触发）
+        def handleTableMainChange(row, col):
+            print(row, col)
+        self.tableWidget_main.currentCellChanged.connect(handleTableMainChange)
 
         def handleDirNewClick():
             print("新增按钮")
@@ -158,7 +189,7 @@ class MyWindow(QWidget, Ui_MainForm):
 
         # 筛选组 类型
         def handleGroupFilter(event):
-            print(f"筛选组 来源 类型 {event.keyType} {event.isChecked()}")
+            # print(f"筛选组 来源 类型 {event.keyType} {event.isChecked()}")
             self.sort[event.keyType] = event.isChecked()
             setConfig(event.keyType, event.isChecked())
             with timer("加载列表耗时"):
@@ -181,49 +212,69 @@ class MyWindow(QWidget, Ui_MainForm):
         self.checkBox_invalid.setChecked(self.sort["isCheckedInvalid"])
 
         # 排序选择
+        self.comboBox_sort.setCurrentIndex(4)
         def handleSortSelect(index):
             self.sort["sortCurrent"] = self.sortCurrent[index]
             setConfig("sortCurrent", self.sort["sortCurrent"])
-            print(f'排序选择 index:{index} sortCurrent:{self.sort["sortCurrent"]}')
-            self.refreshData() # 数据刷新入口都在这
+            # print(f'排序选择 index:{index} sortCurrent:{self.sort["sortCurrent"]}')
+            self.sortData()
+            self.captureData()
         self.comboBox_sort.currentIndexChanged.connect(handleSortSelect)
-        self.comboBox_sort.setCurrentIndex(4)
 
         # 排序
         def handleGroupSort(event):
-            print(f"排序 keyType:{event.keyType}")
-            self.sort["sortReverse"] = event.keyType == 'reverse'
+            keyType = event.keyType == 'reverse'
+            if self.sort["sortReverse"] == keyType:
+                return
+            # print(f"排序 keyType:{event.keyType}")
+            self.sort["sortReverse"] = keyType
             setConfig("sortReverse", self.sort["sortReverse"])
-            self.refreshData() # 数据刷新入口都在这
+            self.sortData()
+            self.captureData()
         self.buttonGroup_sort.buttonClicked.connect(handleGroupSort) # 排序
         self.radioButton_positive.keyType = 'positive'
         self.radioButton_reverse.keyType = 'reverse'
 
         # 查看大小
         def handleGroupImg(event):
+            if self.sort["displaySize"] == event.keyType:
+                return
             print(f"查看大小 keyType:{event.keyType}")
             self.sort["displaySize"] = event.keyType
             setConfig("displaySize", self.sort["displaySize"])
-            self.refreshData() # 数据刷新入口都在这
+            self.refreshTable()
         self.buttonGroup_img.buttonClicked.connect(handleGroupImg) # 查看大小
-        self.radioButton_big.keyType = 'big'
-        self.radioButton_small.keyType = 'small'
+        self.radioButton_big.keyType = 240
+        self.radioButton_small.keyType = self.sort["displaySize"] # 默认大小
 
-        # 数量选择
+        # 页面显示数量选择
+        self.comboBox_size.setCurrentIndex(2)
         def handleSizeSelect(index):
             self.sort["filterSize"] = self.filterSize[index]
             setConfig("filterSize", self.sort["filterSize"])
-            print(f'数量选择 index:{index} filterSize:{self.sort["filterSize"]}')
-            self.calculateQuantity() # 刷新页面数量
+            # print(f'页面显示数量选择 index:{index} filterSize:{self.sort["filterSize"]}')
+            self.calculateQuantityTotal() # 刷新页面数量
         self.comboBox_size.currentIndexChanged.connect(handleSizeSelect)
-        self.comboBox_size.setCurrentIndex(2)
 
         # 页选择
         def handlePageSelect(index):
             self.page = index + 1
-            print(f"页选择 index:{index} page:{self.page}")
-            self.redrawBtn(self.page)
-            self.refreshData() # 数据刷新入口都在这
+            # print(f"页选择 index:{index} page:{self.page}")
+            # 重绘翻页按钮
+            if self.page >= self.total_page:
+                # print("页选择redrawBtnRight no self.page:", self.page)
+                self.btn_right.setVisible(False)
+            else:
+                # print("页选择redrawBtnRight ok self.page:", self.page)
+                self.btn_right.setVisible(True)
+            if self.page <= 1:
+                # print("页选择redrawBtnLeft no self.page:", self.page)
+                self.btn_left.setVisible(False)
+                self.comboBox_page.setVisible(self.total_page != 0)
+            else:
+                # print("页选择redrawBtnLeft ok self.page:", self.page)
+                self.btn_left.setVisible(True)
+            self.captureData()
         self.comboBox_page.currentIndexChanged.connect(handlePageSelect)
         # 页切换按钮
         def handleGroupPage(event):
@@ -233,7 +284,7 @@ class MyWindow(QWidget, Ui_MainForm):
                 num += 1
             elif event.keyType == 'sub':
                 num -= 1
-            self.comboBox_page.setCurrentIndex(num - 1) # 关联页选择
+            self.comboBox_page.setCurrentIndex(num - 1) # 关联页选择,触发数据刷新
         self.buttonGroup_page.buttonClicked.connect(handleGroupPage) # 页左右切
         self.btn_left.keyType = "sub"
         self.btn_right.keyType = "add"
@@ -259,10 +310,9 @@ class MyWindow(QWidget, Ui_MainForm):
             for obj in self.workshop:
                 # print(f'{obj["workshopid"]} : {obj["filesize"]}')
                 total_capacity += obj["filesize"]
-            print(f"总容量：{total_capacity}")
             self.label_capacity.setText(f"容量：{dirSizeToStr(total_capacity)}")
             self.total_size = len(self.workshop)
-            print(f"工坊壁纸缓存合未知项目总数量：{self.total_size}")
+            print(f"工坊壁纸缓存合未知项目总数量：{self.total_size}  总容量：{total_capacity}")
         self.filterData()
 
     # 筛选数据
@@ -318,72 +368,96 @@ class MyWindow(QWidget, Ui_MainForm):
             # if config['isDevelopment']:
             #     print(f'不符合筛选排除: {obj["source"]} {obj["workshopid"]}')
             return False
-        print(f"筛选前长度：{len(self.workshop)}")
+        # print(f"筛选前长度：{len(self.workshop)}")
         self.data = list(filter(filterSource, self.workshop))
         self.filter_total_size = len(self.data) # 筛选后长度
         self.label_filter.setText(f"筛选结果（ {self.total_size} 个中有 {self.filter_total_size} 个）")
-        self.calculateQuantity()
+        self.calculateQuantityTotal()
 
     # 重新计算总页数
-    def calculateQuantity(self):
-        print(f'重新计算总页数calculateQuantity {self.filter_total_size}')
+    def calculateQuantityTotal(self):
         self.total_page = math.ceil(self.filter_total_size / self.sort["filterSize"])
         self.label_page.setText(f"共 {self.total_page} 页")
+        print('重新计算总页数calculateQuantityTotal: ', self.total_page)
         model = QStringListModel()
         pageData = []
         for i in range(0, self.total_page):
             pageData.append(str(i+1))
         model.setStringList(pageData)
-        self.comboBox_page.setModel(model) # ？会触发刷新数据
+        self.comboBox_page.setModel(model) # 会触发刷新数据
 
-    # 设置列表数据
-    def refreshData(self):
-        print(f'refreshData {len(self.data)}')
+    # 排序列表数据
+    def sortData(self):
+        print(f'设置列表数据sortData {len(self.data)}')
         # 排序(除了名称倒序，其他都是正序)
         self.data.sort(key=lambda x:x[self.sort["sortCurrent"]], reverse = self.sort["sortReverse"])
-
-        self.tableWidget_main.setRowCount(0)
-        if self.total_page == self.page:
-            self.tableWidget_main.setRowCount(self.filter_total_size % self.sort["filterSize"])
-        else:
-            if self.filter_total_size < self.sort["filterSize"]:
-                self.tableWidget_main.setRowCount(self.filter_total_size)
-            else:
-                self.tableWidget_main.setRowCount(self.sort["filterSize"])
+    
+    # 截取列表数据
+    def captureData(self):
         # 截取
-        start = (self.page - 1) * self.sort["filterSize"]
-        end = self.page * self.sort["filterSize"]
-        if end > self.filter_total_size:
-            end = None
-        for index, item in enumerate(self.data[start:end]): # 截取功能要浅拷贝处理，否则会加载上次截取
-            self.tableWidget_main.setRowHeight(index, 140)
-            boxItem = Ui_Item()
-            boxItem.setData(item)
-            self.tableWidget_main.setCellWidget(index, 0, boxItem)
+        self.captureStart = (self.page - 1) * self.sort["filterSize"]
+        self.captureEnd = self.page * self.sort["filterSize"]
+        if self.captureEnd > self.filter_total_size:
+            self.captureEnd = None
+        self.refreshTable()
 
-    # 重绘翻页按钮
-    def redrawBtn(self, num):
-        if num >= self.total_page:
-            print(f"redrawBtn right on num:{num} total_page:{self.total_page}")
-            self.btn_right.setVisible(False)
+    def refreshTable(self):
+        # 重新计算图文宽度和最大列数
+        def calculateQuantityImgsizeCol(widgetWidth, colMax):
+            imgWidth = int(widgetWidth / colMax)
+            if imgWidth > self.sort["displaySize"]:
+                imgWidth, colMax = calculateQuantityImgsizeCol(widgetWidth, colMax + 1)
+            # elif imgWidth < 180:
+            #     colMax = colMax - 1
+            #     imgWidth, _ = calculateQuantityImgsizeCol(widgetWidth, colMax)
+            return imgWidth, colMax
+        imgWidth, colMax = calculateQuantityImgsizeCol(self.tableWidget_main.size().width() - 16, 3)
+        print('重新计算图文宽度和最大列数', imgWidth, colMax)
+
+        self.tableWidget_main.clearContents() # 清空
+        if self.total_page == self.page:
+            self.tableWidget_main.setRowCount(math.ceil(self.filter_total_size % self.sort["filterSize"] / colMax))
         else:
-            print(f"redrawBtn right ok num:{num} total_page:{self.total_page}")
-            self.btn_right.setVisible(True)
-        if num <= 1:
-            print(f"redrawBtn left no num:{num} total_page:{self.total_page}")
-            self.btn_left.setVisible(False)
-            self.comboBox_page.setVisible(self.total_page != 0)
-        else:
-            print(f"redrawBtn left ok num:{num} total_page:{self.total_page}")
-            self.btn_left.setVisible(True)
-        self.page = num
+            self.tableWidget_main.setRowCount(math.ceil(self.sort["filterSize"] / colMax))
+        self.tableWidget_main.setRowHeight(0, imgWidth)
+
+        self.tableWidget_main.setColumnCount(colMax)
+        # 根据列数设置列宽
+        i = 0
+        while i < colMax:
+            self.tableWidget_main.setColumnWidth(i, imgWidth)
+            i += 1
+        
+        # 重绘单元格
+        def redrawItem(imgPath, name):
+            nonlocal imgWidth
+            itemBox = QLabel()
+            # itemBox.setMinimumSize(QSize(size, size))
+            itemBox.setMaximumSize(QSize(imgWidth, imgWidth))
+            # itemBox.setScaledContents(True)
+            itemBox.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            itemBox.setPixmap(QPixmap(imgPath).scaled(imgWidth, imgWidth, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            return itemBox
+        
+        row = 0 # 计数行
+        col = 0 # 计数列
+        for item in self.data[self.captureStart:self.captureEnd]: # 截取功能要浅拷贝处理，否则会加载上次截取
+            self.tableWidget_main.setCellWidget(row, col, redrawItem(item["previewsmall"], item["title"]))
+            col += 1
+            if col >= colMax:
+                col = 0
+                row += 1
+                self.tableWidget_main.setRowHeight(row, imgWidth)
+
+    # 初始化界面右侧功能
+    def initMainRight(self):
+        pass
 
     # repkg初始化
     def initRepkg(self):
         self.tableWidget_repkg.horizontalHeader().setStretchLastSection(True) # 表格自适应
         # self.tableWidget_repkg.horizontalHeader().setVisible(True) # 隐藏头
         # self.tableWidget_repkg.verticalHeader().setVisible(True) # 隐藏侧边
-        self.debouncer = Debouncer(lambda: updateRepkgData(self.tableWidget_repkg, self.size().width(), False), 700)
 
         # repkg选择
         def handleRepkgPathClick():
@@ -471,27 +545,9 @@ class MyWindow(QWidget, Ui_MainForm):
 
     # 窗口变化
     def resizeEvent(self, event):
-        # print(f"窗口大小已更新为: {self.size().width()}x{self.size().height()}")
-        if self.tabWidget.currentIndex() == 1:
-            self.debouncer.trigger()
-
-    # tabWidget切换
-    def tabChange(self):
-        index = self.tabWidget.currentIndex()
-        if index == 1: # repkg加载
-            # repkg列表更新
-            path = config["repkgPath"]
-            print(f"repkg加载{os.linesep}提取地址:{self.lineEdit_repkg.text()}{os.linesep}上次提取:{path}")
-            if path != '' and self.lineEdit_repkg.text() != path: # 防止重复刷新
-                # Repkg刷新
-                self.lineEdit_repkg.setText(path)
-                updateRepkgData(self.tableWidget_repkg)
-        elif index == 2: # Mklink加载
-            updateMklinkList(self.listWidget_mklink)
-        elif index == 3: # NAS备份加载
-            pass
-        elif index == 4: # 黑名单加载
-            self.get_addauthorblock_list()
+        if self.windowWidth == self.size().width():
+            return
+        self.windowDebouncer.trigger()
 
 
 if __name__ == '__main__':

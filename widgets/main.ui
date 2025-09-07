@@ -149,6 +149,9 @@
          </property>
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_8">
+           <property name="rightMargin">
+            <number>9</number>
+           </property>
            <item>
             <widget class="QGroupBox" name="groupBox_2">
              <property name="title">
@@ -389,9 +392,6 @@
                 <property name="text">
                  <string>大图标</string>
                 </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
                 <attribute name="buttonGroup">
                  <string notr="true">buttonGroup_img</string>
                 </attribute>
@@ -401,6 +401,9 @@
                <widget class="QRadioButton" name="radioButton_small">
                 <property name="text">
                  <string>小图标</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
                 </property>
                 <attribute name="buttonGroup">
                  <string notr="true">buttonGroup_img</string>
@@ -514,6 +517,40 @@ background-color: rgb(255, 85, 0);</string>
            <property name="spacing">
             <number>0</number>
            </property>
+           <property name="topMargin">
+            <number>9</number>
+           </property>
+           <item>
+            <widget class="QTableWidget" name="tableWidget_main">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>668</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::Shape::NoFrame</enum>
+             </property>
+             <property name="verticalScrollBarPolicy">
+              <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOn</enum>
+             </property>
+             <property name="gridStyle">
+              <enum>Qt::PenStyle::SolidLine</enum>
+             </property>
+             <attribute name="horizontalHeaderVisible">
+              <bool>false</bool>
+             </attribute>
+             <attribute name="verticalHeaderVisible">
+              <bool>false</bool>
+             </attribute>
+            </widget>
+           </item>
            <item>
             <widget class="QLabel" name="label_error">
              <property name="sizePolicy">
@@ -537,25 +574,6 @@ background-color: rgb(255, 85, 0);</string>
              <property name="alignment">
               <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QTableWidget" name="tableWidget_main">
-             <property name="frameShape">
-              <enum>QFrame::Shape::NoFrame</enum>
-             </property>
-             <property name="verticalScrollBarPolicy">
-              <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOn</enum>
-             </property>
-             <property name="gridStyle">
-              <enum>Qt::PenStyle::SolidLine</enum>
-             </property>
-             <attribute name="horizontalHeaderVisible">
-              <bool>false</bool>
-             </attribute>
-             <attribute name="verticalHeaderVisible">
-              <bool>false</bool>
-             </attribute>
             </widget>
            </item>
            <item>
@@ -658,7 +676,7 @@ background-color: rgb(255, 85, 0);</string>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_12">
             <property name="topMargin">
-             <number>0</number>
+             <number>9</number>
             </property>
             <property name="rightMargin">
              <number>0</number>
@@ -666,6 +684,27 @@ background-color: rgb(255, 85, 0);</string>
             <property name="bottomMargin">
              <number>0</number>
             </property>
+            <item>
+             <widget class="QLabel" name="label_error_project">
+              <property name="font">
+               <font>
+                <pointsize>14</pointsize>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">color: rgb(119, 119, 119);</string>
+              </property>
+              <property name="text">
+               <string>请选择一个壁纸</string>
+              </property>
+              <property name="scaledContents">
+               <bool>false</bool>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignmentFlag::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
             <item>
              <widget class="QLabel" name="label_img">
               <property name="minimumSize">
@@ -872,6 +911,12 @@ background-color: rgb(85, 170, 255);</string>
        </item>
        <item>
         <widget class="QTableWidget" name="tableWidget_repkg">
+         <property name="minimumSize">
+          <size>
+           <width>982</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="frameShape">
           <enum>QFrame::Shape::NoFrame</enum>
          </property>
@@ -1628,8 +1673,6 @@ background-color: rgb(85, 170, 255);</string>
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_sort"/>
-  <buttongroup name="buttonGroup_img"/>
   <buttongroup name="buttonGroup_type">
    <property name="exclusive">
     <bool>false</bool>
@@ -1640,6 +1683,8 @@ background-color: rgb(85, 170, 255);</string>
     <bool>false</bool>
    </property>
   </buttongroup>
+  <buttongroup name="buttonGroup_img"/>
+  <buttongroup name="buttonGroup_sort"/>
   <buttongroup name="buttonGroup_page">
    <property name="exclusive">
     <bool>false</bool>
