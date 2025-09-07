@@ -34,7 +34,7 @@ config = {
     "isCheckedVideo": True, # 视频
     "isCheckedWeb": True, # 网页
     "isCheckedApplication": True, # 应用
-    "isCheckedWallpaper": True, # 工坊
+    "isCheckedWallpaper": False, # 工坊
     "isCheckedBackup": False, # 备份
     "isCheckedInvalid": True, # 失效
     "isCheckedAuthorblock": True, # 黑名单
@@ -183,7 +183,7 @@ def get_project_json(source, invalid, dir_name, dir_path, data, project_path):
     # def generateProject():
     if data is None:
         size = getDirSize(dir_path)
-        img = os.path.join(chair_path, "img\\dir.png")
+        img = u":/img/dir.png" # qt资源图片地址
         obj = {
             "allowmobileupload" : False,
             "authorsteamid" : "",

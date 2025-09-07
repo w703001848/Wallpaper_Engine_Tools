@@ -1,18 +1,18 @@
-import os, atexit, pyperclip
-import sys, subprocess
-import logging, json, math
+import os, sys, subprocess, atexit, pyperclip
+import logging, math, time, json
 # PySide6组件调用
 from PySide6.QtCore import Qt, QSize, QStringListModel
 from PySide6.QtGui import QPixmap, QFont
 from PySide6.QtWidgets import QApplication, QWidget, QLabel
 # 加载模板
 from widgets.Ui_main import Ui_MainForm
-from widgets.componentListItem import MyWindow as Ui_Item
 # 功能模块
-from modules.main import Debouncer, timer, Unlock_hidden_achievements, dirSizeToStr, openFileDialog, openDirDialog, openMessageDialog, openStartfile
+from modules.main import Debouncer, timer, Unlock_hidden_achievements, getDirSize, dirSizeToStr, openFileDialog, openDirDialog, openMessageDialog, openStartfile
 from modules.Config import config, temp_authorblocklistnames, getWorkshop, setSteamPath, setWallpaperPath, setWallpaperBackupPath, setConfig, saveConfig
 from modules.RePKG import runRepkg, followWork, updateRepkgData
 from modules.Mklink import mklinkCreate, mklinkNew, mklinkBack, updateMklinkList
+# 资源图片
+from img import images_rc
 
 class MyWindow(QWidget, Ui_MainForm):
     
@@ -149,6 +149,7 @@ class MyWindow(QWidget, Ui_MainForm):
         }
         self.captureStart = None
         self.captureEnd = None
+        self.colMax = 5
 
         if not config['mklinkList'][0]["path"] or not config['mklinkList'][1]["path"]:
             self.tableWidget_main.setVisible(False)
@@ -159,19 +160,15 @@ class MyWindow(QWidget, Ui_MainForm):
         # self.tableWidget_main.horizontalHeader().setVisible(False) # 隐藏头
         # self.tableWidget_main.verticalHeader().setVisible(False) # 隐藏侧边
         self.tableWidget_main.resizeColumnsToContents() # 列宽自动调整
-        self.tableWidget_main.setColumnCount(1)
-
-        # 表格点击（重复点击不会触发）
-        def handleTableMainChange(row, col):
-            print(row, col)
-        self.tableWidget_main.currentCellChanged.connect(handleTableMainChange)
 
         def handleDirNewClick():
             print("新增按钮")
+            openMessageDialog("没用")
         self.btn_dir_new.clicked.connect(handleDirNewClick)
 
         def handleInvalidClick():
             print("删除失效按钮")
+            openMessageDialog("备份的可以，工坊的删了还会下载回来，需要上号取消空白订阅")
         self.btn_invalid.clicked.connect(handleInvalidClick)
         
         def handleSearchClick():
@@ -411,20 +408,20 @@ class MyWindow(QWidget, Ui_MainForm):
             #     colMax = colMax - 1
             #     imgWidth, _ = calculateQuantityImgsizeCol(widgetWidth, colMax)
             return imgWidth, colMax
-        imgWidth, colMax = calculateQuantityImgsizeCol(self.tableWidget_main.size().width() - 16, 3)
-        print('重新计算图文宽度和最大列数', imgWidth, colMax)
+        imgWidth, self.colMax = calculateQuantityImgsizeCol(self.tableWidget_main.size().width() - 16, 3)
+        print('重新计算图文宽度和最大列数', imgWidth, self.colMax)
 
         self.tableWidget_main.clearContents() # 清空
         if self.total_page == self.page:
-            self.tableWidget_main.setRowCount(math.ceil(self.filter_total_size % self.sort["filterSize"] / colMax))
+            self.tableWidget_main.setRowCount(math.ceil(self.filter_total_size % self.sort["filterSize"] / self.colMax))
         else:
-            self.tableWidget_main.setRowCount(math.ceil(self.sort["filterSize"] / colMax))
+            self.tableWidget_main.setRowCount(math.ceil(self.sort["filterSize"] / self.colMax))
         self.tableWidget_main.setRowHeight(0, imgWidth)
 
-        self.tableWidget_main.setColumnCount(colMax)
+        self.tableWidget_main.setColumnCount(self.colMax)
         # 根据列数设置列宽
         i = 0
-        while i < colMax:
+        while i < self.colMax:
             self.tableWidget_main.setColumnWidth(i, imgWidth)
             i += 1
         
@@ -444,14 +441,114 @@ class MyWindow(QWidget, Ui_MainForm):
         for item in self.data[self.captureStart:self.captureEnd]: # 截取功能要浅拷贝处理，否则会加载上次截取
             self.tableWidget_main.setCellWidget(row, col, redrawItem(item["previewsmall"], item["title"]))
             col += 1
-            if col >= colMax:
+            if col >= self.colMax:
                 col = 0
                 row += 1
                 self.tableWidget_main.setRowHeight(row, imgWidth)
 
     # 初始化界面右侧功能
     def initMainRight(self):
-        pass
+        self.currentItem = None
+
+        # self.label_img.setVisible(False)
+        self.label_name.setVisible(False)
+        self.label_title.setVisible(False)
+        self.label_note.setVisible(False)
+        self.groupBox_btn.setVisible(False)
+
+        def get_type_str(key):
+            keyType = key.lower()
+            typeStr = "未知"
+            if keyType == "scene":
+                typeStr = "场景"
+            elif keyType == "video":
+                typeStr = "视频"
+            elif keyType == "web":
+                typeStr = "网页"
+            elif keyType == "application":
+                typeStr = "应用"
+            return typeStr
+        
+        # 表格点击（重复点击不会触发）
+        def handleTableMainChange(row, col):
+            # 首次点击
+            if self.currentItem == None:
+                self.label_error_project.setVisible(False)
+                # self.label_img.setVisible(True)
+                self.label_name.setVisible(True)
+                self.label_title.setVisible(True)
+                self.label_note.setVisible(True)
+                self.groupBox_btn.setVisible(True)
+            self.currentItem = self.data[row * self.colMax + col]
+            
+            # itemBox.setMaximumSize(QSize(imgWidth, imgWidth))
+            # itemBox.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.label_img.setPixmap(QPixmap(self.currentItem["previewsmall"]).scaled(182, 182, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            self.label_name.setText(self.currentItem["workshopid"])
+            self.label_title.setText(self.currentItem["title"])
+            self.label_type.setText(f'【{get_type_str(self.currentItem["type"])}】 {self.currentItem["filesizelabel"]}')
+            self.label_subscriptiondate.setText(time.strftime("订阅时间：%Y-%m-%d %X", time.localtime(self.currentItem["subscriptiondate"])))
+            self.label_updatedate.setText(time.strftime("更新时间：%Y-%m-%d %X", time.localtime(self.currentItem["updatedate"])))
+            if "description" in self.currentItem:
+                self.label_note.setText(self.currentItem["description"])
+            else:
+                try:
+                    with open(self.currentItem["project"], encoding="utf-8") as f1:
+                        data = json.load(f1)
+                        self.label_note.setText(data["description"] if "description" in data else "简介：无")
+                except Exception as e:
+                    logging.warning(f"读取config.json: {e}")
+            if self.currentItem["type"].lower() == 'scene':
+                self.btn_repkg_work.setVisible(True)
+                self.btn_repkg_dir.setVisible(True)
+            else:
+                self.btn_repkg_work.setVisible(False)
+                self.btn_repkg_dir.setVisible(False)
+            if self.currentItem["source"] == 'backup':
+                self.btn_capacity.setVisible(True)
+            else:
+                self.btn_capacity.setVisible(False)
+            print('表格点击', row, col, self.currentItem)
+        self.tableWidget_main.cellClicked.connect(handleTableMainChange)
+        # 打开资源管理器
+        def handleDirOpen():
+            os.startfile(os.path.dirname(self.currentItem["project"]))
+        self.btn_open.clicked.connect(handleDirOpen)
+        def handleEdit():
+            openMessageDialog("开发中")
+            print("修改按钮")
+            # 备份文件夹单个项目，\n每次修改更新时间戳，\n大小计算
+        self.btn_edit.clicked.connect(handleEdit)
+        # 重新计算大小按钮
+        def handleCapacity():
+            self.currentItem["filesize"] = getDirSize(os.path.dirname(self.currentItem["project"]))
+            self.currentItem["filesizelabel"] = dirSizeToStr(self.currentItem["filesize"])
+            print("重新计算大小按钮", self.currentItem["filesizelabel"])
+            self.label_type.setText(f'【{get_type_str(self.currentItem["type"])}】 {self.currentItem["filesizelabel"]}')
+            for item in config["workshopBackup"]:
+                if item["workshopid"] == self.currentItem["workshopid"]:
+                    item["filesize"] = self.currentItem["filesize"]
+                    item["filesizelabel"] = self.currentItem["filesizelabel"]
+                    break
+        self.btn_capacity.clicked.connect(handleCapacity)
+        # 提取repkg
+        def handleRepkgWork():
+            splitext = os.path.splitext(self.currentItem["file"])
+            __path = self.currentItem["file"]
+            if splitext[1].lower() != '.pkg':
+                __path = splitext[0] + '.pkg'
+                if not os.path.exists(__path):
+                    openMessageDialog("无法找到pkg文件")
+                    return
+            if runRepkg(__path):
+                if followWork():
+                    # updateRepkgData(self.tableWidget_repkg)
+                    setConfig('repkgPath', __path)
+        self.btn_repkg_work.clicked.connect(handleRepkgWork)
+        # 打开repkg output
+        def handleRepkgDir():
+            os.startfile(os.path.join(os.getcwd(), "output"))
+        self.btn_repkg_dir.clicked.connect(handleRepkgDir)
 
     # repkg初始化
     def initRepkg(self):
@@ -476,6 +573,11 @@ class MyWindow(QWidget, Ui_MainForm):
                     updateRepkgData(self.tableWidget_repkg)
                     setConfig('repkgPath', __path)
         self.btn_repkg.clicked.connect(handleRepkgExtractClick)
+
+        def handleRepkgDir():
+            # 打开资源管理器
+            os.startfile(os.path.join(os.getcwd(), "output"))
+        self.btn_repkg_output.clicked.connect(handleRepkgDir)
 
     # 软地址初始化
     def initMklink(self):
