@@ -466,6 +466,9 @@ class MyWindow(QWidget, Ui_MainForm):
         
         # 表格点击（重复点击不会触发）
         def handleTableMainChange(row, col):
+            item = self.data[row * self.colMax + col]
+            if item == None:
+                return
             # 首次点击
             if self.currentItem == None:
                 self.label_error_project.setVisible(False)
@@ -474,8 +477,7 @@ class MyWindow(QWidget, Ui_MainForm):
                 self.label_title.setVisible(True)
                 self.label_note.setVisible(True)
                 self.groupBox_btn.setVisible(True)
-            self.currentItem = self.data[row * self.colMax + col]
-
+            self.currentItem = item
             # itemBox.setMaximumSize(QSize(imgWidth, imgWidth))
             # itemBox.setAlignment(Qt.AlignmentFlag.AlignCenter)
             self.label_img.setPixmap(QPixmap(self.currentItem["previewsmall"]).scaled(182, 182, Qt.KeepAspectRatio, Qt.SmoothTransformation))
@@ -503,7 +505,7 @@ class MyWindow(QWidget, Ui_MainForm):
                 self.btn_capacity.setVisible(True)
             else:
                 self.btn_capacity.setVisible(False)
-            print('表格点击', row, col, self.currentItem)
+            # print('表格点击', row, col, self.currentItem)
         self.tableWidget_main.cellClicked.connect(handleTableMainChange)
         # 打开资源管理器
         def handleDirOpen():

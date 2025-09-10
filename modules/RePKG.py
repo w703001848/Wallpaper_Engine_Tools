@@ -34,6 +34,8 @@ def runRepkg(path):
         if os.path.exists(output):
             clearDir(output)
             # os.removedirs(output)
+        else:
+            os.makedirs(output)
         os.system(r'repkg extract -e tex -s -o ./{} "{}"'.format(output, path))
         pathExecuted = path
     except Exception as e:

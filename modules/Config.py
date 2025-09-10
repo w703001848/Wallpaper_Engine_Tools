@@ -280,6 +280,8 @@ def getWorkshop():
 
     if os.path.exists(wallpaper_steam_path):
 
+        # 还原工作目录
+        os.chdir(wallpaper_steam_path)
         # 清理缓存里工坊失效文件夹是否还存在
         if len(un_workshop):
             print(f"清理工坊失效壁纸、文件夹缓存：{len(un_workshop)}")
@@ -303,6 +305,8 @@ def getWorkshop():
                     del un_project[count]
                 else:
                     count += 1
+        # 还原工作目录
+        os.chdir(chair_path)
 
         # 整合工坊数据
         workshop_dir = os.listdir(wallpaper_steam_path)
@@ -360,8 +364,10 @@ def getWorkshop():
         logging.warning("工坊文件夹不存在!跳过查询", wallpaper_steam_path)
     
     if os.path.exists(backupPath):
-        # 整合备份失效壁纸、文件夹
-        # 清理缓存里备份缺少project.json文件夹是否还存在
+        # 修改工作目录到备份文件夹
+        os.chdir(backupPath)
+            # 整合备份失效壁纸、文件夹
+            # 清理缓存里备份缺少project.json文件夹是否还存在
         if len(un_backup):
             print(f"清理备份缺少project.json文件夹缓存：{len(un_backup)}")
             count = 0
@@ -384,6 +390,8 @@ def getWorkshop():
                     del workshopBackup[count]
                 else:
                     count += 1
+        # 还原工作目录
+        os.chdir(chair_path)
 
         backup_dir = os.listdir(backupPath)
         # 整合工坊备份数据
@@ -463,9 +471,9 @@ def setWallpaperBackupPath(path):
         return False
 
 # 查询是否存在并获取config.json
-# if os.path.exists(config_path):
+if os.path.exists(config_path):
 # 测试用
-if config['isDevelopment'] and os.path.exists(config_path):
+# if config['isDevelopment'] and os.path.exists(config_path):
     get_config()
 
 config['version'] = version
