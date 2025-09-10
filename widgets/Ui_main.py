@@ -253,15 +253,15 @@ class Ui_MainForm(object):
         self.groupBox_3.setObjectName(u"groupBox_3")
         self.verticalLayout_11 = QVBoxLayout(self.groupBox_3)
         self.verticalLayout_11.setObjectName(u"verticalLayout_11")
+        self.checkBox_folders = QCheckBox(self.groupBox_3)
+        self.checkBox_folders.setObjectName(u"checkBox_folders")
+
+        self.verticalLayout_11.addWidget(self.checkBox_folders)
+
         self.checkBox_authorblock = QCheckBox(self.groupBox_3)
         self.checkBox_authorblock.setObjectName(u"checkBox_authorblock")
 
         self.verticalLayout_11.addWidget(self.checkBox_authorblock)
-
-        self.btn_dir_new = QPushButton(self.groupBox_3)
-        self.btn_dir_new.setObjectName(u"btn_dir_new")
-
-        self.verticalLayout_11.addWidget(self.btn_dir_new)
 
         self.btn_invalid = QPushButton(self.groupBox_3)
         self.btn_invalid.setObjectName(u"btn_invalid")
@@ -295,6 +295,12 @@ class Ui_MainForm(object):
         self.verticalLayout_main.setContentsMargins(-1, 9, -1, -1)
         self.tableWidget_main = QTableWidget(self.tab_main)
         self.tableWidget_main.setObjectName(u"tableWidget_main")
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.tableWidget_main.sizePolicy().hasHeightForWidth())
+        self.tableWidget_main.setSizePolicy(sizePolicy2)
+        self.tableWidget_main.setMinimumSize(QSize(660, 0))
         self.tableWidget_main.setFrameShape(QFrame.Shape.NoFrame)
         self.tableWidget_main.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
         self.tableWidget_main.setGridStyle(Qt.PenStyle.SolidLine)
@@ -305,9 +311,6 @@ class Ui_MainForm(object):
 
         self.label_error = QLabel(self.tab_main)
         self.label_error.setObjectName(u"label_error")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        sizePolicy2.setHorizontalStretch(0)
-        sizePolicy2.setVerticalStretch(0)
         sizePolicy2.setHeightForWidth(self.label_error.sizePolicy().hasHeightForWidth())
         self.label_error.setSizePolicy(sizePolicy2)
         font = QFont()
@@ -746,6 +749,7 @@ class Ui_MainForm(object):
 
         self.listWidget_nas = QListWidget(self.tab_nas)
         self.listWidget_nas.setObjectName(u"listWidget_nas")
+        self.listWidget_nas.setSpacing(2)
 
         self.verticalLayout.addWidget(self.listWidget_nas)
 
@@ -781,15 +785,65 @@ class Ui_MainForm(object):
         self.tabWidget.addTab(self.tab_nas, "")
         self.tab_authorblock = QWidget()
         self.tab_authorblock.setObjectName(u"tab_authorblock")
-        self.gridLayout_5 = QGridLayout(self.tab_authorblock)
-        self.gridLayout_5.setObjectName(u"gridLayout_5")
+        self.horizontalLayout_18 = QHBoxLayout(self.tab_authorblock)
+        self.horizontalLayout_18.setObjectName(u"horizontalLayout_18")
+        self.verticalLayout_12 = QVBoxLayout()
+        self.verticalLayout_12.setObjectName(u"verticalLayout_12")
+        self.label_12 = QLabel(self.tab_authorblock)
+        self.label_12.setObjectName(u"label_12")
+        self.label_12.setMinimumSize(QSize(0, 28))
+
+        self.verticalLayout_12.addWidget(self.label_12)
+
         self.listWidget_authorblock = QListWidget(self.tab_authorblock)
         self.listWidget_authorblock.setObjectName(u"listWidget_authorblock")
         self.listWidget_authorblock.setFrameShape(QFrame.Shape.StyledPanel)
         self.listWidget_authorblock.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
-        self.listWidget_authorblock.setSpacing(6)
+        self.listWidget_authorblock.setSpacing(4)
 
-        self.gridLayout_5.addWidget(self.listWidget_authorblock, 0, 0, 1, 1)
+        self.verticalLayout_12.addWidget(self.listWidget_authorblock)
+
+
+        self.horizontalLayout_18.addLayout(self.verticalLayout_12)
+
+        self.verticalLayout_18 = QVBoxLayout()
+        self.verticalLayout_18.setObjectName(u"verticalLayout_18")
+        self.horizontalLayout_17 = QHBoxLayout()
+        self.horizontalLayout_17.setObjectName(u"horizontalLayout_17")
+        self.label_13 = QLabel(self.tab_authorblock)
+        self.label_13.setObjectName(u"label_13")
+        self.label_13.setMinimumSize(QSize(0, 28))
+
+        self.horizontalLayout_17.addWidget(self.label_13)
+
+        self.btn_authorblock_new = QPushButton(self.tab_authorblock)
+        self.btn_authorblock_new.setObjectName(u"btn_authorblock_new")
+
+        self.horizontalLayout_17.addWidget(self.btn_authorblock_new)
+
+        self.btn_authorblock_refresh = QPushButton(self.tab_authorblock)
+        self.btn_authorblock_refresh.setObjectName(u"btn_authorblock_refresh")
+
+        self.horizontalLayout_17.addWidget(self.btn_authorblock_refresh)
+
+
+        self.verticalLayout_18.addLayout(self.horizontalLayout_17)
+
+        self.listWidget_virus = QListWidget(self.tab_authorblock)
+        self.listWidget_virus.setObjectName(u"listWidget_virus")
+        self.listWidget_virus.setSpacing(2)
+
+        self.verticalLayout_18.addWidget(self.listWidget_virus)
+
+
+        self.horizontalLayout_18.addLayout(self.verticalLayout_18)
+
+        self.lineEdit = QLineEdit(self.tab_authorblock)
+        self.lineEdit.setObjectName(u"lineEdit")
+        sizePolicy5.setHeightForWidth(self.lineEdit.sizePolicy().hasHeightForWidth())
+        self.lineEdit.setSizePolicy(sizePolicy5)
+
+        self.horizontalLayout_18.addWidget(self.lineEdit)
 
         self.tabWidget.addTab(self.tab_authorblock, "")
         self.tab_set = QWidget()
@@ -895,11 +949,6 @@ class Ui_MainForm(object):
         self.groupBox_8.setObjectName(u"groupBox_8")
         self.verticalLayout_17 = QVBoxLayout(self.groupBox_8)
         self.verticalLayout_17.setObjectName(u"verticalLayout_17")
-        self.checkBox_dir = QCheckBox(self.groupBox_8)
-        self.checkBox_dir.setObjectName(u"checkBox_dir")
-
-        self.verticalLayout_17.addWidget(self.checkBox_dir)
-
         self.label_11 = QLabel(self.groupBox_8)
         self.label_11.setObjectName(u"label_11")
 
@@ -978,7 +1027,7 @@ class Ui_MainForm(object):
 
         self.retranslateUi(MainForm)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(3)
         self.btn_invalid.setDefault(False)
         self.btn_restart.setDefault(False)
 
@@ -1020,8 +1069,8 @@ class Ui_MainForm(object):
         self.comboBox_size.setItemText(3, QCoreApplication.translate("MainForm", u"50", None))
 
         self.groupBox_3.setTitle(QCoreApplication.translate("MainForm", u"\u64cd\u4f5c", None))
-        self.checkBox_authorblock.setText(QCoreApplication.translate("MainForm", u"\u62c9\u9ed1\u5173\u8054", None))
-        self.btn_dir_new.setText(QCoreApplication.translate("MainForm", u"\u65b0\u589e\u6587\u4ef6\u5939", None))
+        self.checkBox_folders.setText(QCoreApplication.translate("MainForm", u"\u5de5\u574a\u5206\u7c7b", None))
+        self.checkBox_authorblock.setText(QCoreApplication.translate("MainForm", u"\u6bd2\u5173\u8054", None))
         self.btn_invalid.setText(QCoreApplication.translate("MainForm", u"\u5220\u9664\u5931\u6548\u8ba2\u9605", None))
         self.label_capacity.setText(QCoreApplication.translate("MainForm", u"\u5bb9\u91cf\uff1a0G", None))
         self.label_error.setText(QCoreApplication.translate("MainForm", u"\u60a8\u672a\u5b89\u88c5Wallpaper Engine", None))
@@ -1070,6 +1119,10 @@ class Ui_MainForm(object):
         self.btn_naslink_create.setText(QCoreApplication.translate("MainForm", u"\u6279\u91cf\u751f\u6210\u5feb\u6377\u65b9\u5f0f", None))
         self.btn_naslink_remove.setText(QCoreApplication.translate("MainForm", u"\u79fb\u9664", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_nas), QCoreApplication.translate("MainForm", u"NAS\u5907\u4efd", None))
+        self.label_12.setText(QCoreApplication.translate("MainForm", u"\u62c9\u9ed1\u540d\u5355", None))
+        self.label_13.setText(QCoreApplication.translate("MainForm", u"\u8d5b\u535a\u6885\u6bd2", None))
+        self.btn_authorblock_new.setText(QCoreApplication.translate("MainForm", u"\u65b0\u589e", None))
+        self.btn_authorblock_refresh.setText(QCoreApplication.translate("MainForm", u"\u5237\u65b0\u540d\u79f0", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_authorblock), QCoreApplication.translate("MainForm", u"\u62c9\u9ed1\u540d\u5355", None))
         self.groupBox_dir.setTitle(QCoreApplication.translate("MainForm", u"\u8f6f\u4ef6\u76ee\u5f55", None))
         self.label.setText(QCoreApplication.translate("MainForm", u"Steam\u5b89\u88c5\u4f4d\u7f6e", None))
@@ -1082,10 +1135,9 @@ class Ui_MainForm(object):
         self.lineEdit_wallpaperBackupPath.setPlaceholderText(QCoreApplication.translate("MainForm", u"\u4f8b\uff1aC:\\Program Files (x86)\\Steam\\steamapps\\common\\wallpaper_engine\\projects\\backup", None))
         self.btn_wallpaperBackupPath.setText("")
         self.groupBox_8.setTitle(QCoreApplication.translate("MainForm", u"\u7f13\u5b58", None))
-        self.checkBox_dir.setText(QCoreApplication.translate("MainForm", u"\u81ea\u5b9a\u4e49\u6587\u4ef6\u5939\uff08\u53d6\u6d88\u52fe\u9009\u540e\u4e0b\u6b21\u91cd\u542f\u540c\u6b65Wallpaper\u6587\u4ef6\u5939\u5206\u7c7b\uff09", None))
         self.label_11.setText(QCoreApplication.translate("MainForm", u"\u65e0\u6cd5\u8bc6\u522b\u5230Wallpaper\u66f4\u65b0\u64cd\u4f5c\u3002\n"
 "\u7f3a\u5931\u90e8\u5206\u58c1\u7eb8\u53ef\u4ee5\u5173\u95edWallpaper\u540e\u7b49\u5f85\u4e00\u6bb5\u65f6\u95f4\u65b0\u6570\u636e\u751f\u6210\uff0c\u518d\u5c1d\u8bd5\u6b64\u64cd\u4f5c\u3002", None))
-        self.btn_restart.setText(QCoreApplication.translate("MainForm", u"\u5f3a\u5236\u5237\u65b0", None))
+        self.btn_restart.setText(QCoreApplication.translate("MainForm", u"\u5f3a\u5236\u5237\u65b0(\u672a\u5b8c\u5584)", None))
         self.groupBox.setTitle(QCoreApplication.translate("MainForm", u"\u89e3\u9501\u9690\u85cf\u6210\u5c31\u300c30\u6761\u547d\u300d", None))
         self.label_9.setText(QCoreApplication.translate("MainForm", u"\u6253\u5f00\u58c1\u7eb8\u8bbe\u7f6e\uff0c\u5207\u6362\u5230\u5173\u4e8e\u9875\u9762\uff0c\u70b9\u51fb\u89e3\u9501\n"
 "\n"

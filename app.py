@@ -3,7 +3,7 @@ import logging, math, time, json
 # PySide6组件调用
 from PySide6.QtCore import Qt, QSize, QStringListModel
 from PySide6.QtGui import QPixmap, QFont
-from PySide6.QtWidgets import QApplication, QWidget, QLabel
+from PySide6.QtWidgets import QApplication, QWidget, QLabel, QListWidgetItem
 # 加载模板
 from widgets.Ui_main import Ui_MainForm
 # 功能模块
@@ -101,7 +101,7 @@ class MyWindow(QWidget, Ui_MainForm):
 
         self.label_version.setText('版本：' + config["version"])
         self.btn_unlock_hidden_achievements.clicked.connect(Unlock_hidden_achievements) # 解锁成就
-        self.checkBox_dir.clicked.connect(lambda event: setConfig("isFolders", not event)) # 分类文件夹锁定
+        self.checkBox_folders.clicked.connect(lambda event: setConfig("isFolders", not event)) # 分类文件夹锁定
 
         # 调用此函数以重启应用
         def showRestartConfirmation():
@@ -160,11 +160,6 @@ class MyWindow(QWidget, Ui_MainForm):
         # self.tableWidget_main.horizontalHeader().setVisible(False) # 隐藏头
         # self.tableWidget_main.verticalHeader().setVisible(False) # 隐藏侧边
         self.tableWidget_main.resizeColumnsToContents() # 列宽自动调整
-
-        def handleDirNewClick():
-            print("新增按钮")
-            openMessageDialog("没用")
-        self.btn_dir_new.clicked.connect(handleDirNewClick)
 
         def handleInvalidClick():
             print("删除失效按钮")
@@ -480,7 +475,7 @@ class MyWindow(QWidget, Ui_MainForm):
                 self.label_note.setVisible(True)
                 self.groupBox_btn.setVisible(True)
             self.currentItem = self.data[row * self.colMax + col]
-            
+
             # itemBox.setMaximumSize(QSize(imgWidth, imgWidth))
             # itemBox.setAlignment(Qt.AlignmentFlag.AlignCenter)
             self.label_img.setPixmap(QPixmap(self.currentItem["previewsmall"]).scaled(182, 182, Qt.KeepAspectRatio, Qt.SmoothTransformation))
@@ -629,14 +624,27 @@ class MyWindow(QWidget, Ui_MainForm):
                 self.lineEdit_mklink_path_new.setText("")
         self.btn_mklink_restore.clicked.connect(handleMklinkBackClick)
 
-    # 软地址初始化
+    # 黑名单初始化
     def initAuthorblock(self):
+        self.virus = []
+
         # 黑名单列表点击
         def handleAuthorblockClick():
             obj = temp_authorblocklistnames[self.listWidget_authorblock.currentRow()]
             openMessageDialog("已复制到剪贴板")
             pyperclip.copy(f"名称: {obj['name']}{os.linesep}ID: {obj['value']}")
         self.listWidget_authorblock.itemClicked.connect(handleAuthorblockClick)
+        # 毒狗列表点击
+        def handleVirusClick():
+            obj = self.virus[self.listWidget_virus.currentRow()]
+            openMessageDialog("已复制到剪贴板")
+            pyperclip.copy(f"名称: {obj['personaname']}{os.linesep}profileurl: {obj['profileurl']}")
+        self.listWidget_virus.itemClicked.connect(handleVirusClick)
+        # 域名生成steamworks key
+        self.btn_authorblock_new.clicked.connect(lambda: openMessageDialog("404 域名没啦"))
+        # 传入steamid列表 返回查询基本信息
+        # https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/
+        self.btn_authorblock_refresh.clicked.connect(lambda: openMessageDialog("steamworks key 失效"))
 
     # 黑名单列表数据加载
     def get_addauthorblock_list(self):
@@ -644,6 +652,24 @@ class MyWindow(QWidget, Ui_MainForm):
             print('黑名单列表加载数据')
             for item in temp_authorblocklistnames:
                 self.listWidget_authorblock.addItem(f"名称: {item['name']}{os.linesep}ID: {item['value']}")
+        
+        try:
+            path = os.path.join(os.getcwd(), 'authorblock')
+            if os.path.exists(path):
+                with open(os.path.join(path, 'authorblock.json'), encoding="utf-8") as f1:
+                    self.virus = json.load(f1)
+                    # print(data)
+                    print('毒狗列表加载数据')
+                    self.listWidget_virus.setIconSize(QSize(48, 48))
+                    for item in self.virus:
+                        note = f'{item["steamid"]}{os.linesep}目前名字：{item["personaname"]}{os.linesep}{" // ".join(item["realname"])}'
+                        # print(os.path.join(os.getcwd(), 'authorblock', item["avatarmedium"]))
+                        icon = QPixmap(os.path.join(os.getcwd(), 'authorblock', item["avatarmedium"]))
+                        icon.scaled(48, 48, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                        item = QListWidgetItem(icon, note)
+                        self.listWidget_virus.addItem(item)
+        except Exception as e:
+            logging.warning(f"读取authorblock.json: {e}")
 
     # 窗口变化
     def resizeEvent(self, event):

@@ -30,7 +30,7 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="tab_main">
       <attribute name="title">
@@ -442,16 +442,16 @@
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_11">
               <item>
-               <widget class="QCheckBox" name="checkBox_authorblock">
+               <widget class="QCheckBox" name="checkBox_folders">
                 <property name="text">
-                 <string>拉黑关联</string>
+                 <string>工坊分类</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="btn_dir_new">
+               <widget class="QCheckBox" name="checkBox_authorblock">
                 <property name="text">
-                 <string>新增文件夹</string>
+                 <string>毒关联</string>
                 </property>
                </widget>
               </item>
@@ -519,6 +519,18 @@ background-color: rgb(255, 85, 0);</string>
            </property>
            <item>
             <widget class="QTableWidget" name="tableWidget_main">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>660</width>
+               <height>0</height>
+              </size>
+             </property>
              <property name="frameShape">
               <enum>QFrame::Shape::NoFrame</enum>
              </property>
@@ -1365,7 +1377,11 @@ background-color: rgb(85, 170, 255);</string>
         </layout>
        </item>
        <item>
-        <widget class="QListWidget" name="listWidget_nas"/>
+        <widget class="QListWidget" name="listWidget_nas">
+         <property name="spacing">
+          <number>2</number>
+         </property>
+        </widget>
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_9">
@@ -1420,17 +1436,86 @@ background-color: rgb(255, 85, 0);</string>
       <attribute name="title">
        <string>拉黑名单</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_5">
-       <item row="0" column="0">
-        <widget class="QListWidget" name="listWidget_authorblock">
-         <property name="frameShape">
-          <enum>QFrame::Shape::StyledPanel</enum>
-         </property>
-         <property name="verticalScrollBarPolicy">
-          <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOn</enum>
-         </property>
-         <property name="spacing">
-          <number>6</number>
+      <layout class="QHBoxLayout" name="horizontalLayout_18">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_12">
+         <item>
+          <widget class="QLabel" name="label_12">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>28</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>拉黑名单</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QListWidget" name="listWidget_authorblock">
+           <property name="frameShape">
+            <enum>QFrame::Shape::StyledPanel</enum>
+           </property>
+           <property name="verticalScrollBarPolicy">
+            <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOn</enum>
+           </property>
+           <property name="spacing">
+            <number>4</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_18">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_17">
+           <item>
+            <widget class="QLabel" name="label_13">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>28</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>赛博梅毒</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btn_authorblock_new">
+             <property name="text">
+              <string>新增</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btn_authorblock_refresh">
+             <property name="text">
+              <string>刷新名称</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QListWidget" name="listWidget_virus">
+           <property name="spacing">
+            <number>2</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
         </widget>
        </item>
@@ -1637,13 +1722,6 @@ background-color: rgb(255, 85, 0);</string>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_17">
               <item>
-               <widget class="QCheckBox" name="checkBox_dir">
-                <property name="text">
-                 <string>自定义文件夹（取消勾选后下次重启同步Wallpaper文件夹分类）</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QLabel" name="label_11">
                 <property name="text">
                  <string>无法识别到Wallpaper更新操作。
@@ -1664,7 +1742,7 @@ background-color: rgb(255, 85, 0);</string>
 background-color: rgb(255, 85, 0);</string>
                 </property>
                 <property name="text">
-                 <string>强制刷新</string>
+                 <string>强制刷新(未完善)</string>
                 </property>
                 <property name="checkable">
                  <bool>false</bool>
@@ -1786,22 +1864,22 @@ background-color: rgb(85, 170, 255);</string>
  </resources>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_type">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
   <buttongroup name="buttonGroup_source">
    <property name="exclusive">
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroup_img"/>
   <buttongroup name="buttonGroup_sort"/>
+  <buttongroup name="buttonGroup_type">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
   <buttongroup name="buttonGroup_page">
    <property name="exclusive">
     <bool>false</bool>
    </property>
   </buttongroup>
+  <buttongroup name="buttonGroup_img"/>
  </buttongroups>
 </ui>
