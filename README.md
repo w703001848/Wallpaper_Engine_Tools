@@ -10,8 +10,10 @@ pip install pyinstaller
 ### Compiles for development
 
 ```
-pyinstaller -D --windowed -n "Wallpaper_Engine_Tools" --add-binary "./RePKG.exe;." app.py
-pyinstaller --onefile -n "Wallpaper_Engine_Tools" --add-binary "./RePKG.exe;." app.py
+pyinstaller -D -n "Wallpaper_Engine_Tools" --add-binary "./RePKG.exe;." app.py
+
+pyinstaller --onefile --windowed -n "Wallpaper_Engine_Tools" --add-binary "./RePKG.exe;." -i "./img/icon.ico" --splash "./img/background-img.png" app.py
+
 pyinstaller Wallpaper_Engine_Tools.spec
 ```
 

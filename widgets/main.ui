@@ -24,7 +24,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../img/images.qrc">
-    <normaloff>:/img/dir.ico</normaloff>:/img/dir.ico</iconset>
+    <normaloff>:/img/icon.ico</normaloff>:/img/icon.ico</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
@@ -451,7 +451,7 @@
               <item>
                <widget class="QCheckBox" name="checkBox_authorblock">
                 <property name="text">
-                 <string>毒关联</string>
+                 <string>毒排查</string>
                 </property>
                </widget>
               </item>
@@ -1297,7 +1297,7 @@ background-color: rgb(255, 170, 127);</string>
             </size>
            </property>
            <property name="placeholderText">
-            <string>ftp://192.168.10.101（H:/）</string>
+            <string>ftp://112.168.217.73 或使用外置硬盘盘符（H:/）</string>
            </property>
           </widget>
          </item>
@@ -1400,7 +1400,7 @@ background-color: rgb(85, 85, 255);</string>
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>458</width>
+            <width>983</width>
             <height>765</height>
            </rect>
           </property>
