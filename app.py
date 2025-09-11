@@ -719,6 +719,10 @@ class MyWindow(QWidget, Ui_MainForm):
 
     # 毒狗名单初始化
     def initVirus(self):
+        def handleVirusLabelClick():
+            openMessageDialog("网址已复制到剪贴板")
+            pyperclip.copy("https://zhizhuzi.0d000721.cc/")
+        self.btn_virus_label.clicked.connect(handleVirusLabelClick)
         # 毒狗列表点击
         def handleVirusClick():
             obj = self.virus[self.listWidget_virus.currentRow()]

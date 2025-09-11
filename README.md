@@ -24,24 +24,20 @@ pyinstaller Wallpaper_Engine_Tools.spec
 > setam安装位置获取
 >
 > > ~~win注册表~~
-> >
-> > 快捷方式拖入
 >
 > wallpaper engine安装位置获取
 >
 > > ~~win注册表~~
-> >
-> > 快捷方式拖入
 >
 > wallpaper engine - config
 >
-> > 识别
+> > ~~识别~~
 > >
-> > 订阅获取
+> > ~~订阅获取~~
 > >
-> > 项目引用必须物品关联
+> > ~~项目引用必须物品关联~~
 > >
-> > 取消订阅留存
+> > ~~取消订阅留存~~
 > >
 > > > 查询
 > > >
@@ -51,11 +47,11 @@ pyinstaller Wallpaper_Engine_Tools.spec
 >
 > > ~~图文列表~~
 > >
-> > 图文拆分
+> > ~~图文拆分~~
 > >
-> > 筛选
+> > ~~筛选~~
 > >
-> > 容量
+> > ~~容量~~
 >
 > 备份订阅
 >
@@ -63,17 +59,15 @@ pyinstaller Wallpaper_Engine_Tools.spec
 > >
 > > 分类整理
 >
-> 应用解压
->
 > > 标记导入管理
 > >
 > > 列表管理
 > >
-> > > 展示
+> > > ~~展示~~
 > > >
 > > > 删除
 >
-> config打包排除
+> ~~config打包排除~~
 >
 > 硬盘瘦身
 >
@@ -86,5 +80,5 @@ pyinstaller Wallpaper_Engine_Tools.spec
 > RePKG
 >
 > > ~~场景图片提取~~
-> > 拖入提取
+> > ~~拖入提取~~
 

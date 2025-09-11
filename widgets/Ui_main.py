@@ -22,6 +22,7 @@ from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox,
     QScrollArea, QSizePolicy, QSpacerItem, QTabWidget,
     QTableWidget, QTableWidgetItem, QToolButton, QVBoxLayout,
     QWidget)
+import images_rc
 
 class Ui_MainForm(object):
     def setupUi(self, MainForm):
@@ -770,7 +771,7 @@ class Ui_MainForm(object):
         self.scrollArea_1.setWidgetResizable(True)
         self.scrollAreaWidgetContents_1 = QWidget()
         self.scrollAreaWidgetContents_1.setObjectName(u"scrollAreaWidgetContents_1")
-        self.scrollAreaWidgetContents_1.setGeometry(QRect(0, 0, 983, 765))
+        self.scrollAreaWidgetContents_1.setGeometry(QRect(0, 0, 983, 782))
         self.verticalLayout_2 = QVBoxLayout(self.scrollAreaWidgetContents_1)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.groupBox_dir = QGroupBox(self.scrollAreaWidgetContents_1)
@@ -894,11 +895,11 @@ class Ui_MainForm(object):
 
         self.horizontalLayout_17 = QHBoxLayout()
         self.horizontalLayout_17.setObjectName(u"horizontalLayout_17")
-        self.label_13 = QLabel(self.groupBox_6)
-        self.label_13.setObjectName(u"label_13")
-        self.label_13.setMinimumSize(QSize(0, 28))
+        self.btn_virus_label = QPushButton(self.groupBox_6)
+        self.btn_virus_label.setObjectName(u"btn_virus_label")
+        self.btn_virus_label.setStyleSheet(u"border-style: outset;")
 
-        self.horizontalLayout_17.addWidget(self.label_13)
+        self.horizontalLayout_17.addWidget(self.btn_virus_label)
 
         self.btn_virus_new = QPushButton(self.groupBox_6)
         self.btn_virus_new.setObjectName(u"btn_virus_new")
@@ -1099,8 +1100,12 @@ class Ui_MainForm(object):
         self.lineEdit_wallpaperBackupPath.setPlaceholderText(QCoreApplication.translate("MainForm", u"\u4f8b\uff1aC:\\Program Files (x86)\\Steam\\steamapps\\common\\wallpaper_engine\\projects\\backup", None))
         self.btn_wallpaperBackupPath.setText("")
         self.groupBox_6.setTitle(QCoreApplication.translate("MainForm", u"\u9ed1\u540d\u5355", None))
-        self.label_12.setText(QCoreApplication.translate("MainForm", u"\u5de5\u574a\u53f3\u952e - \u62a5\u544a\u963b\u6b62\u540d\u5355", None))
-        self.label_13.setText(QCoreApplication.translate("MainForm", u"\u8d5b\u535a\u6885\u6bd2", None))
+        self.label_12.setText(QCoreApplication.translate("MainForm", u"\u5de5\u574a\u53f3\u952e\n"
+" - \u62a5\u544a\u963b\u6b62\u540d\u5355\n"
+"", None))
+        self.btn_virus_label.setText(QCoreApplication.translate("MainForm", u"\u67e5\u8be2\u6bd2\u72d7\u7684\u7f51\u5740(\u70b9\u51fb\u590d\u5236):\n"
+"https://zhizhuzi.0d000721.cc/\n"
+"\u6765\u6e90\uff1a\u8718\u86db\u5b50\u58c1\u7eb8\u5f15\u64ce\u81ea\u68c0\u7ec4", None))
         self.btn_virus_new.setText(QCoreApplication.translate("MainForm", u"\u65b0\u589e", None))
         self.btn_virus_refresh.setText(QCoreApplication.translate("MainForm", u"\u5237\u65b0\u540d\u79f0", None))
         self.groupBox_8.setTitle(QCoreApplication.translate("MainForm", u"\u7f13\u5b58", None))
