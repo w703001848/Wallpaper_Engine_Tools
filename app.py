@@ -3,12 +3,12 @@ import logging, math, time, json
 # PySide6组件调用
 from PySide6.QtCore import Qt, QSize, QStringListModel
 from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import QApplication, QWidget, QListWidgetItem
+from PySide6.QtWidgets import QApplication, QWidget, QListWidgetItem, QLineEdit
 # 加载模板
 from widgets.Ui_main import Ui_MainForm
 from widgets.itemImg import ItemImg
 # 功能模块
-from modules.main import Debouncer, timer, Unlock_hidden_achievements, getDirSize, dirSizeToStr, openFileDialog, openDirDialog, openMessageDialog, openStartfile
+from modules.main import Debouncer, timer, Unlock_hidden_achievements, getDirSize, dirSizeToStr, openFileDialog, openDirDialog, openMessageDialog, openStartfile, dragEnterEvent
 from modules.Config import config, temp_authorblocklistnames, getWorkshop, setSteamPath, setWallpaperPath, setWallpaperBackupPath, setConfig, saveConfig
 from modules.RePKG import runRepkg, followWork, updateRepkgData
 from modules.Mklink import mklinkCreate, mklinkNew, mklinkBack, updateMklinkList
@@ -36,6 +36,12 @@ class MyWindow(QWidget, Ui_MainForm):
 
             # 加载数据
             self.loadData(True)
+
+        try:
+            import pyi_splash
+            pyi_splash.close()
+        except ImportError:
+            pass
 
     # 初始化界面
     def initPage(self):
@@ -546,6 +552,20 @@ class MyWindow(QWidget, Ui_MainForm):
         self.tableWidget_repkg.horizontalHeader().setStretchLastSection(True) # 表格自适应
         # self.tableWidget_repkg.horizontalHeader().setVisible(True) # 隐藏头
         # self.tableWidget_repkg.verticalHeader().setVisible(True) # 隐藏侧边
+        
+        self.lineEdit_repkg.setAcceptDrops(True)
+        self.lineEdit_repkg.dragEnterEvent = dragEnterEvent
+        # 拖放事件释放接收
+        def dropEvent(event):
+            urls = event.mimeData().urls()
+            if urls and urls[0].isLocalFile():
+                folder_path = urls[0].toLocalFile()  # 获取文件夹路径
+                if os.path.isfile(folder_path):
+                    file = os.path.splitext(folder_path)
+                    if file[1].lower() == '.pkg' or file[1].lower() == '.mpkg':
+                        self.lineEdit_repkg.setText(folder_path)  # 显示路径
+                    # event.acceptProposedAction()
+        self.lineEdit_repkg.dropEvent = dropEvent
 
         # repkg选择
         def handleRepkgPathClick():

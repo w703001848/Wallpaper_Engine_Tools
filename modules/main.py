@@ -155,3 +155,8 @@ def checkEnvironment():
         print("正式环境")
         return True
 
+
+# 拖放事件是否开启接收
+def dragEnterEvent(event):
+    if event.mimeData().hasUrls():
+        event.acceptProposedAction()
