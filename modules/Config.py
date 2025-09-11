@@ -29,7 +29,8 @@ config = {
         "path": "",
         "path_new": ""
     }], # mklink历史新增
-    "nasLink": "", # NAS备份
+    "nasLinkPath": "", # NAS备份IP地址
+    "nasLink": [], # NAS备份
     "isCheckedScene": True, # 场景
     "isCheckedVideo": True, # 视频
     "isCheckedWeb": True, # 网页

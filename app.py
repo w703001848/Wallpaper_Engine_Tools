@@ -11,6 +11,7 @@ from modules.main import Debouncer, timer, Unlock_hidden_achievements, getDirSiz
 from modules.Config import config, temp_authorblocklistnames, getWorkshop, setSteamPath, setWallpaperPath, setWallpaperBackupPath, setConfig, saveConfig
 from modules.RePKG import runRepkg, followWork, updateRepkgData
 from modules.Mklink import mklinkCreate, mklinkNew, mklinkBack, updateMklinkList
+from modules.Naslink import naslink
 # 资源图片
 from img import images_rc
 
@@ -29,7 +30,7 @@ class MyWindow(QWidget, Ui_MainForm):
             self.initMainRight()
             self.initRepkg()
             self.initMklink()
-            # self.initNaslink()
+            self.initNaslink()
             self.initAuthorblock()
 
             # 加载数据
@@ -60,9 +61,7 @@ class MyWindow(QWidget, Ui_MainForm):
                     updateRepkgData(self.tableWidget_repkg)
             elif index == 2: # Mklink加载
                 updateMklinkList(self.listWidget_mklink)
-            elif index == 3: # NAS备份加载
-                pass
-            elif index == 4: # 黑名单加载
+            elif index == 3: # 黑名单加载
                 self.get_addauthorblock_list()
         self.tabWidget.currentChanged.connect(tabChange)
 
@@ -626,6 +625,63 @@ class MyWindow(QWidget, Ui_MainForm):
                 self.listWidget_mklink.currentItem().setText(f"标注:{obj['name']}\n{obj['path']}\n未生成")
                 self.lineEdit_mklink_path_new.setText("")
         self.btn_mklink_restore.clicked.connect(handleMklinkBackClick)
+
+    # NAS备份
+    def initNaslink(self):
+        self.nasLink = config["nasLink"]
+
+        def handleNasInput(e):
+            if e != config["nasLinkPath"]:
+                self.btn_nas_save.setVisible(True)
+        self.lineEdit_nas_path_backup.textChanged.connect(handleNasInput)
+        self.lineEdit_nas_path_backup.setText(config["nasLinkPath"])
+        def handleNasSaveClick():
+            txt = self.lineEdit_nas_path_backup.text()
+            if os.path.exists(txt):
+                self.btn_nas_save.setVisible(False)
+                setConfig("nasLinkPath", txt)
+            else:
+                openMessageDialog("地址错误！")
+        self.btn_nas_save.clicked.connect(handleNasSaveClick)
+        self.btn_nas_save.setVisible(False)
+
+        def handleNewClick():
+            txt = self.lineEdit_nas_path_backup.text()
+            if os.path.exists(txt):
+                path = openDirDialog(txt)
+                if path:
+                    dir = path[len(txt):]
+                    obj = {
+                        "IP": txt,
+                        "dir": dir
+                    }
+                    self.nasLink.append(obj)
+                    self.listWidget_nas.addItem(f'前缀：{obj["IP"]}  -  路径：{obj["dir"]}')
+            else:
+                openMessageDialog("ip地址错误！")
+        self.btn_naslink_new.clicked.connect(handleNewClick)
+        def handleRemoveClick():
+            index = self.listWidget_nas.currentRow()
+            if index >=0:
+                del self.nasLink[index]
+                self.listWidget_nas.takeItem(index)
+                self.listWidget_nas.setCurrentRow(-1)
+                self.btn_naslink_remove.setVisible(False)
+            else:
+                openMessageDialog("请选择需要删除的地址！")
+        self.btn_naslink_remove.clicked.connect(handleRemoveClick)
+        self.btn_naslink_remove.setVisible(False)
+        
+        def handleCreateClick():
+            pass
+        self.btn_naslink_create.clicked.connect(handleCreateClick)
+
+        def handleNasChange(event):
+            self.btn_naslink_remove.setVisible(True)
+        self.listWidget_nas.currentItemChanged.connect(handleNasChange) # 表格点击
+
+        for item in self.nasLink:
+            self.listWidget_nas.addItem(f'前缀：{item["IP"]}  -  路径：{item["dir"]}')
 
     # 黑名单初始化
     def initAuthorblock(self):
