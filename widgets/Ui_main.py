@@ -900,15 +900,15 @@ class Ui_MainForm(object):
 
         self.horizontalLayout_17.addWidget(self.label_13)
 
-        self.btn_authorblock_new = QPushButton(self.groupBox_6)
-        self.btn_authorblock_new.setObjectName(u"btn_authorblock_new")
+        self.btn_virus_new = QPushButton(self.groupBox_6)
+        self.btn_virus_new.setObjectName(u"btn_virus_new")
 
-        self.horizontalLayout_17.addWidget(self.btn_authorblock_new)
+        self.horizontalLayout_17.addWidget(self.btn_virus_new)
 
-        self.btn_authorblock_refresh = QPushButton(self.groupBox_6)
-        self.btn_authorblock_refresh.setObjectName(u"btn_authorblock_refresh")
+        self.btn_virus_refresh = QPushButton(self.groupBox_6)
+        self.btn_virus_refresh.setObjectName(u"btn_virus_refresh")
 
-        self.horizontalLayout_17.addWidget(self.btn_authorblock_refresh)
+        self.horizontalLayout_17.addWidget(self.btn_virus_refresh)
 
 
         self.verticalLayout_18.addLayout(self.horizontalLayout_17)
@@ -1101,8 +1101,8 @@ class Ui_MainForm(object):
         self.groupBox_6.setTitle(QCoreApplication.translate("MainForm", u"\u9ed1\u540d\u5355", None))
         self.label_12.setText(QCoreApplication.translate("MainForm", u"\u5de5\u574a\u53f3\u952e - \u62a5\u544a\u963b\u6b62\u540d\u5355", None))
         self.label_13.setText(QCoreApplication.translate("MainForm", u"\u8d5b\u535a\u6885\u6bd2", None))
-        self.btn_authorblock_new.setText(QCoreApplication.translate("MainForm", u"\u65b0\u589e", None))
-        self.btn_authorblock_refresh.setText(QCoreApplication.translate("MainForm", u"\u5237\u65b0\u540d\u79f0", None))
+        self.btn_virus_new.setText(QCoreApplication.translate("MainForm", u"\u65b0\u589e", None))
+        self.btn_virus_refresh.setText(QCoreApplication.translate("MainForm", u"\u5237\u65b0\u540d\u79f0", None))
         self.groupBox_8.setTitle(QCoreApplication.translate("MainForm", u"\u7f13\u5b58", None))
         self.label_11.setText(QCoreApplication.translate("MainForm", u"\u65e0\u6cd5\u8bc6\u522b\u5230Wallpaper\u66f4\u65b0\u64cd\u4f5c\u3002\n"
 "\u7f3a\u5931\u90e8\u5206\u58c1\u7eb8\u53ef\u4ee5\u5173\u95edWallpaper\u540e\u7b49\u5f85\u4e00\u6bb5\u65f6\u95f4\u65b0\u6570\u636e\u751f\u6210\uff0c\u518d\u5c1d\u8bd5\u6b64\u64cd\u4f5c\u3002", None))

@@ -1631,14 +1631,14 @@ background-color: rgb(85, 85, 255);</string>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QPushButton" name="btn_authorblock_new">
+                   <widget class="QPushButton" name="btn_virus_new">
                     <property name="text">
                      <string>新增</string>
                     </property>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QPushButton" name="btn_authorblock_refresh">
+                   <widget class="QPushButton" name="btn_virus_refresh">
                     <property name="text">
                      <string>刷新名称</string>
                     </property>

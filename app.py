@@ -3,7 +3,7 @@ import logging, math, time, json
 # PySide6组件调用
 from PySide6.QtCore import Qt, QSize, QStringListModel
 from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import QApplication, QWidget, QListWidgetItem, QLineEdit
+from PySide6.QtWidgets import QApplication, QWidget, QListWidgetItem
 # 加载模板
 from widgets.Ui_main import Ui_MainForm
 from widgets.itemImg import ItemImg
@@ -33,6 +33,7 @@ class MyWindow(QWidget, Ui_MainForm):
             self.initMklink()
             self.initNaslink()
             self.initAuthorblock()
+            self.initVirus()
 
             # 加载数据
             self.loadData(True)
@@ -69,7 +70,8 @@ class MyWindow(QWidget, Ui_MainForm):
             elif index == 2: # Mklink加载
                 updateMklinkList(self.listWidget_mklink)
             elif index == 3: # 黑名单加载
-                self.get_addauthorblock_list()
+                self.get_authorblock_list()
+                self.get_virus_list()
         self.tabWidget.currentChanged.connect(tabChange)
 
         # 获取steam地址
@@ -697,7 +699,7 @@ class MyWindow(QWidget, Ui_MainForm):
         for item in self.nasLink:
             self.listWidget_nas.addItem(f'前缀：{item["IP"]}  -  路径：{item["dir"]}')
 
-    # 黑名单初始化
+    # 阻止名单初始化
     def initAuthorblock(self):
         self.virus = []
 
@@ -707,6 +709,16 @@ class MyWindow(QWidget, Ui_MainForm):
             openMessageDialog("已复制到剪贴板")
             pyperclip.copy(f"名称: {obj['name']}{os.linesep}ID: {obj['value']}")
         self.listWidget_authorblock.itemClicked.connect(handleAuthorblockClick)
+
+    # 阻止名单列表数据加载
+    def get_authorblock_list(self):
+        if len(temp_authorblocklistnames) != self.listWidget_authorblock.count():
+            print('黑名单列表加载数据')
+            for item in temp_authorblocklistnames:
+                self.listWidget_authorblock.addItem(f"名称: {item['name']}{os.linesep}ID: {item['value']}")
+
+    # 毒狗名单初始化
+    def initVirus(self):
         # 毒狗列表点击
         def handleVirusClick():
             obj = self.virus[self.listWidget_virus.currentRow()]
@@ -714,23 +726,18 @@ class MyWindow(QWidget, Ui_MainForm):
             pyperclip.copy(f"名称: {obj['personaname']}{os.linesep}profileurl: {obj['profileurl']}")
         self.listWidget_virus.itemClicked.connect(handleVirusClick)
         # 域名生成steamworks key
-        self.btn_authorblock_new.clicked.connect(lambda: openMessageDialog("404 域名没啦"))
+        self.btn_virus_new.clicked.connect(lambda: openMessageDialog("404 域名没啦"))
         # 传入steamid列表 返回查询基本信息
         # https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/
-        self.btn_authorblock_refresh.clicked.connect(lambda: openMessageDialog("steamworks key 失效"))
-
-    # 黑名单列表数据加载
-    def get_addauthorblock_list(self):
-        if len(temp_authorblocklistnames) != self.listWidget_authorblock.count():
-            print('黑名单列表加载数据')
-            for item in temp_authorblocklistnames:
-                self.listWidget_authorblock.addItem(f"名称: {item['name']}{os.linesep}ID: {item['value']}")
+        self.btn_virus_refresh.clicked.connect(lambda: openMessageDialog("steamworks key 失效"))
         
+    # 毒狗名单列表数据加载
+    def get_virus_list(self):
         if not self.listWidget_virus.count():
             try:
-                path = os.path.join(os.getcwd(), 'authorblock')
+                path = os.path.join(os.getcwd(), 'virus')
                 if os.path.exists(path):
-                    with open(os.path.join(path, 'authorblock.json'), encoding="utf-8") as f1:
+                    with open(os.path.join(path, 'virus.json'), encoding="utf-8") as f1:
                         self.virus = json.load(f1)
                         # print(data)
                         print('毒狗列表加载数据')
@@ -742,13 +749,13 @@ class MyWindow(QWidget, Ui_MainForm):
                                     strIsBlock = "【已拉黑】"
                                     break
                             note = f'{item["steamid"]}{strIsBlock}{os.linesep}目前名字：{item["personaname"]}{os.linesep}{" // ".join(item["realname"])}'
-                            # print(os.path.join(os.getcwd(), 'authorblock', item["avatarmedium"]))
-                            icon = QPixmap(os.path.join(os.getcwd(), 'authorblock', item["avatarmedium"]))
+                            # print(os.path.join(os.getcwd(), 'virus', item["avatarmedium"]))
+                            icon = QPixmap(os.path.join(os.getcwd(), 'virus', item["avatarmedium"]))
                             icon.scaled(48, 48, Qt.KeepAspectRatio, Qt.SmoothTransformation)
                             item = QListWidgetItem(icon, note)
                             self.listWidget_virus.addItem(item)
             except Exception as e:
-                logging.warning(f"读取authorblock.json: {e}")
+                logging.warning(f"读取virus.json: {e}")
 
     # 窗口变化
     def resizeEvent(self, event):
