@@ -393,6 +393,7 @@ class MyWindow(QWidget, Ui_MainForm):
             self.captureEnd = None
         self.refreshTable()
 
+    # 刷新列表
     def refreshTable(self):
         # 重新计算图文宽度和最大列数
         def calculateQuantityImgsizeCol(widgetWidth, colMax):
@@ -655,23 +656,29 @@ class MyWindow(QWidget, Ui_MainForm):
             for item in temp_authorblocklistnames:
                 self.listWidget_authorblock.addItem(f"名称: {item['name']}{os.linesep}ID: {item['value']}")
         
-        try:
-            path = os.path.join(os.getcwd(), 'authorblock')
-            if os.path.exists(path):
-                with open(os.path.join(path, 'authorblock.json'), encoding="utf-8") as f1:
-                    self.virus = json.load(f1)
-                    # print(data)
-                    print('毒狗列表加载数据')
-                    self.listWidget_virus.setIconSize(QSize(48, 48))
-                    for item in self.virus:
-                        note = f'{item["steamid"]}{os.linesep}目前名字：{item["personaname"]}{os.linesep}{" // ".join(item["realname"])}'
-                        # print(os.path.join(os.getcwd(), 'authorblock', item["avatarmedium"]))
-                        icon = QPixmap(os.path.join(os.getcwd(), 'authorblock', item["avatarmedium"]))
-                        icon.scaled(48, 48, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-                        item = QListWidgetItem(icon, note)
-                        self.listWidget_virus.addItem(item)
-        except Exception as e:
-            logging.warning(f"读取authorblock.json: {e}")
+        if not self.listWidget_virus.count():
+            try:
+                path = os.path.join(os.getcwd(), 'authorblock')
+                if os.path.exists(path):
+                    with open(os.path.join(path, 'authorblock.json'), encoding="utf-8") as f1:
+                        self.virus = json.load(f1)
+                        # print(data)
+                        print('毒狗列表加载数据')
+                        self.listWidget_virus.setIconSize(QSize(48, 48))
+                        for item in self.virus:
+                            strIsBlock = ""
+                            for obj in temp_authorblocklistnames:
+                                if obj["value"] == item["steamid"]:
+                                    strIsBlock = "【已拉黑】"
+                                    break
+                            note = f'{item["steamid"]}{strIsBlock}{os.linesep}目前名字：{item["personaname"]}{os.linesep}{" // ".join(item["realname"])}'
+                            # print(os.path.join(os.getcwd(), 'authorblock', item["avatarmedium"]))
+                            icon = QPixmap(os.path.join(os.getcwd(), 'authorblock', item["avatarmedium"]))
+                            icon.scaled(48, 48, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                            item = QListWidgetItem(icon, note)
+                            self.listWidget_virus.addItem(item)
+            except Exception as e:
+                logging.warning(f"读取authorblock.json: {e}")
 
     # 窗口变化
     def resizeEvent(self, event):
