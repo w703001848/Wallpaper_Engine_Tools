@@ -5,7 +5,7 @@ import winreg as reg
 
 from .main import checkEnvironment, getDirSize, dirSizeToStr
 
-version = "1.2"
+version = "1.7"
 chair_path = os.getcwd() # 当前工作目录
 config_path = os.path.join(os.getcwd(), 'config.json')
 
@@ -18,7 +18,7 @@ config = {
     "wallpaperPath": "", # wallpaper地址
     "backupPath": "", # wallpaper备份地址
     "uiThumbnails": "", # wallpaper图片缓存位置
-    "repkgPath": "E:/wallpaper_engine_backup1/[scene]2871049687/scene.pkg", # 记录上次提取RePKG路径
+    "repkgPath": "", # 记录上次提取RePKG路径
     # "isCheckedRePKGClear": False, # 是否清空RePKG上次输出
     "mklinkList": [{
         "name": "订阅",

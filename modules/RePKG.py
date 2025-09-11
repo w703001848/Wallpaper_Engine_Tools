@@ -99,7 +99,7 @@ def updateRepkgData(tableWidget: QTableWidget, update = True):
             temp_repkg_img_list.append(os.path.join(dirPath, item))
 
     # repkg图表生成
-    size, colMax = calculateQuantity(tableWidget.size().width() - 16, 3)
+    size, colMax = calculateQuantity(tableWidget.size().width() - 16, 5)
     tableWidget.setColumnCount(colMax)
     tableWidget.clearContents() # 清空
     tableWidget.setRowCount(math.ceil(len(temp_repkg_img_list) / colMax))
@@ -130,10 +130,10 @@ def updateRepkgData(tableWidget: QTableWidget, update = True):
 
 def calculateQuantity(widgetWidth, colMax):
     size = int(widgetWidth / colMax)
+    # print(f"Repkg更新 图size:{size} 列:{colMax}")
     if size > 240:
         size, colMax = calculateQuantity(widgetWidth, colMax + 1)
     # elif size < 180:
     #     colMax = colMax - 1
     #     size, _ = calculateQuantity(widgetWidth, colMax)
-    print(f"Repkg更新 图size:{size} 列:{colMax}")
     return size, colMax

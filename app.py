@@ -2,10 +2,11 @@ import os, sys, subprocess, atexit, pyperclip
 import logging, math, time, json
 # PySide6组件调用
 from PySide6.QtCore import Qt, QSize, QStringListModel
-from PySide6.QtGui import QPixmap, QFont
-from PySide6.QtWidgets import QApplication, QWidget, QLabel, QListWidgetItem
+from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import QApplication, QWidget, QListWidgetItem
 # 加载模板
 from widgets.Ui_main import Ui_MainForm
+from widgets.itemImg import ItemImg
 # 功能模块
 from modules.main import Debouncer, timer, Unlock_hidden_achievements, getDirSize, dirSizeToStr, openFileDialog, openDirDialog, openMessageDialog, openStartfile
 from modules.Config import config, temp_authorblocklistnames, getWorkshop, setSteamPath, setWallpaperPath, setWallpaperBackupPath, setConfig, saveConfig
@@ -420,21 +421,13 @@ class MyWindow(QWidget, Ui_MainForm):
             self.tableWidget_main.setColumnWidth(i, imgWidth)
             i += 1
         
-        # 重绘单元格
-        def redrawItem(imgPath, name):
-            nonlocal imgWidth
-            itemBox = QLabel()
-            # itemBox.setMinimumSize(QSize(size, size))
-            itemBox.setMaximumSize(QSize(imgWidth, imgWidth))
-            # itemBox.setScaledContents(True)
-            itemBox.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            itemBox.setPixmap(QPixmap(imgPath).scaled(imgWidth, imgWidth, Qt.KeepAspectRatio, Qt.SmoothTransformation))
-            return itemBox
-        
         row = 0 # 计数行
         col = 0 # 计数列
         for item in self.data[self.captureStart:self.captureEnd]: # 截取功能要浅拷贝处理，否则会加载上次截取
-            self.tableWidget_main.setCellWidget(row, col, redrawItem(item["previewsmall"], item["title"]))
+            # 绘制单元格
+            widget = ItemImg()
+            widget.setContent(imgWidth, item["previewsmall"], item["title"])
+            self.tableWidget_main.setCellWidget(row, col, widget)
             col += 1
             if col >= self.colMax:
                 col = 0
@@ -466,9 +459,10 @@ class MyWindow(QWidget, Ui_MainForm):
         
         # 表格点击（重复点击不会触发）
         def handleTableMainChange(row, col):
-            item = self.data[row * self.colMax + col]
-            if item == None:
+            index = row * self.colMax + col
+            if index in self.data:
                 return
+            item = self.data[index]
             # 首次点击
             if self.currentItem == None:
                 self.label_error_project.setVisible(False)
