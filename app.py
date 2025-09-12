@@ -468,7 +468,7 @@ class MyWindow(QWidget, Ui_MainForm):
         # 表格点击（重复点击不会触发）
         def handleTableMainChange(row, col):
             index = row * self.colMax + col
-            if index in self.data:
+            if index >= len(self.data) or index < 0:
                 return
             item = self.data[index]
             # 首次点击
