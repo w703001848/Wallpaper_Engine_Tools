@@ -15,14 +15,13 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox,
-    QCommandLinkButton, QFrame, QGridLayout, QGroupBox,
-    QHBoxLayout, QHeaderView, QLabel, QLineEdit,
-    QListWidget, QListWidgetItem, QPushButton, QRadioButton,
-    QScrollArea, QSizePolicy, QSpacerItem, QTabWidget,
-    QTableWidget, QTableWidgetItem, QToolButton, QVBoxLayout,
-    QWidget)
-import images_rc
+from PySide6.QtWidgets import (QAbstractItemView, QApplication, QButtonGroup, QCheckBox,
+    QComboBox, QCommandLinkButton, QFrame, QGridLayout,
+    QGroupBox, QHBoxLayout, QHeaderView, QLabel,
+    QLineEdit, QListWidget, QListWidgetItem, QProgressBar,
+    QPushButton, QRadioButton, QScrollArea, QSizePolicy,
+    QSpacerItem, QTabWidget, QTableWidget, QTableWidgetItem,
+    QToolButton, QVBoxLayout, QWidget)
 
 class Ui_MainForm(object):
     def setupUi(self, MainForm):
@@ -91,6 +90,12 @@ class Ui_MainForm(object):
         self.horizontalSpacer_4 = QSpacerItem(0, 0, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_13.addItem(self.horizontalSpacer_4)
+
+        self.progressBar = QProgressBar(self.tab_main)
+        self.progressBar.setObjectName(u"progressBar")
+        self.progressBar.setValue(24)
+
+        self.horizontalLayout_13.addWidget(self.progressBar)
 
 
         self.verticalLayout_4.addLayout(self.horizontalLayout_13)
@@ -299,6 +304,7 @@ class Ui_MainForm(object):
         self.tableWidget_main.setMinimumSize(QSize(660, 0))
         self.tableWidget_main.setFrameShape(QFrame.Shape.NoFrame)
         self.tableWidget_main.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        self.tableWidget_main.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.tableWidget_main.setShowGrid(False)
         self.tableWidget_main.horizontalHeader().setVisible(False)
         self.tableWidget_main.verticalHeader().setVisible(False)
@@ -593,20 +599,25 @@ class Ui_MainForm(object):
         self.tab_mklink.setObjectName(u"tab_mklink")
         self.verticalLayout_7 = QVBoxLayout(self.tab_mklink)
         self.verticalLayout_7.setObjectName(u"verticalLayout_7")
-        self.horizontalLayout_4 = QHBoxLayout()
-        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.label_7 = QLabel(self.tab_mklink)
+        self.groupBox_10 = QGroupBox(self.tab_mklink)
+        self.groupBox_10.setObjectName(u"groupBox_10")
+        self.horizontalLayout_20 = QHBoxLayout(self.groupBox_10)
+        self.horizontalLayout_20.setObjectName(u"horizontalLayout_20")
+        self.label_7 = QLabel(self.groupBox_10)
         self.label_7.setObjectName(u"label_7")
+        self.label_7.setMinimumSize(QSize(180, 0))
+        self.label_7.setMaximumSize(QSize(180, 16777215))
         self.label_7.setLineWidth(2)
+        self.label_7.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
+        self.label_7.setWordWrap(True)
 
-        self.horizontalLayout_4.addWidget(self.label_7)
+        self.horizontalLayout_20.addWidget(self.label_7)
 
-
-        self.verticalLayout_7.addLayout(self.horizontalLayout_4)
-
+        self.verticalLayout_20 = QVBoxLayout()
+        self.verticalLayout_20.setObjectName(u"verticalLayout_20")
         self.horizontalLayout_5 = QHBoxLayout()
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
-        self.label_3 = QLabel(self.tab_mklink)
+        self.label_3 = QLabel(self.groupBox_10)
         self.label_3.setObjectName(u"label_3")
         self.label_3.setMinimumSize(QSize(160, 0))
         self.label_3.setMaximumSize(QSize(160, 16777215))
@@ -614,24 +625,24 @@ class Ui_MainForm(object):
 
         self.horizontalLayout_5.addWidget(self.label_3)
 
-        self.lineEdit_mklink_path = QLineEdit(self.tab_mklink)
+        self.lineEdit_mklink_path = QLineEdit(self.groupBox_10)
         self.lineEdit_mklink_path.setObjectName(u"lineEdit_mklink_path")
         self.lineEdit_mklink_path.setEnabled(False)
 
         self.horizontalLayout_5.addWidget(self.lineEdit_mklink_path)
 
-        self.btn_mklink_open_old = QPushButton(self.tab_mklink)
+        self.btn_mklink_open_old = QPushButton(self.groupBox_10)
         self.btn_mklink_open_old.setObjectName(u"btn_mklink_open_old")
         self.btn_mklink_open_old.setMaximumSize(QSize(48, 16777215))
 
         self.horizontalLayout_5.addWidget(self.btn_mklink_open_old)
 
 
-        self.verticalLayout_7.addLayout(self.horizontalLayout_5)
+        self.verticalLayout_20.addLayout(self.horizontalLayout_5)
 
         self.horizontalLayout_7 = QHBoxLayout()
         self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
-        self.label_5 = QLabel(self.tab_mklink)
+        self.label_5 = QLabel(self.groupBox_10)
         self.label_5.setObjectName(u"label_5")
         self.label_5.setMinimumSize(QSize(160, 0))
         self.label_5.setMaximumSize(QSize(160, 16777215))
@@ -639,19 +650,25 @@ class Ui_MainForm(object):
 
         self.horizontalLayout_7.addWidget(self.label_5)
 
-        self.lineEdit_mklink_path_new = QLineEdit(self.tab_mklink)
+        self.lineEdit_mklink_path_new = QLineEdit(self.groupBox_10)
         self.lineEdit_mklink_path_new.setObjectName(u"lineEdit_mklink_path_new")
 
         self.horizontalLayout_7.addWidget(self.lineEdit_mklink_path_new)
 
-        self.btn_mklink_open = QPushButton(self.tab_mklink)
+        self.btn_mklink_open = QPushButton(self.groupBox_10)
         self.btn_mklink_open.setObjectName(u"btn_mklink_open")
         self.btn_mklink_open.setMaximumSize(QSize(48, 16777215))
 
         self.horizontalLayout_7.addWidget(self.btn_mklink_open)
 
 
-        self.verticalLayout_7.addLayout(self.horizontalLayout_7)
+        self.verticalLayout_20.addLayout(self.horizontalLayout_7)
+
+        self.listWidget_mklink = QListWidget(self.groupBox_10)
+        self.listWidget_mklink.setObjectName(u"listWidget_mklink")
+        self.listWidget_mklink.setSpacing(6)
+
+        self.verticalLayout_20.addWidget(self.listWidget_mklink)
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
@@ -659,28 +676,28 @@ class Ui_MainForm(object):
 
         self.horizontalLayout.addItem(self.horizontalSpacer_2)
 
-        self.btn_mklink_new = QPushButton(self.tab_mklink)
+        self.btn_mklink_new = QPushButton(self.groupBox_10)
         self.btn_mklink_new.setObjectName(u"btn_mklink_new")
         self.btn_mklink_new.setStyleSheet(u"color: rgb(255, 255, 255);\n"
 "background-color: rgb(85, 170, 255);")
 
         self.horizontalLayout.addWidget(self.btn_mklink_new)
 
-        self.btn_mklink_remove = QPushButton(self.tab_mklink)
+        self.btn_mklink_remove = QPushButton(self.groupBox_10)
         self.btn_mklink_remove.setObjectName(u"btn_mklink_remove")
         self.btn_mklink_remove.setStyleSheet(u"color: rgb(255, 255, 255);\n"
 "background-color: rgb(255, 85, 0);")
 
         self.horizontalLayout.addWidget(self.btn_mklink_remove)
 
-        self.btn_mklink_create = QPushButton(self.tab_mklink)
+        self.btn_mklink_create = QPushButton(self.groupBox_10)
         self.btn_mklink_create.setObjectName(u"btn_mklink_create")
         self.btn_mklink_create.setStyleSheet(u"color: rgb(255, 255, 255);\n"
 "background-color: rgb(85, 85, 255);")
 
         self.horizontalLayout.addWidget(self.btn_mklink_create)
 
-        self.btn_mklink_restore = QPushButton(self.tab_mklink)
+        self.btn_mklink_restore = QPushButton(self.groupBox_10)
         self.btn_mklink_restore.setObjectName(u"btn_mklink_restore")
         self.btn_mklink_restore.setStyleSheet(u"color: rgb(255, 255, 255);\n"
 "background-color: rgb(255, 170, 127);")
@@ -688,51 +705,56 @@ class Ui_MainForm(object):
         self.horizontalLayout.addWidget(self.btn_mklink_restore)
 
 
-        self.verticalLayout_7.addLayout(self.horizontalLayout)
+        self.verticalLayout_20.addLayout(self.horizontalLayout)
 
-        self.listWidget_mklink = QListWidget(self.tab_mklink)
-        self.listWidget_mklink.setObjectName(u"listWidget_mklink")
-        self.listWidget_mklink.setSpacing(6)
 
-        self.verticalLayout_7.addWidget(self.listWidget_mklink)
+        self.horizontalLayout_20.addLayout(self.verticalLayout_20)
 
-        self.horizontalLayout_10 = QHBoxLayout()
-        self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
-        self.label_8 = QLabel(self.tab_mklink)
+
+        self.verticalLayout_7.addWidget(self.groupBox_10)
+
+        self.groupBox_9 = QGroupBox(self.tab_mklink)
+        self.groupBox_9.setObjectName(u"groupBox_9")
+        self.horizontalLayout_19 = QHBoxLayout(self.groupBox_9)
+        self.horizontalLayout_19.setObjectName(u"horizontalLayout_19")
+        self.label_8 = QLabel(self.groupBox_9)
         self.label_8.setObjectName(u"label_8")
+        self.label_8.setMinimumSize(QSize(180, 0))
+        self.label_8.setMaximumSize(QSize(180, 16777215))
         self.label_8.setLineWidth(2)
+        self.label_8.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
+        self.label_8.setWordWrap(True)
 
-        self.horizontalLayout_10.addWidget(self.label_8)
+        self.horizontalLayout_19.addWidget(self.label_8)
 
-
-        self.verticalLayout_7.addLayout(self.horizontalLayout_10)
-
+        self.verticalLayout_19 = QVBoxLayout()
+        self.verticalLayout_19.setObjectName(u"verticalLayout_19")
         self.horizontalLayout_6 = QHBoxLayout()
         self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
-        self.label_6 = QLabel(self.tab_mklink)
+        self.label_6 = QLabel(self.groupBox_9)
         self.label_6.setObjectName(u"label_6")
 
         self.horizontalLayout_6.addWidget(self.label_6)
 
-        self.lineEdit_nas_path_backup = QLineEdit(self.tab_mklink)
+        self.lineEdit_nas_path_backup = QLineEdit(self.groupBox_9)
         self.lineEdit_nas_path_backup.setObjectName(u"lineEdit_nas_path_backup")
         self.lineEdit_nas_path_backup.setMaximumSize(QSize(16777215, 16777215))
 
         self.horizontalLayout_6.addWidget(self.lineEdit_nas_path_backup)
 
-        self.btn_nas_save = QPushButton(self.tab_mklink)
+        self.btn_nas_save = QPushButton(self.groupBox_9)
         self.btn_nas_save.setObjectName(u"btn_nas_save")
 
         self.horizontalLayout_6.addWidget(self.btn_nas_save)
 
-        self.btn_naslink_new = QPushButton(self.tab_mklink)
+        self.btn_naslink_new = QPushButton(self.groupBox_9)
         self.btn_naslink_new.setObjectName(u"btn_naslink_new")
         self.btn_naslink_new.setStyleSheet(u"color: rgb(255, 255, 255);\n"
 "background-color: rgb(85, 170, 255);")
 
         self.horizontalLayout_6.addWidget(self.btn_naslink_new)
 
-        self.btn_naslink_remove = QPushButton(self.tab_mklink)
+        self.btn_naslink_remove = QPushButton(self.groupBox_9)
         self.btn_naslink_remove.setObjectName(u"btn_naslink_remove")
         self.btn_naslink_remove.setMaximumSize(QSize(80, 16777215))
         self.btn_naslink_remove.setStyleSheet(u"color: rgb(255, 255, 255);\n"
@@ -740,7 +762,7 @@ class Ui_MainForm(object):
 
         self.horizontalLayout_6.addWidget(self.btn_naslink_remove)
 
-        self.btn_naslink_create = QPushButton(self.tab_mklink)
+        self.btn_naslink_create = QPushButton(self.groupBox_9)
         self.btn_naslink_create.setObjectName(u"btn_naslink_create")
         self.btn_naslink_create.setMinimumSize(QSize(120, 23))
         self.btn_naslink_create.setStyleSheet(u"color: rgb(255, 255, 255);\n"
@@ -749,13 +771,24 @@ class Ui_MainForm(object):
         self.horizontalLayout_6.addWidget(self.btn_naslink_create)
 
 
-        self.verticalLayout_7.addLayout(self.horizontalLayout_6)
+        self.verticalLayout_19.addLayout(self.horizontalLayout_6)
 
-        self.listWidget_nas = QListWidget(self.tab_mklink)
+        self.listWidget_nas = QListWidget(self.groupBox_9)
         self.listWidget_nas.setObjectName(u"listWidget_nas")
         self.listWidget_nas.setSpacing(2)
 
-        self.verticalLayout_7.addWidget(self.listWidget_nas)
+        self.verticalLayout_19.addWidget(self.listWidget_nas)
+
+
+        self.horizontalLayout_19.addLayout(self.verticalLayout_19)
+
+
+        self.verticalLayout_7.addWidget(self.groupBox_9)
+
+        self.horizontalLayout_10 = QHBoxLayout()
+        self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
+
+        self.verticalLayout_7.addLayout(self.horizontalLayout_10)
 
         self.tabWidget.addTab(self.tab_mklink, "")
         self.tab_set = QWidget()
@@ -1066,8 +1099,12 @@ class Ui_MainForm(object):
         self.btn_repkg.setText(QCoreApplication.translate("MainForm", u"\u63d0\u53d6", None))
         self.btn_repkg_output.setText(QCoreApplication.translate("MainForm", u"\u6253\u5f00\u8f93\u51fa", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_repkg), QCoreApplication.translate("MainForm", u"RePKG", None))
+        self.groupBox_10.setTitle(QCoreApplication.translate("MainForm", u"Mklink", None))
         self.label_7.setText(QCoreApplication.translate("MainForm", u"C\u76d8\u7626\u8eab\uff08mklink\u547d\u4ee4\u751f\u6210\u8f6f\u94fe\u63a5\u76ee\u5f55\u8fc1\u79fb\u9879\u76ee\uff09\n"
-"\u6ce8\u610f\uff1a\u751f\u6210\u8f6f\u94fe\u63a5\u5c06\u91cd\u547d\u540d\u6e90\u6587\u4ef6\u5939\uff08\u540d\u79f0+\u540e\u7f00\uff09\u9632\u6b62\u4e22\u5931\uff0c\u5982\u679c\u5931\u8d25\u8bf7\u624b\u52a8\u6539\u56de\u3002\n"
+"\n"
+"\u6ce8\u610f\uff1a\n"
+"\u751f\u6210\u8f6f\u94fe\u63a5\u5c06\u91cd\u547d\u540d\u6e90\u6587\u4ef6\u5939\uff08\u540d\u79f0+\u540e\u7f00\uff09\u9632\u6b62\u4e22\u5931\uff0c\u5982\u679c\u5931\u8d25\u8bf7\u624b\u52a8\u6539\u56de\u3002\n"
+"\n"
 "\u5185\u5bb9\u8f6c\u79fb\u4e0d\u5efa\u8bae\u4f7f\u7528\uff0c\u8bf7\u624b\u52a8\u526a\u5207\u8ba2\u9605\u76ee\u5f55", None))
         self.label_3.setText(QCoreApplication.translate("MainForm", u"\u539f\u5730\u5740\uff08\u66ff\u6362\u8f6f\u94fe\u63a5\uff09", None))
         self.lineEdit_mklink_path.setPlaceholderText("")
@@ -1079,16 +1116,22 @@ class Ui_MainForm(object):
         self.btn_mklink_remove.setText(QCoreApplication.translate("MainForm", u"\u79fb\u9664", None))
         self.btn_mklink_create.setText(QCoreApplication.translate("MainForm", u"\u751f\u6210\u8f6f\u94fe\u63a5\uff08\u539f\u5730\u5740->\u76ee\u6807\u5730\u5740\uff09", None))
         self.btn_mklink_restore.setText(QCoreApplication.translate("MainForm", u"\u8fd8\u539f", None))
+        self.groupBox_9.setTitle(QCoreApplication.translate("MainForm", u"\u8fc1\u79fb\u5916\u7f6e\u5b58\u50a8\u4f4d\u7f6e", None))
         self.label_8.setText(QCoreApplication.translate("MainForm", u"\u9488\u5bf9\u4e0d\u5e38\u7528\u58c1\u7eb8\u548c\u5e94\u7528\u538b\u7f29\u5305\u8fc1\u79fb\u81f3NAS(\u6216\u8005\u5916\u7f6e\u786c\u76d8)\u6765\u51cf\u5c0f\u786c\u76d8\u5360\u7528\uff0c\u642d\u914d\u5feb\u6377\u65b9\u5f0f\u5feb\u901f\u5b9a\u4f4d\u6e90\u6587\u4ef6\n"
-"\u6b65\u9aa4\uff1a1.\u624b\u52a8\u8f6c\u79fb\u9879\u76ee\u5230\u6307\u5b9aip\u5730\u5740\u76ee\u5f55 2.\u751f\u6210\u5feb\u6377\u65b9\u5f0f\n"
-"\u6ce8\uff1aNAS\u4e00\u4e9b\u64cd\u4f5c\u7528\u76d8\u7b26\u8df3\u8f6c\u4f1a\u51fa\u9519", None))
+"\n"
+"\u6b65\u9aa4\uff1a\n"
+"1.\u58c1\u7eb8\u53f3\u952e\u624b\u52a8\u8f6c\u79fb\u9879\u76ee\u5230\u6307\u5b9aip\u5730\u5740\u76ee\u5f55 \n"
+"2.\u751f\u6210\u5feb\u6377\u65b9\u5f0f\n"
+"\n"
+"\u6ce8\uff1a\n"
+"NAS\u4e00\u4e9b\u64cd\u4f5c\u7528\u76d8\u7b26\u8df3\u8f6c\u4f1a\u51fa\u9519", None))
         self.label_6.setText(QCoreApplication.translate("MainForm", u"ip\u5730\u5740\u6216\u76d8\u7b26\uff1a", None))
         self.lineEdit_nas_path_backup.setPlaceholderText(QCoreApplication.translate("MainForm", u"ftp://112.168.217.73 \u6216\u4f7f\u7528\u5916\u7f6e\u786c\u76d8\u76d8\u7b26\uff08H:/\uff09", None))
         self.btn_nas_save.setText(QCoreApplication.translate("MainForm", u"\u4fdd\u5b58", None))
         self.btn_naslink_new.setText(QCoreApplication.translate("MainForm", u"\u65b0\u589e", None))
         self.btn_naslink_remove.setText(QCoreApplication.translate("MainForm", u"\u79fb\u9664", None))
         self.btn_naslink_create.setText(QCoreApplication.translate("MainForm", u"\u6279\u91cf\u751f\u6210\u5feb\u6377\u65b9\u5f0f", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_mklink), QCoreApplication.translate("MainForm", u"Mklink", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_mklink), QCoreApplication.translate("MainForm", u"\u5b58\u50a8\u6574\u7406", None))
         self.groupBox_dir.setTitle(QCoreApplication.translate("MainForm", u"\u8f6f\u4ef6\u76ee\u5f55", None))
         self.label.setText(QCoreApplication.translate("MainForm", u"Steam\u5b89\u88c5\u4f4d\u7f6e", None))
         self.lineEdit_steamPath.setPlaceholderText(QCoreApplication.translate("MainForm", u"\u4f8b\uff1aC:\\Program Files (x86)\\Steam", None))
@@ -1099,7 +1142,7 @@ class Ui_MainForm(object):
         self.label_4.setText(QCoreApplication.translate("MainForm", u"\u5907\u4efd\u4f4d\u7f6e", None))
         self.lineEdit_wallpaperBackupPath.setPlaceholderText(QCoreApplication.translate("MainForm", u"\u4f8b\uff1aC:\\Program Files (x86)\\Steam\\steamapps\\common\\wallpaper_engine\\projects\\backup", None))
         self.btn_wallpaperBackupPath.setText("")
-        self.groupBox_6.setTitle(QCoreApplication.translate("MainForm", u"\u9ed1\u540d\u5355", None))
+        self.groupBox_6.setTitle(QCoreApplication.translate("MainForm", u"\u963b\u6b62\u540d\u5355/\u9ed1\u540d\u5355", None))
         self.label_12.setText(QCoreApplication.translate("MainForm", u"\u5de5\u574a\u53f3\u952e\n"
 " - \u62a5\u544a\u963b\u6b62\u540d\u5355\n"
 "", None))

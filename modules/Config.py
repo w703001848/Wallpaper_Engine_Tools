@@ -21,11 +21,11 @@ config = {
     "repkgPath": "", # 记录上次提取RePKG路径
     # "isCheckedRePKGClear": False, # 是否清空RePKG上次输出
     "mklinkList": [{
-        "name": "订阅",
+        "remark": "订阅",
         "path": "",
         "path_new": ""
     }, {
-        "name": "备份",
+        "remark": "备份",
         "path": "",
         "path_new": ""
     }], # mklink历史新增
@@ -62,28 +62,30 @@ temp_dependency = [] # 父级关联项目
 def get_config(): 
     global config
     try:
-        with open(config_path, encoding="utf-8") as f1:
-            data = json.load(f1)
-            # 新版本config合并
-            if len(data) != len(config):
-                for key in config.keys():
-                    if not data.get(key, ''): data[key] = config[key]
-            # 清理历史遗弃字段
-            if len(data) != len(config):
-                for key in data.keys():
-                    if not config.get(key, ''): del data[key]
-            config = data
+        f1 = open(config_path, encoding="utf-8")
+        data = json.load(f1)
+        # 新版本config合并
+        if len(data) != len(config):
+            for key in config.keys():
+                if not data.get(key, ''): data[key] = config[key]
+        # 清理历史遗弃字段
+        if len(data) != len(config):
+            for key in data.keys():
+                if not config.get(key, ''): del data[key]
+        config = data
+        f1.close()
     except Exception as e:
-        logging.warning(f"读取config.json: {e}")
+        logging.error(f"读取config.json: {e}")
 
 # 写入config.json
 def saveConfig(): 
     try:
-        with open(config_path, mode='wt', encoding="utf-8") as f1:
-            json.dump(config, f1) # 将json写入文件
-            print("保存config")
+        f1 = open(config_path, mode='wt', encoding="utf-8")
+        json.dump(config, f1, ensure_ascii=False) # 将json写入文件
+        print("保存config")
+        f1.close()
     except Exception as e:
-        logging.warning(f"写入config.json: {e}")
+        logging.error(f"写入config.json: {e}")
         
 # 设置config.json
 def setConfig(key, obj): 
@@ -92,7 +94,7 @@ def setConfig(key, obj):
         if config[key] != obj:
             config[key] = obj
     except Exception as e:
-        logging.warning(f"设置config.json: {e}")
+        logging.error(f"设置config.json: {e}")
 
 # 注册表获取Steam安装位置
 def get_steam_path_registry(): 
@@ -153,11 +155,12 @@ def get_wallpaper_steam_path():
 def get_wallpaper_config(): 
     global temp_authorblocklistnames
     try:
-        with open(os.path.join(os.path.dirname(config["wallpaperPath"]), 'config.json'), encoding="utf-8") as f2:
-            res = json.load(f2) # 从文件读取json并反序列化
-            temp_authorblocklistnames = res[config["username"]]["general"]["browser"]["authorblocklistnames"]
-            if config["isFolders"]:
-                setConfig('folders', res[config["username"]]["general"]["browser"]["folders"])
+        f1 = open(os.path.join(os.path.dirname(config["wallpaperPath"]), 'config.json'), encoding="utf-8")
+        res = json.load(f1) # 从文件读取json并反序列化
+        temp_authorblocklistnames = res[config["username"]]["general"]["browser"]["authorblocklistnames"]
+        if config["isFolders"]:
+            setConfig('folders', res[config["username"]]["general"]["browser"]["folders"])
+        f1.close()
         return True
     except Exception as e:
         logging.error(f"获取WallpaperEngine config位置并读取: {e}")
@@ -166,9 +169,10 @@ def get_wallpaper_config():
 # WallpaperEngine 工坊壁纸缓存
 def get_workshopcache():
     try:
-        with open(os.path.join(os.path.dirname(config["wallpaperPath"]), 'bin/workshopcache.json'), encoding="utf-8") as f1:
-            res = json.load(f1) # 从文件读取json并反序列化
-            return res["wallpapers"]
+        f1 = open(os.path.join(os.path.dirname(config["wallpaperPath"]), 'bin/workshopcache.json'), encoding="utf-8")
+        res = json.load(f1) # 从文件读取json并反序列化
+        f1.close()
+        return res["wallpapers"]
     except Exception as e:
         logging.error(f"获取WallpaperEngine 工坊壁纸缓存并读取: {e}")
     return []
@@ -212,6 +216,7 @@ def get_project_json(source, invalid, dir_name, dir_path, data, project_path):
             "workshopurl" : "",
             "invalid": invalid, # 自增，用于判断失效
             "source": source, # 自增，用于判断来源
+            "storagepath": "", # 自增，用于判断是否转移其他存储位置
         }
     else:
         obj = data
@@ -222,8 +227,10 @@ def get_project_json(source, invalid, dir_name, dir_path, data, project_path):
             obj["file"] = os.path.join(dir_path, data["file"])
         else: 
             obj["file"] = ""
-        obj["filesize"] = getDirSize(dir_path)
-        obj["filesizelabel"] = dirSizeToStr(obj["filesize"])
+        if "filesize" not in data:
+            obj["filesize"] = getDirSize(dir_path)
+        if "filesizelabel" not in data:
+            obj["filesizelabel"] = dirSizeToStr(obj["filesize"])
         obj["hasrating"] = False
         obj["ispreset"] = False
         obj["local"] = False
@@ -253,6 +260,8 @@ def get_project_json(source, invalid, dir_name, dir_path, data, project_path):
         obj["workshopurl"] = os.path.join("steam://url/CommunityFilePage", dir_name)
         obj["invalid"] = invalid
         obj["source"] = source
+        if "storagepath" not in data:
+            obj["storagepath"] = ""
     return obj
 
 # 参数有发布id，后期可查看是否黑名单。
@@ -350,9 +359,10 @@ def getWorkshop():
             project_path = os.path.join(dir_path, "project.json")
             if os.path.exists(project_path):
                 try:
-                    with open(project_path, encoding="utf-8") as f1:
-                        data = json.load(f1) # 从文件读取json并反序列化
-                        un_workshop.append(get_project_json('wallpaper', True, dir_name, dir_path, data, project_path))
+                    f1 = open(project_path, encoding="utf-8")
+                    data = json.load(f1) # 从文件读取json并反序列化
+                    un_workshop.append(get_project_json('wallpaper', True, dir_name, dir_path, data, project_path))
+                    f1.close()
                     logging.warning(f"工坊壁纸目录未知项目加入工坊: {project_path}")
                 except Exception as e:
                     un_project.append(get_project_json('wallpaper', True, dir_name, dir_path, None, project_path))
@@ -419,10 +429,11 @@ def getWorkshop():
             project_path = os.path.join(dir_path, "project.json")
             if os.path.exists(project_path):
                 try:
-                    with open(project_path, encoding="utf-8") as f1:
-                        data = json.load(f1) # 从文件读取json并反序列化
-                        search_workshopcache_dependency(data)
-                        workshopBackup.append(get_project_json('backup', False, dir_name, dir_path, data, project_path))
+                    f1 = open(project_path, encoding="utf-8")
+                    data = json.load(f1) # 从文件读取json并反序列化
+                    search_workshopcache_dependency(data)
+                    workshopBackup.append(get_project_json('backup', False, dir_name, dir_path, data, project_path))
+                    f1.close()
                     # logging.warning(f"备份缓存新增: {project_path}")
                 except Exception as e:
                     logging.error(f"备份project.json无法识别: {dir_name} {e}")

@@ -3,16 +3,16 @@ import logging, math, time, json
 # PySide6组件调用
 from PySide6.QtCore import Qt, QSize, QStringListModel
 from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import QApplication, QWidget, QListWidgetItem
+from PySide6.QtWidgets import QApplication, QWidget, QMenu, QListWidgetItem, QInputDialog
 # 加载模板
 from widgets.Ui_main import Ui_MainForm
 from widgets.itemImg import ItemImg
 # 功能模块
-from modules.main import Debouncer, timer, Unlock_hidden_achievements, getDirSize, dirSizeToStr, openFileDialog, openDirDialog, openMessageDialog, openStartfile, dragEnterEvent
+from modules.main import Debouncer, timer, convert_path, Unlock_hidden_achievements, getDirSize, dirSizeToStr, openFileDialog, openDirDialog, openMessageDialog, openStartfile, dragEnterEvent
 from modules.Config import config, temp_authorblocklistnames, getWorkshop, setSteamPath, setWallpaperPath, setWallpaperBackupPath, setConfig, saveConfig
 from modules.RePKG import runRepkg, followWork, updateRepkgData
 from modules.Mklink import mklinkCreate, mklinkNew, mklinkBack, updateMklinkList
-from modules.Naslink import naslink
+from modules.Storege import MoveProject, GeneratedDirNas
 # 资源图片
 from img import images_rc
 
@@ -27,6 +27,7 @@ class MyWindow(QWidget, Ui_MainForm):
 
         with timer("初始化耗时"):
             self.initPage()
+            self.initContextMenu()
             self.initMain()
             self.initMainRight()
             self.initRepkg()
@@ -38,6 +39,7 @@ class MyWindow(QWidget, Ui_MainForm):
             # 加载数据
             self.loadData(True)
 
+        # 打包-加载画面 关闭
         try:
             import pyi_splash
             pyi_splash.close()
@@ -113,7 +115,7 @@ class MyWindow(QWidget, Ui_MainForm):
 
         # 调用此函数以重启应用
         def showRestartConfirmation():
-            if openMessageDialog("清空缓存数据并重启，请确认！"):
+            if openMessageDialog("清空缓存数据并重启，请确认！", "tip"):
                 setConfig("isCheckedScene", True) # 场景
                 setConfig("isCheckedVideo", True) # 视频
                 setConfig("isCheckedWeb", True) # 网页
@@ -299,6 +301,8 @@ class MyWindow(QWidget, Ui_MainForm):
         self.checkBox_authorblock.keyType = "isCheckedAuthorblock"
         self.checkBox_authorblock.setChecked(self.sort["isCheckedAuthorblock"])
 
+        self.progressBar.setVisible(False)
+
     # 加载数据
     def loadData(self, isFirst = False):
         print('loadData')
@@ -428,7 +432,7 @@ class MyWindow(QWidget, Ui_MainForm):
         while i < self.colMax:
             self.tableWidget_main.setColumnWidth(i, imgWidth)
             i += 1
-        
+
         row = 0 # 计数行
         col = 0 # 计数列
         for item in self.data[self.captureStart:self.captureEnd]: # 截取功能要浅拷贝处理，否则会加载上次截取
@@ -441,6 +445,63 @@ class MyWindow(QWidget, Ui_MainForm):
                 col = 0
                 row += 1
                 self.tableWidget_main.setRowHeight(row, imgWidth)
+
+    # 右键弹窗初始化
+    def initContextMenu(self):
+        self.itemMenu = None
+        # 右键弹窗
+        self.context_menu = QMenu(self)
+        self.actionStartfile = self.context_menu.addAction("打开资源管理器")
+        def handleStartfile():
+            os.startfile(os.path.dirname(self.itemMenu["project"]))
+        self.actionStartfile.triggered.connect(handleStartfile)
+
+        # self.context_menu.addSeparator() # 分割线
+        # self.actionEdit = self.context_menu.addAction("修改")
+
+        self.actionMoveBackup = self.context_menu.addAction("转移备份")
+        def handleMoveBackup():
+            MoveProject(self.itemMenu)
+        self.actionMoveBackup.triggered.connect(handleMoveBackup)
+
+        self.menuMoveNas = QMenu("转移NAS同步备份", self)
+        def handleMenuNas(e):
+            for obj in config["nasLink"]:
+                if obj["remark"] == e.text():
+                    MoveProject(self.itemMenu, os.path.join(obj["IP"], obj["dir"]))
+        self.menuMoveNas.triggered.connect(handleMenuNas)
+        self.context_menu.addMenu(self.menuMoveNas)
+
+        self.tableWidget_main.setContextMenuPolicy(Qt.CustomContextMenu) # 开启右键菜单触发
+        self.tableWidget_main.customContextMenuRequested.connect(self.show_context_menu)
+    
+    # 右键弹窗显示
+    def show_context_menu(self, pos):
+        # print("右键弹窗", pos)
+        # 右键指向项目
+        indexAt = self.tableWidget_main.indexAt(pos)
+        if indexAt.isValid():
+            row, col = indexAt.row(), indexAt.column()
+            index = row * self.colMax + col
+            if index >= len(self.data) or index < 0:
+                return
+            self.itemMenu = self.data[index]
+            # 项目适配选项
+            if self.itemMenu["source"] == "wallpaper":
+                self.actionMoveBackup.setVisible(True)
+            elif self.itemMenu["source"] == "backup":
+                self.actionMoveBackup.setVisible(False)
+                if self.itemMenu["storagepath"] != "":
+                    self.menuMoveNas.setVisible(False)
+            else:
+                self.actionMoveBackup.setVisible(False)
+                self.menuMoveNas.setVisible(False)
+            # 更新二级菜单
+            self.menuMoveNas.clear()
+            for obj in config["nasLink"]:
+                self.menuMoveNas.addAction(obj["remark"])
+            # 显示弹窗
+            self.context_menu.exec(self.tableWidget_main.viewport().mapToGlobal(pos))
 
     # 初始化界面右侧功能
     def initMainRight(self):
@@ -479,7 +540,7 @@ class MyWindow(QWidget, Ui_MainForm):
                 self.label_title.setVisible(True)
                 self.label_note.setVisible(True)
                 self.groupBox_btn.setVisible(True)
-            self.currentItem = item
+            self.currentItem = self.itemMenu = item
             # itemBox.setMaximumSize(QSize(imgWidth, imgWidth))
             # itemBox.setAlignment(Qt.AlignmentFlag.AlignCenter)
             self.label_img.setPixmap(QPixmap(self.currentItem["previewsmall"]).scaled(182, 182, Qt.KeepAspectRatio, Qt.SmoothTransformation))
@@ -492,11 +553,12 @@ class MyWindow(QWidget, Ui_MainForm):
                 self.label_note.setText(self.currentItem["description"])
             else:
                 try:
-                    with open(self.currentItem["project"], encoding="utf-8") as f1:
-                        data = json.load(f1)
-                        self.label_note.setText(data["description"] if "description" in data else "简介：无")
+                    f1 = open(self.currentItem["project"], encoding="utf-8")
+                    data = json.load(f1)
+                    self.label_note.setText(data["description"] if "description" in data else "简介：无")
+                    f1.close()
                 except Exception as e:
-                    logging.warning(f"读取config.json: {e}")
+                    logging.error(f"读取config.json简介: {e}")
             if self.currentItem["type"].lower() == 'scene':
                 self.btn_repkg_work.setVisible(True)
                 self.btn_repkg_dir.setVisible(True)
@@ -542,7 +604,7 @@ class MyWindow(QWidget, Ui_MainForm):
             if runRepkg(__path):
                 if followWork():
                     # updateRepkgData(self.tableWidget_repkg)
-                    setConfig('repkgPath', __path)
+                    setConfig('repkgPath', convert_path(__path))
         self.btn_repkg_work.clicked.connect(handleRepkgWork)
         # 打开repkg output
         def handleRepkgDir():
@@ -610,7 +672,7 @@ class MyWindow(QWidget, Ui_MainForm):
         def handleMklinkNewClick():
             obj = mklinkNew()
             if obj:
-                self.listWidget_mklink.addItem(f"标注:{obj['name']}\n{obj['path']}\n未生成")
+                self.listWidget_mklink.addItem(f"标注:{obj['remark']}\n{obj['path']}\n未生成")
         self.btn_mklink_new.clicked.connect(handleMklinkNewClick)
 
         # 移除
@@ -628,7 +690,7 @@ class MyWindow(QWidget, Ui_MainForm):
             if dir_path_new:
                 obj = config["mklinkList"][index]
                 obj['path_new'] = dir_path_new
-                self.listWidget_mklink.currentItem().setText(f"标注:{obj['name']}\n{obj['path']}\n{obj['path_new'] or '未生成'}")
+                self.listWidget_mklink.currentItem().setText(f"标注:{obj['remark']}\n{obj['path']}\n{obj['path_new'] or '未生成'}")
                 self.lineEdit_mklink_path_new.setText(obj['path_new'])
         self.btn_mklink_create.clicked.connect(handleMklinkCreateClick)
 
@@ -638,7 +700,7 @@ class MyWindow(QWidget, Ui_MainForm):
             if mklinkBack(index):
                 obj = config["mklinkList"][index]
                 obj['path_new'] = ""
-                self.listWidget_mklink.currentItem().setText(f"标注:{obj['name']}\n{obj['path']}\n未生成")
+                self.listWidget_mklink.currentItem().setText(f"标注:{obj['remark']}\n{obj['path']}\n未生成")
                 self.lineEdit_mklink_path_new.setText("")
         self.btn_mklink_restore.clicked.connect(handleMklinkBackClick)
 
@@ -652,7 +714,8 @@ class MyWindow(QWidget, Ui_MainForm):
         self.lineEdit_nas_path_backup.textChanged.connect(handleNasInput)
         self.lineEdit_nas_path_backup.setText(config["nasLinkPath"])
         def handleNasSaveClick():
-            txt = self.lineEdit_nas_path_backup.text()
+            txt = convert_path(self.lineEdit_nas_path_backup.text())
+            self.lineEdit_nas_path_backup.setText(txt)
             if os.path.exists(txt):
                 self.btn_nas_save.setVisible(False)
                 setConfig("nasLinkPath", txt)
@@ -664,15 +727,18 @@ class MyWindow(QWidget, Ui_MainForm):
         def handleNewClick():
             txt = self.lineEdit_nas_path_backup.text()
             if os.path.exists(txt):
-                path = openDirDialog(txt)
-                if path:
-                    dir = path[len(txt):]
-                    obj = {
-                        "IP": txt,
-                        "dir": dir
-                    }
-                    self.nasLink.append(obj)
-                    self.listWidget_nas.addItem(f'前缀：{obj["IP"]}  -  路径：{obj["dir"]}')
+                remark, ok = QInputDialog.getText(None, '新增存储', '请输入备注 例：游戏')
+                if ok:
+                    path = openDirDialog(txt)
+                    if path:
+                        dir = path[len(txt):]
+                        obj = {
+                            "remark": remark,
+                            "IP": txt,
+                            "dir": dir
+                        }
+                        self.nasLink.append(obj)
+                        self.listWidget_nas.addItem(f'{obj["remark"]}{os.linesep}存储位置：{obj["IP"]}  -  路径：{obj["dir"]}')
             else:
                 openMessageDialog("ip地址错误！")
         self.btn_naslink_new.clicked.connect(handleNewClick)
@@ -689,7 +755,20 @@ class MyWindow(QWidget, Ui_MainForm):
         self.btn_naslink_remove.setVisible(False)
         
         def handleCreateClick():
-            pass
+            index = self.listWidget_nas.currentRow()
+            if index < 0:
+                openMessageDialog("请选择要生成的外置路径")
+                return
+            obj = self.nasLink[index]
+            print(obj)
+            dir_path = os.path.join(obj["IP"], obj["dir"])
+            if not os.path.exists(dir_path):
+                openMessageDialog(f"找不到路径{dir_path}", "error")
+                return
+            print(dir_path)
+            list_dir = os.listdir(dir_path)
+            for dir_name in list_dir:
+                GeneratedDirNas(dir_path, dir_name)
         self.btn_naslink_create.clicked.connect(handleCreateClick)
 
         def handleNasChange(event):
@@ -697,7 +776,7 @@ class MyWindow(QWidget, Ui_MainForm):
         self.listWidget_nas.currentItemChanged.connect(handleNasChange) # 表格点击
 
         for item in self.nasLink:
-            self.listWidget_nas.addItem(f'前缀：{item["IP"]}  -  路径：{item["dir"]}')
+            self.listWidget_nas.addItem(f'{item["remark"]}{os.linesep}存储位置：{item["IP"]}  -  路径：{item["dir"]}')
 
     # 阻止名单初始化
     def initAuthorblock(self):
@@ -741,25 +820,26 @@ class MyWindow(QWidget, Ui_MainForm):
             try:
                 path = os.path.join(os.getcwd(), 'virus')
                 if os.path.exists(path):
-                    with open(os.path.join(path, 'virus.json'), encoding="utf-8") as f1:
-                        self.virus = json.load(f1)
-                        # print(data)
-                        print('毒狗列表加载数据')
-                        self.listWidget_virus.setIconSize(QSize(48, 48))
-                        for item in self.virus:
-                            strIsBlock = ""
-                            for obj in temp_authorblocklistnames:
-                                if obj["value"] == item["steamid"]:
-                                    strIsBlock = "【已拉黑】"
-                                    break
-                            note = f'{item["steamid"]}{strIsBlock}{os.linesep}目前名字：{item["personaname"]}{os.linesep}{" // ".join(item["realname"])}'
-                            # print(os.path.join(os.getcwd(), 'virus', item["avatarmedium"]))
-                            icon = QPixmap(os.path.join(os.getcwd(), 'virus', item["avatarmedium"]))
-                            icon.scaled(48, 48, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-                            item = QListWidgetItem(icon, note)
-                            self.listWidget_virus.addItem(item)
+                    f1 = open(os.path.join(path, 'virus.json'), encoding="utf-8")
+                    self.virus = json.load(f1)
+                    # print(data)
+                    print('毒狗列表加载数据')
+                    self.listWidget_virus.setIconSize(QSize(48, 48))
+                    for item in self.virus:
+                        strIsBlock = ""
+                        for obj in temp_authorblocklistnames:
+                            if obj["value"] == item["steamid"]:
+                                strIsBlock = "【已拉黑】"
+                                break
+                        note = f'{item["steamid"]}{strIsBlock}{os.linesep}目前名字：{item["personaname"]}{os.linesep}{" // ".join(item["realname"])}'
+                        # print(os.path.join(os.getcwd(), 'virus', item["avatarmedium"]))
+                        icon = QPixmap(os.path.join(os.getcwd(), 'virus', item["avatarmedium"]))
+                        icon.scaled(48, 48, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                        item = QListWidgetItem(icon, note)
+                        self.listWidget_virus.addItem(item)
+                    f1.close()
             except Exception as e:
-                logging.warning(f"读取virus.json: {e}")
+                logging.error(f"读取virus.json: {e}")
 
     # 窗口变化
     def resizeEvent(self, event):

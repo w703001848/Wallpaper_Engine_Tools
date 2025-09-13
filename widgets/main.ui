@@ -131,6 +131,13 @@
            </property>
           </spacer>
          </item>
+         <item>
+          <widget class="QProgressBar" name="progressBar">
+           <property name="value">
+            <number>24</number>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
        <item>
@@ -530,6 +537,9 @@ background-color: rgb(255, 85, 0);</string>
              </property>
              <property name="verticalScrollBarPolicy">
               <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOn</enum>
+             </property>
+             <property name="editTriggers">
+              <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
              </property>
              <property name="showGrid">
               <bool>false</bool>
@@ -1081,286 +1091,351 @@ background-color: rgb(85, 170, 255);</string>
      </widget>
      <widget class="QWidget" name="tab_mklink">
       <attribute name="title">
-       <string>Mklink</string>
+       <string>存储整理</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_7">
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_4">
-         <item>
-          <widget class="QLabel" name="label_7">
-           <property name="lineWidth">
-            <number>2</number>
-           </property>
-           <property name="text">
-            <string>C盘瘦身（mklink命令生成软链接目录迁移项目）
-注意：生成软链接将重命名源文件夹（名称+后缀）防止丢失，如果失败请手动改回。
+        <widget class="QGroupBox" name="groupBox_10">
+         <property name="title">
+          <string>Mklink</string>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_20">
+          <item>
+           <widget class="QLabel" name="label_7">
+            <property name="minimumSize">
+             <size>
+              <width>180</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>180</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="lineWidth">
+             <number>2</number>
+            </property>
+            <property name="text">
+             <string>C盘瘦身（mklink命令生成软链接目录迁移项目）
+
+注意：
+生成软链接将重命名源文件夹（名称+后缀）防止丢失，如果失败请手动改回。
+
 内容转移不建议使用，请手动剪切订阅目录</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_5">
-         <item>
-          <widget class="QLabel" name="label_3">
-           <property name="minimumSize">
-            <size>
-             <width>160</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>160</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>原地址（替换软链接）</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="lineEdit_mklink_path">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="placeholderText">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="btn_mklink_open_old">
-           <property name="maximumSize">
-            <size>
-             <width>48</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>打开</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_7">
-         <item>
-          <widget class="QLabel" name="label_5">
-           <property name="minimumSize">
-            <size>
-             <width>160</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>160</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>目标地址（指向新地址）</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="lineEdit_mklink_path_new">
-           <property name="placeholderText">
-            <string>例：D:/Documents/wallpaper_engine_backup</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="btn_mklink_open">
-           <property name="maximumSize">
-            <size>
-             <width>48</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>打开</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <spacer name="horizontalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QPushButton" name="btn_mklink_new">
-           <property name="styleSheet">
-            <string notr="true">color: rgb(255, 255, 255);
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_20">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_5">
+              <item>
+               <widget class="QLabel" name="label_3">
+                <property name="minimumSize">
+                 <size>
+                  <width>160</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>160</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>原地址（替换软链接）</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="lineEdit_mklink_path">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="placeholderText">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btn_mklink_open_old">
+                <property name="maximumSize">
+                 <size>
+                  <width>48</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>打开</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_7">
+              <item>
+               <widget class="QLabel" name="label_5">
+                <property name="minimumSize">
+                 <size>
+                  <width>160</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>160</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>目标地址（指向新地址）</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="lineEdit_mklink_path_new">
+                <property name="placeholderText">
+                 <string>例：D:/Documents/wallpaper_engine_backup</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btn_mklink_open">
+                <property name="maximumSize">
+                 <size>
+                  <width>48</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>打开</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QListWidget" name="listWidget_mklink">
+              <property name="spacing">
+               <number>6</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout">
+              <item>
+               <spacer name="horizontalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btn_mklink_new">
+                <property name="styleSheet">
+                 <string notr="true">color: rgb(255, 255, 255);
 background-color: rgb(85, 170, 255);</string>
-           </property>
-           <property name="text">
-            <string>新增</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="btn_mklink_remove">
-           <property name="styleSheet">
-            <string notr="true">color: rgb(255, 255, 255);
+                </property>
+                <property name="text">
+                 <string>新增</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btn_mklink_remove">
+                <property name="styleSheet">
+                 <string notr="true">color: rgb(255, 255, 255);
 background-color: rgb(255, 85, 0);</string>
-           </property>
-           <property name="text">
-            <string>移除</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="btn_mklink_create">
-           <property name="styleSheet">
-            <string notr="true">color: rgb(255, 255, 255);
+                </property>
+                <property name="text">
+                 <string>移除</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btn_mklink_create">
+                <property name="styleSheet">
+                 <string notr="true">color: rgb(255, 255, 255);
 background-color: rgb(85, 85, 255);</string>
-           </property>
-           <property name="text">
-            <string>生成软链接（原地址-&gt;目标地址）</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="btn_mklink_restore">
-           <property name="styleSheet">
-            <string notr="true">color: rgb(255, 255, 255);
+                </property>
+                <property name="text">
+                 <string>生成软链接（原地址-&gt;目标地址）</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btn_mklink_restore">
+                <property name="styleSheet">
+                 <string notr="true">color: rgb(255, 255, 255);
 background-color: rgb(255, 170, 127);</string>
-           </property>
-           <property name="text">
-            <string>还原</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QListWidget" name="listWidget_mklink">
-         <property name="spacing">
-          <number>6</number>
-         </property>
+                </property>
+                <property name="text">
+                 <string>还原</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_10">
-         <item>
-          <widget class="QLabel" name="label_8">
-           <property name="lineWidth">
-            <number>2</number>
-           </property>
-           <property name="text">
-            <string>针对不常用壁纸和应用压缩包迁移至NAS(或者外置硬盘)来减小硬盘占用，搭配快捷方式快速定位源文件
-步骤：1.手动转移项目到指定ip地址目录 2.生成快捷方式
-注：NAS一些操作用盘符跳转会出错</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_6">
-         <item>
-          <widget class="QLabel" name="label_6">
-           <property name="text">
-            <string>ip地址或盘符：</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="lineEdit_nas_path_backup">
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="placeholderText">
-            <string>ftp://112.168.217.73 或使用外置硬盘盘符（H:/）</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="btn_nas_save">
-           <property name="text">
-            <string>保存</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="btn_naslink_new">
-           <property name="styleSheet">
-            <string notr="true">color: rgb(255, 255, 255);
+        <widget class="QGroupBox" name="groupBox_9">
+         <property name="title">
+          <string>迁移外置存储位置</string>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_19">
+          <item>
+           <widget class="QLabel" name="label_8">
+            <property name="minimumSize">
+             <size>
+              <width>180</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>180</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="lineWidth">
+             <number>2</number>
+            </property>
+            <property name="text">
+             <string>针对不常用壁纸和应用压缩包迁移至NAS(或者外置硬盘)来减小硬盘占用，搭配快捷方式快速定位源文件
+
+步骤：
+1.壁纸右键手动转移项目到指定ip地址目录 
+2.生成快捷方式
+
+注：
+NAS一些操作用盘符跳转会出错</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_19">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_6">
+              <item>
+               <widget class="QLabel" name="label_6">
+                <property name="text">
+                 <string>ip地址或盘符：</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="lineEdit_nas_path_backup">
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="placeholderText">
+                 <string>ftp://112.168.217.73 或使用外置硬盘盘符（H:/）</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btn_nas_save">
+                <property name="text">
+                 <string>保存</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btn_naslink_new">
+                <property name="styleSheet">
+                 <string notr="true">color: rgb(255, 255, 255);
 background-color: rgb(85, 170, 255);</string>
-           </property>
-           <property name="text">
-            <string>新增</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="btn_naslink_remove">
-           <property name="maximumSize">
-            <size>
-             <width>80</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">color: rgb(255, 255, 255);
+                </property>
+                <property name="text">
+                 <string>新增</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btn_naslink_remove">
+                <property name="maximumSize">
+                 <size>
+                  <width>80</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">color: rgb(255, 255, 255);
 background-color: rgb(255, 85, 0);</string>
-           </property>
-           <property name="text">
-            <string>移除</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="btn_naslink_create">
-           <property name="minimumSize">
-            <size>
-             <width>120</width>
-             <height>23</height>
-            </size>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">color: rgb(255, 255, 255);
+                </property>
+                <property name="text">
+                 <string>移除</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btn_naslink_create">
+                <property name="minimumSize">
+                 <size>
+                  <width>120</width>
+                  <height>23</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">color: rgb(255, 255, 255);
 background-color: rgb(85, 85, 255);</string>
-           </property>
-           <property name="text">
-            <string>批量生成快捷方式</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+                </property>
+                <property name="text">
+                 <string>批量生成快捷方式</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QListWidget" name="listWidget_nas">
+              <property name="spacing">
+               <number>2</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
        </item>
        <item>
-        <widget class="QListWidget" name="listWidget_nas">
-         <property name="spacing">
-          <number>2</number>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_10"/>
        </item>
       </layout>
      </widget>
@@ -1561,7 +1636,7 @@ background-color: rgb(85, 85, 255);</string>
            <item>
             <widget class="QGroupBox" name="groupBox_6">
              <property name="title">
-              <string>黑名单</string>
+              <string>阻止名单/黑名单</string>
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_9">
               <item>
@@ -1788,19 +1863,19 @@ background-color: rgb(85, 170, 255);</string>
  </resources>
  <connections/>
  <buttongroups>
+  <buttongroup name="buttonGroup_img"/>
+  <buttongroup name="buttonGroup_source">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
+  <buttongroup name="buttonGroup_sort"/>
   <buttongroup name="buttonGroup_type">
    <property name="exclusive">
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroup_img"/>
-  <buttongroup name="buttonGroup_sort"/>
   <buttongroup name="buttonGroup_page">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="buttonGroup_source">
    <property name="exclusive">
     <bool>false</bool>
    </property>

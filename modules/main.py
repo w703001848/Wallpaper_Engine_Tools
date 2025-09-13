@@ -76,20 +76,32 @@ def Unlock_hidden_achievements():
     keyboard.press_and_release('enter')  # 按下Enter
 
 # 警告弹窗
-def openMessageDialog(txt="警告", funOK=func, funCancel=func):
-    msg = QMessageBox()
-    msg.setIcon(QMessageBox.Warning)  # 设置图标为警告
-    msg.setText(txt)  # 设置消息文本
-    msg.setWindowTitle("警告")  # 设置窗口标题
-    msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)  # 设置按钮
+def openMessageDialog(txt = "", type = "warning", title = "警告", icon = QMessageBox.Warning, btns = QMessageBox.Close, funOK = func, funCancel = func):
+    msg = QMessageBox(icon, title, txt, btns)
+    if type == "error":
+        msg.setWindowTitle("错误")
+        msg.setIcon(QMessageBox.Critical)
+    elif type == "tip":
+        msg.setWindowTitle("提示")
+        msg.setIcon(QMessageBox.NoIcon)
+        msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+    # msg.setText(txt)  # 设置消息文本
+    # msg.setWindowTitle(title)  # 设置窗口标题
+    # msg.setIcon(icon)  # 设置图标为警告
+    # msg.setStandardButtons(btns)  # 设置按钮
     # 执行模态对话框，返回点击的按钮
     ret = msg.exec()
     if ret == QMessageBox.Ok:
+        print('Ok')
         funOK(ret)
         return True
     elif ret == QMessageBox.Cancel:
+        print('Cancel')
         funCancel(ret)
         return False
+    else:
+        # print('openMessageDialog ret', ret)
+        return ret
 
 # 打开资源管理器
 def openStartfile(path):
@@ -105,7 +117,7 @@ def openFileDialog(path=None, title="选择一个文件", type="All Files (*)", 
     file_name, _ = QFileDialog.getOpenFileName(None, title, path, type)
     if file_name:
         funOK(file_name)
-        return file_name
+        return convert_path(file_name)
     else:
         funCancel()
         return False
@@ -115,7 +127,7 @@ def openDirDialog(path=None, title ="选择一个文件夹", funOK=func, funCanc
     dir_path = QFileDialog.getExistingDirectory(None, title, path)
     if dir_path:
         funOK(dir_path)
-        return dir_path
+        return convert_path(dir_path)
     else:
         funCancel()
         return False
@@ -160,3 +172,7 @@ def checkEnvironment():
 def dragEnterEvent(event):
     if event.mimeData().hasUrls():
         event.acceptProposedAction()
+
+# 当前平台路径分割符号转换
+def convert_path(path, to_unix=os.name=='nt'):
+    return path.replace("/", "\\") if to_unix else path.replace("\\", "/")
