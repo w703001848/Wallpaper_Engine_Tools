@@ -46,8 +46,8 @@ class WorkerThread(QThread):
         self.fun = None
 
     def run(self):
+        self.running = True
         if self.time:
-            self.running = True
             timer = time.time()
             while self.running:
                 if not self.paused:
@@ -59,6 +59,7 @@ class WorkerThread(QThread):
             self.running = False
         elif self.fun is not None:
             self.fun()
+            self.running = False
             self.running_update.emit(True)
 
     def setFun(self, fun):

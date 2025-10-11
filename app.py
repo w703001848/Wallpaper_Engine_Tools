@@ -12,7 +12,7 @@ from modules.main import Debouncer, timer, convert_path, Unlock_hidden_achieveme
 from modules.Config import config, temp_authorblocklistnames, getWorkshop, setSteamPath, setWallpaperPath, setWallpaperBackupPath, setConfig, saveConfig
 from modules.RePKG import runRepkg, followWork, updateRepkgData
 from modules.Mklink import mklinkCreate, mklinkNew, mklinkBack, updateMklinkList
-from modules.Storege import MoveProject, GeneratedDirNas
+from modules.Storege import MoveProject, GeneratedDirNas, GeneratedDirThread
 # 资源图片
 from img import images_rc
 
@@ -452,10 +452,14 @@ class MyWindow(QWidget, Ui_MainForm):
 
         self.actionMoveBackup = self.context_menu.addAction("转移备份")
         def handleMoveBackup():
-            self.progressBar.setVisible(True)
-            self.progressBar.setRange(0,0)
-            MoveProject(self.itemMenu)
-            self.progressBar.setVisible(False)
+            # self.progressBar.setVisible(True)
+            # self.progressBar.setRange(0,0)
+            # MoveProject(self.itemMenu)
+            # self.progressBar.setVisible(False)
+            # 多线程
+            if not GeneratedDirThread.paused:
+                GeneratedDirThread.setFun(lambda: MoveProject(self.itemMenu))
+                GeneratedDirThread.start()
         self.actionMoveBackup.triggered.connect(handleMoveBackup)
 
         self.menuMoveNas = QMenu("转移NAS同步备份", self)

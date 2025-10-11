@@ -4,10 +4,13 @@ import logging
 
 from .Config import config
 from .main import convert_path, openMessageDialog, getDirSize, dirSizeToStr
-
+from .Thread import WorkerThread
+from PySide6.QtCore import Slot
 shell = Dispatch("WScript.Shell")
 
 list_notify = list()
+
+GeneratedDirThread = WorkerThread()
 
 # 生成快捷方式
 def GeneratedLnk(shorcut, target):
@@ -61,18 +64,13 @@ def GeneratedDirNas(path, name):
         shutil.copy2(projectPath, os.path.join(dir_path_new, 'project.json'))
 
         try:
-            txt_split = os.path.splitext(data["preview"])
-            target = os.path.join(dir_path_old, "folder" + txt_split[1])
+            target = os.path.join(dir_path_old, data["preview"])
             if not os.path.exists(target):
-                # preview改名folder
-                target_old = os.path.join(dir_path_old, data["preview"])
-                if not os.path.exists(target_old):
-                    raise Exception("无法查询到preview/folder", dir_path_old)
-                os.rename(target_old, target)
-            # 复制preview/folder
+                raise Exception("无法查询到preview", dir_path_old)
+            # 复制preview
             shutil.copy2(target, os.path.join(dir_path_new, data["preview"]))
         except Exception as e:
-            logging.error(f'复制preview/folder失败: {dir_path_old} - {e}')
+            logging.error(f'复制preview失败: {dir_path_old} - {e}')
 
         # 是否只生成'项目文件夹'快捷方式
         if "type" in data and data["type"].lower() == 'video':
@@ -80,7 +78,7 @@ def GeneratedDirNas(path, name):
             for item_name in lists:
                 target = os.path.join(dir_path_old, item_name)
                 txt_split = os.path.splitext(item_name)
-                if txt_split[0] == "preview" or txt_split[0] == "folder" or item_name == "project.json" or "Thumbs" in txt_split[0]:
+                if txt_split[0] == "preview" or item_name == "project.json" or "Thumbs" in txt_split[0]:
                     continue
                 else:
                     # print('拷贝: %s: %s: %s' %(target, dir_path_new, txt[0]))
@@ -140,7 +138,13 @@ def MoveProject(obj, path = ""):
         # 创建备份快捷方式
         if path != "":
             GeneratedDirNas(path, obj["workshopid"])
-        openMessageDialog(f'转移完成:{obj["workshopid"]}')
+        # openMessageDialog(f'转移完成:{obj["workshopid"]}')
     except Exception as e:
         logging.error(f"转移内容失败: {e}")
-        openMessageDialog(str(e), 'error')
+        # openMessageDialog(str(e), 'error')
+
+@Slot(bool) # @Slot(str)
+def handle_running_update(i): # 接收信号
+    print(f'# 接收信号 {i}')
+    openMessageDialog(f'转移完成')
+GeneratedDirThread.running_update.connect(handle_running_update)
