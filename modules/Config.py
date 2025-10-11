@@ -50,6 +50,7 @@ config = {
     "isCheckedBackup": False, # 备份
     "isCheckedInvalid": True, # 失效
     "isCheckedTemp": False, # temp
+    "TempDir": [], # 临时存放文件夹
     "isCheckedAuthorblock": True, # 黑名单
     "sortCurrent": "subscriptiondate", # 订阅日期
     "sortReverse": False, # 排序 正序

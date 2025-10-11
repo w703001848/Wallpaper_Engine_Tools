@@ -790,42 +790,6 @@ class Ui_MainForm(object):
 
         self.verticalLayout_7.addWidget(self.groupBox_9)
 
-        self.groupBox_11 = QGroupBox(self.tab_mklink)
-        self.groupBox_11.setObjectName(u"groupBox_11")
-        self.verticalLayout_21 = QVBoxLayout(self.groupBox_11)
-        self.verticalLayout_21.setObjectName(u"verticalLayout_21")
-        self.horizontalLayout_4 = QHBoxLayout()
-        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_4.addItem(self.horizontalSpacer_5)
-
-        self.btn_temp_new = QPushButton(self.groupBox_11)
-        self.btn_temp_new.setObjectName(u"btn_temp_new")
-        self.btn_temp_new.setStyleSheet(u"color: rgb(255, 255, 255);\n"
-"background-color: rgb(85, 170, 255);")
-
-        self.horizontalLayout_4.addWidget(self.btn_temp_new)
-
-        self.btn_temp_remove = QPushButton(self.groupBox_11)
-        self.btn_temp_remove.setObjectName(u"btn_temp_remove")
-        self.btn_temp_remove.setMaximumSize(QSize(80, 16777215))
-        self.btn_temp_remove.setStyleSheet(u"color: rgb(255, 255, 255);\n"
-"background-color: rgb(255, 85, 0);")
-
-        self.horizontalLayout_4.addWidget(self.btn_temp_remove)
-
-
-        self.verticalLayout_21.addLayout(self.horizontalLayout_4)
-
-        self.listWidget_temp = QListWidget(self.groupBox_11)
-        self.listWidget_temp.setObjectName(u"listWidget_temp")
-
-        self.verticalLayout_21.addWidget(self.listWidget_temp)
-
-
-        self.verticalLayout_7.addWidget(self.groupBox_11)
-
         self.tabWidget.addTab(self.tab_mklink, "")
         self.tab_set = QWidget()
         self.tab_set.setObjectName(u"tab_set")
@@ -840,7 +804,7 @@ class Ui_MainForm(object):
         self.scrollArea_1.setWidgetResizable(True)
         self.scrollAreaWidgetContents_1 = QWidget()
         self.scrollAreaWidgetContents_1.setObjectName(u"scrollAreaWidgetContents_1")
-        self.scrollAreaWidgetContents_1.setGeometry(QRect(0, 0, 983, 782))
+        self.scrollAreaWidgetContents_1.setGeometry(QRect(0, 0, 983, 1046))
         self.verticalLayout_2 = QVBoxLayout(self.scrollAreaWidgetContents_1)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.groupBox_dir = QGroupBox(self.scrollAreaWidgetContents_1)
@@ -1038,6 +1002,42 @@ class Ui_MainForm(object):
 
         self.verticalLayout_2.addWidget(self.groupBox)
 
+        self.groupBox_11 = QGroupBox(self.scrollAreaWidgetContents_1)
+        self.groupBox_11.setObjectName(u"groupBox_11")
+        self.verticalLayout_21 = QVBoxLayout(self.groupBox_11)
+        self.verticalLayout_21.setObjectName(u"verticalLayout_21")
+        self.horizontalLayout_4 = QHBoxLayout()
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_4.addItem(self.horizontalSpacer_5)
+
+        self.btn_temp_new = QPushButton(self.groupBox_11)
+        self.btn_temp_new.setObjectName(u"btn_temp_new")
+        self.btn_temp_new.setStyleSheet(u"color: rgb(255, 255, 255);\n"
+"background-color: rgb(85, 170, 255);")
+
+        self.horizontalLayout_4.addWidget(self.btn_temp_new)
+
+        self.btn_temp_remove = QPushButton(self.groupBox_11)
+        self.btn_temp_remove.setObjectName(u"btn_temp_remove")
+        self.btn_temp_remove.setMaximumSize(QSize(80, 16777215))
+        self.btn_temp_remove.setStyleSheet(u"color: rgb(255, 255, 255);\n"
+"background-color: rgb(255, 85, 0);")
+
+        self.horizontalLayout_4.addWidget(self.btn_temp_remove)
+
+
+        self.verticalLayout_21.addLayout(self.horizontalLayout_4)
+
+        self.listWidget_temp = QListWidget(self.groupBox_11)
+        self.listWidget_temp.setObjectName(u"listWidget_temp")
+
+        self.verticalLayout_21.addWidget(self.listWidget_temp)
+
+
+        self.verticalLayout_2.addWidget(self.groupBox_11)
+
         self.groupBox_info = QGroupBox(self.scrollAreaWidgetContents_1)
         self.groupBox_info.setObjectName(u"groupBox_info")
         self.groupBox_info.setMinimumSize(QSize(0, 60))
@@ -1168,9 +1168,6 @@ class Ui_MainForm(object):
         self.btn_naslink_new.setText(QCoreApplication.translate("MainForm", u"\u65b0\u589e", None))
         self.btn_naslink_remove.setText(QCoreApplication.translate("MainForm", u"\u79fb\u9664", None))
         self.btn_naslink_create.setText(QCoreApplication.translate("MainForm", u"\u6279\u91cf\u751f\u6210\u5feb\u6377\u65b9\u5f0f", None))
-        self.groupBox_11.setTitle(QCoreApplication.translate("MainForm", u"\u4e34\u65f6\u5b58\u653e", None))
-        self.btn_temp_new.setText(QCoreApplication.translate("MainForm", u"\u65b0\u589e", None))
-        self.btn_temp_remove.setText(QCoreApplication.translate("MainForm", u"\u79fb\u9664", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_mklink), QCoreApplication.translate("MainForm", u"\u5b58\u50a8\u6574\u7406", None))
         self.groupBox_dir.setTitle(QCoreApplication.translate("MainForm", u"\u8f6f\u4ef6\u76ee\u5f55", None))
         self.label.setText(QCoreApplication.translate("MainForm", u"Steam\u5b89\u88c5\u4f4d\u7f6e", None))
@@ -1200,6 +1197,9 @@ class Ui_MainForm(object):
 "\n"
 "\u6216\u8005\u624b\u52a8\u8f93\u5165\u201d\u4e0a\u4e0a\u4e0b\u4e0b\u5de6\u53f3\u5de6\u53f3ba\u56de\u8f66\u201c", None))
         self.btn_unlock_hidden_achievements.setText(QCoreApplication.translate("MainForm", u"\u89e3\u9501", None))
+        self.groupBox_11.setTitle(QCoreApplication.translate("MainForm", u"\u4e34\u65f6\u5b58\u653e", None))
+        self.btn_temp_new.setText(QCoreApplication.translate("MainForm", u"\u65b0\u589e", None))
+        self.btn_temp_remove.setText(QCoreApplication.translate("MainForm", u"\u79fb\u9664", None))
         self.groupBox_info.setTitle(QCoreApplication.translate("MainForm", u"\u5173\u4e8e", None))
         self.label_version.setText(QCoreApplication.translate("MainForm", u"\u7248\u672c\uff1a0", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_set), QCoreApplication.translate("MainForm", u"\u8bbe\u7f6e", None))

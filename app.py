@@ -35,6 +35,7 @@ class MyWindow(QWidget, Ui_MainForm):
             self.initNaslink()
             self.initAuthorblock()
             self.initVirus()
+            self.initTemp()
 
             # 加载数据
             self.loadData(True)
@@ -70,9 +71,11 @@ class MyWindow(QWidget, Ui_MainForm):
                     updateRepkgData(self.tableWidget_repkg)
             elif index == 2: # Mklink加载
                 updateMklinkList(self.listWidget_mklink)
+                self.get_nas_list()
             elif index == 3: # 黑名单加载
                 self.get_authorblock_list()
                 self.get_virus_list()
+                self.get_temp_list()
         self.tabWidget.currentChanged.connect(tabChange)
 
         # 获取steam地址
@@ -794,8 +797,10 @@ class MyWindow(QWidget, Ui_MainForm):
             self.btn_naslink_remove.setVisible(True)
         self.listWidget_nas.currentItemChanged.connect(handleNasChange) # 表格点击
 
-        for item in self.nasLink:
-            self.listWidget_nas.addItem(f'{item["remark"]}{os.linesep}存储位置：{item["IP"]}  -  路径：{item["dir"]}')
+    def get_nas_list(self): # nas列表数据加载
+        if not self.listWidget_nas.count():
+            for item in self.nasLink:
+                self.listWidget_nas.addItem(f'{item["remark"]}{os.linesep}存储位置：{item["IP"]}  -  路径：{item["dir"]}')
 
     def initAuthorblock(self): # 阻止名单初始化
         self.virus = []
@@ -855,6 +860,36 @@ class MyWindow(QWidget, Ui_MainForm):
                     f1.close()
             except Exception as e:
                 logging.error(f"读取virus.json: {e}")
+
+    def initTemp(self): # 临时文件夹初始化
+        self.TempDir = config["TempDir"]
+        def handleNewClick():
+            path = openDirDialog()
+            if path:
+                self.TempDir.append(path)
+                self.listWidget_temp.addItem(path)
+        self.btn_temp_new.clicked.connect(handleNewClick)
+        
+        def handleRemoveClick():
+            index = self.listWidget_temp.currentRow()
+            if index >=0:
+                del self.TempDir[index]
+                self.listWidget_temp.takeItem(index)
+                self.listWidget_temp.setCurrentRow(-1)
+                self.btn_temp_remove.setVisible(False)
+            else:
+                openMessageDialog("请选择需要删除的地址！")
+        self.btn_temp_remove.clicked.connect(handleRemoveClick)
+        self.btn_temp_remove.setVisible(False)
+
+        def handleTempChange(event):
+            self.btn_temp_remove.setVisible(True)
+        self.listWidget_temp.currentItemChanged.connect(handleTempChange) # 表格点击
+
+    def get_temp_list(self): # 临时文件夹加载
+        if not self.listWidget_temp.count():
+            for item in self.TempDir:
+                self.listWidget_temp.addItem(item)
 
     def resizeEvent(self, event): # 窗口变化
         if self.windowWidth == self.size().width():
