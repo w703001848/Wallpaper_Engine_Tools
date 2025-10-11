@@ -149,10 +149,11 @@ class MyWindow(QWidget, Ui_MainForm):
             "isCheckedWallpaper": config["isCheckedWallpaper"],
             "isCheckedBackup": config["isCheckedBackup"],
             "isCheckedInvalid": config["isCheckedInvalid"],
+            "isCheckedTemp": config["isCheckedTemp"],
             "isCheckedAuthorblock": config["isCheckedAuthorblock"],
             "sortCurrent": config["sortCurrent"], # 订阅日期: subscriptiondate
             "sortReverse": config["sortReverse"], # 排序 正序
-            "filterSize": config["filterSize"],
+            "filterSize": config["filterSize"], # 筛选数量
             "displaySize": config["displaySize"], # 显示大小
         }
         self.captureStart = None
@@ -207,12 +208,13 @@ class MyWindow(QWidget, Ui_MainForm):
         self.checkBox_wallpaper.keyType = "isCheckedWallpaper"
         self.checkBox_backup.keyType = "isCheckedBackup"
         self.checkBox_invalid.keyType = "isCheckedInvalid"
+        self.checkBox_temp.keyType = "isCheckedTemp"
         self.checkBox_wallpaper.setChecked(self.sort["isCheckedWallpaper"])
         self.checkBox_backup.setChecked(self.sort["isCheckedBackup"])
         self.checkBox_invalid.setChecked(self.sort["isCheckedInvalid"])
+        self.checkBox_temp.setChecked(self.sort["isCheckedTemp"])
 
         # 排序选择
-        self.comboBox_sort.setCurrentIndex(4)
         def handleSortSelect(index):
             self.sort["sortCurrent"] = self.sortCurrent[index]
             setConfig("sortCurrent", self.sort["sortCurrent"])
@@ -220,6 +222,10 @@ class MyWindow(QWidget, Ui_MainForm):
             self.sortData()
             self.captureData()
         self.comboBox_sort.currentIndexChanged.connect(handleSortSelect)
+        for i, key in enumerate(self.sortCurrent):
+            if self.sort["sortCurrent"] == key:
+                self.comboBox_sort.setCurrentIndex(i)
+                break
 
         # 排序
         def handleGroupSort(event):
@@ -234,27 +240,39 @@ class MyWindow(QWidget, Ui_MainForm):
         self.buttonGroup_sort.buttonClicked.connect(handleGroupSort) # 排序
         self.radioButton_positive.keyType = 'positive'
         self.radioButton_reverse.keyType = 'reverse'
+        if self.sort["sortReverse"]:
+            self.radioButton_reverse.setChecked(True)
+        else:
+            self.radioButton_positive.setChecked(True)
+
 
         # 查看大小
         def handleGroupImg(event):
             if self.sort["displaySize"] == event.keyType:
                 return
-            print(f"查看大小 keyType:{event.keyType}")
+            # print(f"查看大小 keyType:{event.keyType}")
             self.sort["displaySize"] = event.keyType
             setConfig("displaySize", self.sort["displaySize"])
             self.refreshTable()
         self.buttonGroup_img.buttonClicked.connect(handleGroupImg) # 查看大小
         self.radioButton_big.keyType = 240
-        self.radioButton_small.keyType = self.sort["displaySize"] # 默认大小
+        self.radioButton_small.keyType = 160 # 默认大小
+        if self.sort["displaySize"] == 240:
+            self.radioButton_big.setChecked(True)
+        else:
+            self.radioButton_small.setChecked(True)
 
         # 页面显示数量选择
-        self.comboBox_size.setCurrentIndex(2)
         def handleSizeSelect(index):
             self.sort["filterSize"] = self.filterSize[index]
             setConfig("filterSize", self.sort["filterSize"])
             # print(f'页面显示数量选择 index:{index} filterSize:{self.sort["filterSize"]}')
             self.calculateQuantityTotal() # 刷新页面数量
         self.comboBox_size.currentIndexChanged.connect(handleSizeSelect)
+        for i, key in enumerate(self.filterSize):
+            if self.sort["filterSize"] == key:
+                self.comboBox_size.setCurrentIndex(i)
+                break
 
         # 页选择
         def handlePageSelect(index):

@@ -93,7 +93,6 @@ class Ui_MainForm(object):
 
         self.progressBar = QProgressBar(self.tab_main)
         self.progressBar.setObjectName(u"progressBar")
-        self.progressBar.setValue(24)
 
         self.horizontalLayout_13.addWidget(self.progressBar)
 
@@ -177,6 +176,12 @@ class Ui_MainForm(object):
         self.checkBox_invalid.setMaximumSize(QSize(16777215, 16777215))
 
         self.verticalLayout_10.addWidget(self.checkBox_invalid)
+
+        self.checkBox_temp = QCheckBox(self.groupBox_4)
+        self.buttonGroup_source.addButton(self.checkBox_temp)
+        self.checkBox_temp.setObjectName(u"checkBox_temp")
+
+        self.verticalLayout_10.addWidget(self.checkBox_temp)
 
 
         self.verticalLayout_8.addWidget(self.groupBox_4)
@@ -785,10 +790,41 @@ class Ui_MainForm(object):
 
         self.verticalLayout_7.addWidget(self.groupBox_9)
 
-        self.horizontalLayout_10 = QHBoxLayout()
-        self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
+        self.groupBox_11 = QGroupBox(self.tab_mklink)
+        self.groupBox_11.setObjectName(u"groupBox_11")
+        self.verticalLayout_21 = QVBoxLayout(self.groupBox_11)
+        self.verticalLayout_21.setObjectName(u"verticalLayout_21")
+        self.horizontalLayout_4 = QHBoxLayout()
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
-        self.verticalLayout_7.addLayout(self.horizontalLayout_10)
+        self.horizontalLayout_4.addItem(self.horizontalSpacer_5)
+
+        self.btn_temp_new = QPushButton(self.groupBox_11)
+        self.btn_temp_new.setObjectName(u"btn_temp_new")
+        self.btn_temp_new.setStyleSheet(u"color: rgb(255, 255, 255);\n"
+"background-color: rgb(85, 170, 255);")
+
+        self.horizontalLayout_4.addWidget(self.btn_temp_new)
+
+        self.btn_temp_remove = QPushButton(self.groupBox_11)
+        self.btn_temp_remove.setObjectName(u"btn_temp_remove")
+        self.btn_temp_remove.setMaximumSize(QSize(80, 16777215))
+        self.btn_temp_remove.setStyleSheet(u"color: rgb(255, 255, 255);\n"
+"background-color: rgb(255, 85, 0);")
+
+        self.horizontalLayout_4.addWidget(self.btn_temp_remove)
+
+
+        self.verticalLayout_21.addLayout(self.horizontalLayout_4)
+
+        self.listWidget_temp = QListWidget(self.groupBox_11)
+        self.listWidget_temp.setObjectName(u"listWidget_temp")
+
+        self.verticalLayout_21.addWidget(self.listWidget_temp)
+
+
+        self.verticalLayout_7.addWidget(self.groupBox_11)
 
         self.tabWidget.addTab(self.tab_mklink, "")
         self.tab_set = QWidget()
@@ -1053,6 +1089,7 @@ class Ui_MainForm(object):
         self.checkBox_wallpaper.setText(QCoreApplication.translate("MainForm", u"\u521b\u610f\u5de5\u574a", None))
         self.checkBox_backup.setText(QCoreApplication.translate("MainForm", u"\u6211\u7684\u58c1\u7eb8", None))
         self.checkBox_invalid.setText(QCoreApplication.translate("MainForm", u"\u5931\u6548", None))
+        self.checkBox_temp.setText(QCoreApplication.translate("MainForm", u"\u4e34\u65f6\u5b58\u653e", None))
         self.groupBox_7.setTitle(QCoreApplication.translate("MainForm", u"\u6392\u5e8f", None))
         self.comboBox_sort.setItemText(0, QCoreApplication.translate("MainForm", u"\u540d\u79f0", None))
         self.comboBox_sort.setItemText(1, QCoreApplication.translate("MainForm", u"\u8bc4\u7ea7", None))
@@ -1131,6 +1168,9 @@ class Ui_MainForm(object):
         self.btn_naslink_new.setText(QCoreApplication.translate("MainForm", u"\u65b0\u589e", None))
         self.btn_naslink_remove.setText(QCoreApplication.translate("MainForm", u"\u79fb\u9664", None))
         self.btn_naslink_create.setText(QCoreApplication.translate("MainForm", u"\u6279\u91cf\u751f\u6210\u5feb\u6377\u65b9\u5f0f", None))
+        self.groupBox_11.setTitle(QCoreApplication.translate("MainForm", u"\u4e34\u65f6\u5b58\u653e", None))
+        self.btn_temp_new.setText(QCoreApplication.translate("MainForm", u"\u65b0\u589e", None))
+        self.btn_temp_remove.setText(QCoreApplication.translate("MainForm", u"\u79fb\u9664", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_mklink), QCoreApplication.translate("MainForm", u"\u5b58\u50a8\u6574\u7406", None))
         self.groupBox_dir.setTitle(QCoreApplication.translate("MainForm", u"\u8f6f\u4ef6\u76ee\u5f55", None))
         self.label.setText(QCoreApplication.translate("MainForm", u"Steam\u5b89\u88c5\u4f4d\u7f6e", None))

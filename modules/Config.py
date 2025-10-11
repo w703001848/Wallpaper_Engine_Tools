@@ -49,6 +49,7 @@ config = {
     "isCheckedWallpaper": False, # 工坊
     "isCheckedBackup": False, # 备份
     "isCheckedInvalid": True, # 失效
+    "isCheckedTemp": False, # temp
     "isCheckedAuthorblock": True, # 黑名单
     "sortCurrent": "subscriptiondate", # 订阅日期
     "sortReverse": False, # 排序 正序
