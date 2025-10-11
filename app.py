@@ -442,6 +442,11 @@ class MyWindow(QWidget, Ui_MainForm):
         self.itemMenu = None
         # 右键弹窗
         self.context_menu = QMenu(self)
+        self.copyTitle = self.context_menu.addAction("标题复制")
+        def handleCopyTitle():
+            pyperclip.copy(self.itemMenu["title"])
+            # openMessageDialog("已复制到剪贴板")
+        self.copyTitle.triggered.connect(handleCopyTitle)
         self.actionStartfile = self.context_menu.addAction("打开资源管理器")
         def handleStartfile():
             os.startfile(os.path.dirname(self.itemMenu["project"]))
@@ -780,8 +785,8 @@ class MyWindow(QWidget, Ui_MainForm):
         # 黑名单列表点击
         def handleAuthorblockClick():
             obj = temp_authorblocklistnames[self.listWidget_authorblock.currentRow()]
-            openMessageDialog("已复制到剪贴板")
             pyperclip.copy(f"名称: {obj['name']}{os.linesep}ID: {obj['value']}")
+            openMessageDialog("已复制到剪贴板")
         self.listWidget_authorblock.itemClicked.connect(handleAuthorblockClick)
 
     def get_authorblock_list(self): # 阻止名单列表数据加载
@@ -792,14 +797,14 @@ class MyWindow(QWidget, Ui_MainForm):
 
     def initVirus(self): # 毒狗名单初始化
         def handleVirusLabelClick():
-            openMessageDialog("网址已复制到剪贴板")
             pyperclip.copy("https://zhizhuzi.0d000721.cc/")
+            openMessageDialog("网址已复制到剪贴板")
         self.btn_virus_label.clicked.connect(handleVirusLabelClick)
         # 毒狗列表点击
         def handleVirusClick():
             obj = self.virus[self.listWidget_virus.currentRow()]
-            openMessageDialog("已复制到剪贴板")
             pyperclip.copy(f"名称: {obj['personaname']}{os.linesep}profileurl: {obj['profileurl']}")
+            openMessageDialog("已复制到剪贴板")
         self.listWidget_virus.itemClicked.connect(handleVirusClick)
         # 域名生成steamworks key
         self.btn_virus_new.clicked.connect(lambda: openMessageDialog("404 域名没啦"))
