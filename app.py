@@ -508,7 +508,7 @@ class MyWindow(QWidget, Ui_MainForm):
         indexAt = self.tableWidget_main.indexAt(pos)
         if indexAt.isValid():
             row, col = indexAt.row(), indexAt.column()
-            index = row * self.colMax + col
+            index = row * self.colMax + col + (self.page - 1) * self.sort["filterSize"]
             if index >= len(self.data) or index < 0:
                 return
             self.itemMenu = self.data[index]
@@ -553,7 +553,7 @@ class MyWindow(QWidget, Ui_MainForm):
         
         # 表格点击（重复点击不会触发）
         def handleTableMainChange(row, col):
-            index = row * self.colMax + col
+            index = row * self.colMax + col + (self.page - 1) * self.sort["filterSize"]
             if index >= len(self.data) or index < 0:
                 return
             item = self.data[index]
