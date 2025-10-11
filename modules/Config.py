@@ -1,3 +1,14 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+'''
+@File   :   Config.py
+@Time   :   2025/09/15 00:19:51
+@Author :   ???
+@Version:   1.0
+@Site   :   https://github.com/???
+@Desc   :   None
+'''
+
 import os, sys
 import time, json
 import logging  # 引入logging模块
@@ -51,15 +62,17 @@ config = {
     "unBackupProject": [], # 备份缺少project.json文件夹
 }
 
-temp_authorblocklistnames = [] # 拉黑名单
+""" 123 """
+temp_authorblocklistnames = [] 
+""" 223 """
 temp_dependency = [] # 父级关联项目
 
 # 下标获取参数
 # def __getitem__(key):
 #     return config[key]
 
-# 读取config.json
 def get_config(): 
+    """ 读取config.json """
     global config
     try:
         f1 = open(config_path, encoding="utf-8")
@@ -77,8 +90,8 @@ def get_config():
     except Exception as e:
         logging.error(f"读取config.json: {e}")
 
-# 写入config.json
-def saveConfig(): 
+def saveConfig():
+    """ 写入config.json """
     try:
         f1 = open(config_path, mode='wt', encoding="utf-8")
         json.dump(config, f1, ensure_ascii=False) # 将json写入文件
@@ -87,8 +100,8 @@ def saveConfig():
     except Exception as e:
         logging.error(f"写入config.json: {e}")
         
-# 设置config.json
 def setConfig(key, obj): 
+    """ 设置config.json """
     global config
     try:
         if config[key] != obj:
@@ -96,8 +109,8 @@ def setConfig(key, obj):
     except Exception as e:
         logging.error(f"设置config.json: {e}")
 
-# 注册表获取Steam安装位置
 def get_steam_path_registry(): 
+    """ 注册表获取Steam安装位置 """
     try:
         __aReg = reg.ConnectRegistry(None, reg.HKEY_CURRENT_USER)
         __aKey = reg.OpenKey(__aReg, r"Software\Valve\Steam")
@@ -111,8 +124,8 @@ def get_steam_path_registry():
         logging.error(f"获取Steam安装位置: {e}")
         return ""
     
-# 注册表获取WallpaperEngine安装位置
 def get_wallpaper_path_registry(): 
+    """ 注册表获取WallpaperEngine安装位置 """
     try:
         __aReg = reg.ConnectRegistry(None, reg.HKEY_CURRENT_USER)
         __aKey = reg.OpenKey(__aReg, r"Software\WallpaperEngine")
@@ -127,8 +140,8 @@ def get_wallpaper_path_registry():
         logging.error(f"获取WallpaperEngine安装位置: {e}")
         return ""
     
-# 获取WallpaperEngine备份位置
 def get_wallpaper_backup_path(): 
+    """ 获取WallpaperEngine备份位置 """
     try:
         __path_dir = os.path.join(os.path.dirname(config['wallpaperPath']), 'projects\\backup')
         if os.path.exists(__path_dir):
@@ -139,8 +152,8 @@ def get_wallpaper_backup_path():
         logging.error(f"获取WallpaperEngine备份位置: {e}")
         return ""
 
-# 获取WallpaperEngine订阅地址
 def get_wallpaper_steam_path(): 
+    """ 获取WallpaperEngine订阅地址 """
     try:
         mklink_steam = os.path.join(os.path.dirname(config['steamPath']), 'steamapps\\workshop\\content\\431960')
         if os.path.exists(mklink_steam):
@@ -151,8 +164,8 @@ def get_wallpaper_steam_path():
     except Exception as e:
         logging.error(f"获取Steam壁纸订阅地址: {e}")
 
-# 获取WallpaperEngine config位置并读取 壁纸分类目录、拉黑名单
 def get_wallpaper_config(): 
+    """ 获取WallpaperEngine config位置并读取 壁纸分类目录、拉黑名单 """
     global temp_authorblocklistnames
     try:
         f1 = open(os.path.join(os.path.dirname(config["wallpaperPath"]), 'config.json'), encoding="utf-8")
@@ -166,8 +179,8 @@ def get_wallpaper_config():
         logging.error(f"获取WallpaperEngine config位置并读取: {e}")
     return False
 
-# WallpaperEngine 工坊壁纸缓存
 def get_workshopcache():
+    """ WallpaperEngine 工坊壁纸缓存 """
     try:
         f1 = open(os.path.join(os.path.dirname(config["wallpaperPath"]), 'bin/workshopcache.json'), encoding="utf-8")
         res = json.load(f1) # 从文件读取json并反序列化
@@ -177,12 +190,12 @@ def get_workshopcache():
         logging.error(f"获取WallpaperEngine 工坊壁纸缓存并读取: {e}")
     return []
 
-# 获取WallpaperEngine 图片缓存位置
 # def get_wallpaper_ui_thumbnails(name): 
+#     """ 获取WallpaperEngine 图片缓存位置 """
 #     return os.path.join(config['uiThumbnails'], name)
 
-# 新增壁纸缓存
 def get_project_json(source, invalid, dir_name, dir_path, data, project_path):
+    """ 新增壁纸缓存 """
     global temp_dependency # 父级关联项目
     obj = None
     # def generateProject():
@@ -264,9 +277,13 @@ def get_project_json(source, invalid, dir_name, dir_path, data, project_path):
             obj["storagepath"] = ""
     return obj
 
-# 参数有发布id，后期可查看是否黑名单。
-# 包含项目详细信息和图片缓存等
+
 def getWorkshop():
+    """ 
+    参数有发布id，后期可查看是否黑名单。
+
+    包含项目详细信息和图片缓存等 
+    """
     global temp_dependency # 父级关联项目
 
     temp_workshopcache = get_workshopcache()
@@ -449,8 +466,8 @@ def getWorkshop():
     # print(temp_dependency)
     return temp_workshopcache + un_workshop + un_project + workshopBackup + un_backup # 壁纸数据（已整合）
 
-# 修改Steam安装位置
 def setSteamPath(path):
+    """ 修改Steam安装位置 """
     if path:
         setConfig('steamPath', path)
         # 同步设置mklinkList Steam地址
@@ -459,8 +476,8 @@ def setSteamPath(path):
     else:
         return False
 
-# 修改WallpaperEngine安装位置
 def setWallpaperPath(path):
+    """ 修改WallpaperEngine安装位置 """
     if path:
         setConfig('wallpaperPath', path)
         # 同步设置 备份地址、图片缓存地址
@@ -471,8 +488,8 @@ def setWallpaperPath(path):
     else:
         return False
 
-# 修改WallpaperEngine备份位置
 def setWallpaperBackupPath(path):
+    """ 修改WallpaperEngine备份位置 """
     print(f"WallpaperEngine备份位置: {path}")
     if path:
         setConfig('backupPath', path)

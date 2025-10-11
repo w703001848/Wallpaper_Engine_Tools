@@ -132,11 +132,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QProgressBar" name="progressBar">
-           <property name="value">
-            <number>24</number>
-           </property>
-          </widget>
+          <widget class="QProgressBar" name="progressBar"/>
          </item>
         </layout>
        </item>

@@ -46,8 +46,7 @@ class MyWindow(QWidget, Ui_MainForm):
         except ImportError:
             pass
 
-    # 初始化界面
-    def initPage(self):
+    def initPage(self): # 初始化界面
         # 窗口大小变化防抖
         self.windowWidth = self.size().width() # 记录窗口大小
         def resizeWindow():
@@ -133,8 +132,7 @@ class MyWindow(QWidget, Ui_MainForm):
                 sys.exit(0)
         self.btn_restart.clicked.connect(showRestartConfirmation) # 清空缓存重启
 
-    # 初始化壁纸
-    def initMain(self):
+    def initMain(self): # 初始化壁纸
         self.workshop = [] # 工坊数据
         self.data = [] # 列表数据
         self.page = 1 # 当前页
@@ -303,8 +301,7 @@ class MyWindow(QWidget, Ui_MainForm):
 
         self.progressBar.setVisible(False)
 
-    # 加载数据
-    def loadData(self, isFirst = False):
+    def loadData(self, isFirst = False): # 加载数据
         print('loadData')
         self.page = 1
         self.workshop = getWorkshop()
@@ -319,8 +316,7 @@ class MyWindow(QWidget, Ui_MainForm):
             print(f"工坊壁纸缓存合未知项目总数量：{self.total_size}  总容量：{total_capacity}")
         self.filterData()
 
-    # 筛选数据
-    def filterData(self):
+    def filterData(self): # 筛选数据
         # 筛选来源
         def filterSource(obj):
             # 筛选失效
@@ -378,8 +374,7 @@ class MyWindow(QWidget, Ui_MainForm):
         self.label_filter.setText(f"筛选结果（ {self.total_size} 个中有 {self.filter_total_size} 个）")
         self.calculateQuantityTotal()
 
-    # 重新计算总页数
-    def calculateQuantityTotal(self):
+    def calculateQuantityTotal(self): # 重新计算总页数
         self.total_page = math.ceil(self.filter_total_size / self.sort["filterSize"])
         self.label_page.setText(f"共 {self.total_page} 页")
         print('重新计算总页数calculateQuantityTotal: ', self.total_page)
@@ -390,14 +385,12 @@ class MyWindow(QWidget, Ui_MainForm):
         model.setStringList(pageData)
         self.comboBox_page.setModel(model) # 会触发刷新数据
 
-    # 排序列表数据
-    def sortData(self):
+    def sortData(self): # 排序列表数据
         print(f'设置列表数据sortData {len(self.data)}')
         # 排序(除了名称倒序，其他都是正序)
         self.data.sort(key=lambda x:x[self.sort["sortCurrent"]], reverse = self.sort["sortReverse"])
     
-    # 截取列表数据
-    def captureData(self):
+    def captureData(self): # 截取列表数据
         # 截取
         self.captureStart = (self.page - 1) * self.sort["filterSize"]
         self.captureEnd = self.page * self.sort["filterSize"]
@@ -405,8 +398,7 @@ class MyWindow(QWidget, Ui_MainForm):
             self.captureEnd = None
         self.refreshTable()
 
-    # 刷新列表
-    def refreshTable(self):
+    def refreshTable(self): # 刷新列表
         # 重新计算图文宽度和最大列数
         def calculateQuantityImgsizeCol(widgetWidth, colMax):
             imgWidth = int(widgetWidth / colMax)
@@ -446,8 +438,7 @@ class MyWindow(QWidget, Ui_MainForm):
                 row += 1
                 self.tableWidget_main.setRowHeight(row, imgWidth)
 
-    # 右键弹窗初始化
-    def initContextMenu(self):
+    def initContextMenu(self): # 右键弹窗初始化
         self.itemMenu = None
         # 右键弹窗
         self.context_menu = QMenu(self)
@@ -461,22 +452,27 @@ class MyWindow(QWidget, Ui_MainForm):
 
         self.actionMoveBackup = self.context_menu.addAction("转移备份")
         def handleMoveBackup():
+            self.progressBar.setVisible(True)
+            self.progressBar.setRange(0,0)
             MoveProject(self.itemMenu)
+            self.progressBar.setVisible(False)
         self.actionMoveBackup.triggered.connect(handleMoveBackup)
 
         self.menuMoveNas = QMenu("转移NAS同步备份", self)
         def handleMenuNas(e):
+            self.progressBar.setVisible(True)
+            self.progressBar.setRange(0,0)
             for obj in config["nasLink"]:
                 if obj["remark"] == e.text():
                     MoveProject(self.itemMenu, os.path.join(obj["IP"], obj["dir"]))
+            self.progressBar.setVisible(False)
         self.menuMoveNas.triggered.connect(handleMenuNas)
         self.context_menu.addMenu(self.menuMoveNas)
 
         self.tableWidget_main.setContextMenuPolicy(Qt.CustomContextMenu) # 开启右键菜单触发
         self.tableWidget_main.customContextMenuRequested.connect(self.show_context_menu)
     
-    # 右键弹窗显示
-    def show_context_menu(self, pos):
+    def show_context_menu(self, pos): # 右键弹窗显示
         # print("右键弹窗", pos)
         # 右键指向项目
         indexAt = self.tableWidget_main.indexAt(pos)
@@ -503,8 +499,7 @@ class MyWindow(QWidget, Ui_MainForm):
             # 显示弹窗
             self.context_menu.exec(self.tableWidget_main.viewport().mapToGlobal(pos))
 
-    # 初始化界面右侧功能
-    def initMainRight(self):
+    def initMainRight(self): # 初始化界面右侧功能
         self.currentItem = None
 
         # self.label_img.setVisible(False)
@@ -611,8 +606,7 @@ class MyWindow(QWidget, Ui_MainForm):
             os.startfile(os.path.join(os.getcwd(), "output"))
         self.btn_repkg_dir.clicked.connect(handleRepkgDir)
 
-    # repkg初始化
-    def initRepkg(self):
+    def initRepkg(self): # repkg初始化
         self.tableWidget_repkg.horizontalHeader().setStretchLastSection(True) # 表格自适应
         # self.tableWidget_repkg.horizontalHeader().setVisible(True) # 隐藏头
         # self.tableWidget_repkg.verticalHeader().setVisible(True) # 隐藏侧边
@@ -654,8 +648,7 @@ class MyWindow(QWidget, Ui_MainForm):
             os.startfile(os.path.join(os.getcwd(), "output"))
         self.btn_repkg_output.clicked.connect(handleRepkgDir)
 
-    # 软地址初始化
-    def initMklink(self):
+    def initMklink(self): # 软地址初始化
         self.btn_mklink_open_old.clicked.connect(lambda: openStartfile(self.lineEdit_mklink_path.text())) # mklink打开资源管理器
         self.btn_mklink_open.clicked.connect(lambda: openStartfile(self.lineEdit_mklink_path_new.text())) # mklink打开资源管理器
 
@@ -704,8 +697,7 @@ class MyWindow(QWidget, Ui_MainForm):
                 self.lineEdit_mklink_path_new.setText("")
         self.btn_mklink_restore.clicked.connect(handleMklinkBackClick)
 
-    # NAS备份
-    def initNaslink(self):
+    def initNaslink(self): # NAS备份
         self.nasLink = config["nasLink"]
 
         def handleNasInput(e):
@@ -778,8 +770,7 @@ class MyWindow(QWidget, Ui_MainForm):
         for item in self.nasLink:
             self.listWidget_nas.addItem(f'{item["remark"]}{os.linesep}存储位置：{item["IP"]}  -  路径：{item["dir"]}')
 
-    # 阻止名单初始化
-    def initAuthorblock(self):
+    def initAuthorblock(self): # 阻止名单初始化
         self.virus = []
 
         # 黑名单列表点击
@@ -789,15 +780,13 @@ class MyWindow(QWidget, Ui_MainForm):
             pyperclip.copy(f"名称: {obj['name']}{os.linesep}ID: {obj['value']}")
         self.listWidget_authorblock.itemClicked.connect(handleAuthorblockClick)
 
-    # 阻止名单列表数据加载
-    def get_authorblock_list(self):
+    def get_authorblock_list(self): # 阻止名单列表数据加载
         if len(temp_authorblocklistnames) != self.listWidget_authorblock.count():
             print('黑名单列表加载数据')
             for item in temp_authorblocklistnames:
                 self.listWidget_authorblock.addItem(f"名称: {item['name']}{os.linesep}ID: {item['value']}")
 
-    # 毒狗名单初始化
-    def initVirus(self):
+    def initVirus(self): # 毒狗名单初始化
         def handleVirusLabelClick():
             openMessageDialog("网址已复制到剪贴板")
             pyperclip.copy("https://zhizhuzi.0d000721.cc/")
@@ -814,8 +803,7 @@ class MyWindow(QWidget, Ui_MainForm):
         # https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/
         self.btn_virus_refresh.clicked.connect(lambda: openMessageDialog("steamworks key 失效"))
         
-    # 毒狗名单列表数据加载
-    def get_virus_list(self):
+    def get_virus_list(self): # 毒狗名单列表数据加载
         if not self.listWidget_virus.count():
             try:
                 path = os.path.join(os.getcwd(), 'virus')
@@ -841,8 +829,7 @@ class MyWindow(QWidget, Ui_MainForm):
             except Exception as e:
                 logging.error(f"读取virus.json: {e}")
 
-    # 窗口变化
-    def resizeEvent(self, event):
+    def resizeEvent(self, event): # 窗口变化
         if self.windowWidth == self.size().width():
             return
         self.windowDebouncer.trigger()
