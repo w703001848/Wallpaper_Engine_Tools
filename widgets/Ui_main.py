@@ -169,14 +169,6 @@ class Ui_MainForm(object):
 
         self.verticalLayout_10.addWidget(self.checkBox_backup)
 
-        self.checkBox_invalid = QCheckBox(self.groupBox_4)
-        self.buttonGroup_source.addButton(self.checkBox_invalid)
-        self.checkBox_invalid.setObjectName(u"checkBox_invalid")
-        self.checkBox_invalid.setMinimumSize(QSize(0, 0))
-        self.checkBox_invalid.setMaximumSize(QSize(16777215, 16777215))
-
-        self.verticalLayout_10.addWidget(self.checkBox_invalid)
-
         self.checkBox_temp = QCheckBox(self.groupBox_4)
         self.buttonGroup_source.addButton(self.checkBox_temp)
         self.checkBox_temp.setObjectName(u"checkBox_temp")
@@ -268,6 +260,13 @@ class Ui_MainForm(object):
         self.checkBox_folders.setObjectName(u"checkBox_folders")
 
         self.verticalLayout_11.addWidget(self.checkBox_folders)
+
+        self.checkBox_invalid = QCheckBox(self.groupBox_3)
+        self.checkBox_invalid.setObjectName(u"checkBox_invalid")
+        self.checkBox_invalid.setMinimumSize(QSize(0, 0))
+        self.checkBox_invalid.setMaximumSize(QSize(16777215, 16777215))
+
+        self.verticalLayout_11.addWidget(self.checkBox_invalid)
 
         self.checkBox_authorblock = QCheckBox(self.groupBox_3)
         self.checkBox_authorblock.setObjectName(u"checkBox_authorblock")
@@ -804,7 +803,7 @@ class Ui_MainForm(object):
         self.scrollArea_1.setWidgetResizable(True)
         self.scrollAreaWidgetContents_1 = QWidget()
         self.scrollAreaWidgetContents_1.setObjectName(u"scrollAreaWidgetContents_1")
-        self.scrollAreaWidgetContents_1.setGeometry(QRect(0, 0, 983, 1046))
+        self.scrollAreaWidgetContents_1.setGeometry(QRect(0, 0, 465, 1046))
         self.verticalLayout_2 = QVBoxLayout(self.scrollAreaWidgetContents_1)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.groupBox_dir = QGroupBox(self.scrollAreaWidgetContents_1)
@@ -1088,7 +1087,6 @@ class Ui_MainForm(object):
         self.groupBox_4.setTitle(QCoreApplication.translate("MainForm", u"\u6765\u6e90", None))
         self.checkBox_wallpaper.setText(QCoreApplication.translate("MainForm", u"\u521b\u610f\u5de5\u574a", None))
         self.checkBox_backup.setText(QCoreApplication.translate("MainForm", u"\u6211\u7684\u58c1\u7eb8", None))
-        self.checkBox_invalid.setText(QCoreApplication.translate("MainForm", u"\u5931\u6548", None))
         self.checkBox_temp.setText(QCoreApplication.translate("MainForm", u"\u4e34\u65f6\u5b58\u653e", None))
         self.groupBox_7.setTitle(QCoreApplication.translate("MainForm", u"\u6392\u5e8f", None))
         self.comboBox_sort.setItemText(0, QCoreApplication.translate("MainForm", u"\u540d\u79f0", None))
@@ -1111,6 +1109,7 @@ class Ui_MainForm(object):
 
         self.groupBox_3.setTitle(QCoreApplication.translate("MainForm", u"\u64cd\u4f5c", None))
         self.checkBox_folders.setText(QCoreApplication.translate("MainForm", u"\u5de5\u574a\u5206\u7c7b", None))
+        self.checkBox_invalid.setText(QCoreApplication.translate("MainForm", u"\u5931\u6548", None))
         self.checkBox_authorblock.setText(QCoreApplication.translate("MainForm", u"\u6bd2\u6392\u67e5", None))
         self.btn_invalid.setText(QCoreApplication.translate("MainForm", u"\u5220\u9664\u5931\u6548\u8ba2\u9605", None))
         self.label_capacity.setText(QCoreApplication.translate("MainForm", u"\u5bb9\u91cf\uff1a0G", None))

@@ -9,7 +9,7 @@ from widgets.Ui_main import Ui_MainForm
 from widgets.itemImg import ItemImg
 # 功能模块
 from modules.main import Debouncer, timer, convert_path, Unlock_hidden_achievements, getDirSize, dirSizeToStr, openFileDialog, openDirDialog, openMessageDialog, openStartfile, dragEnterEvent
-from modules.Config import config, temp_authorblocklistnames, getWorkshop, setSteamPath, setWallpaperPath, setWallpaperBackupPath, setConfig, saveConfig
+from modules.Config import config, temp_authorblocklistnames, get_wallpaper_config, getWorkshop, getBackup, getTemp, setSteamPath, setWallpaperPath, setWallpaperBackupPath, setConfig, saveConfig
 from modules.RePKG import runRepkg, followWork, updateRepkgData
 from modules.Mklink import mklinkCreate, mklinkNew, mklinkBack, updateMklinkList
 from modules.Storege import MoveProject, GeneratedDirNas, GeneratedDirThread
@@ -38,7 +38,7 @@ class MyWindow(QWidget, Ui_MainForm):
             self.initTemp()
 
             # 加载数据
-            self.loadData(True)
+            self.loadData()
 
         # 打包-加载画面 关闭
         try:
@@ -113,18 +113,17 @@ class MyWindow(QWidget, Ui_MainForm):
 
         self.label_version.setText('版本：' + config["version"])
         self.btn_unlock_hidden_achievements.clicked.connect(Unlock_hidden_achievements) # 解锁成就
-        self.checkBox_folders.clicked.connect(lambda event: setConfig("isFolders", not event)) # 分类文件夹锁定
 
         # 调用此函数以重启应用
         def showRestartConfirmation():
             if openMessageDialog("清空缓存数据并重启，请确认！", "tip"):
-                setConfig("isCheckedScene", True) # 场景
-                setConfig("isCheckedVideo", True) # 视频
-                setConfig("isCheckedWeb", True) # 网页
-                setConfig("isCheckedApplication", True) # 应用
-                setConfig("isCheckedInvalid", True) # 失效
-                setConfig("filterSize", 30) # 分页
-                setConfig("sortCurrent", "subscriptiondate") # 订阅日期
+                # setConfig("isCheckedScene", True) # 场景
+                # setConfig("isCheckedVideo", True) # 视频
+                # setConfig("isCheckedWeb", True) # 网页
+                # setConfig("isCheckedApplication", True) # 应用
+                # setConfig("filterSize", 30) # 分页
+                # setConfig("sortCurrent", "subscriptiondate") # 订阅日期
+                # setConfig("isCheckedInvalid", True) # 失效
                 # 获取当前脚本的路径
                 script_path = sys.argv[0]
                 # 获取当前脚本的目录，以防脚本不在工作目录中
@@ -137,11 +136,26 @@ class MyWindow(QWidget, Ui_MainForm):
 
     def initMain(self): # 初始化壁纸
         self.workshop = [] # 工坊数据
+        self.backup = [] # 备份数据
+        self.tempData = [] # 临时存放数据
+        self.total_data = 0 # 总项目数量
+        self.total_capacity = {
+            "workshop": "",
+            "backup": "",
+            "tempData": "",
+        } # 项目容量
+        self.folders = [] # 当前文件夹
+        self.folders_index = [] # 当前文件夹选择
+        self.folders_size = 0 # 当前文件夹数量
         self.data = [] # 列表数据
+        self.folders_data = []
+        self.filter_data = []
         self.page = 1 # 当前页
         self.total_page = 1 # 总页数
         self.total_size = 0 # 总数量
-        self.filter_total_size = 0 # 筛选后总数量
+        self.captureStart = None
+        self.captureEnd = None
+        self.colMax = 5
         self.filterSize = [10, 20, 30, 50]
         self.sortCurrent = ["title", "ratingrounded", "favorite", "filesize", "subscriptiondate", "updatedate"]
         self.sort = {
@@ -149,19 +163,11 @@ class MyWindow(QWidget, Ui_MainForm):
             "isCheckedVideo": config["isCheckedVideo"],
             "isCheckedWeb": config["isCheckedWeb"],
             "isCheckedApplication": config["isCheckedApplication"],
-            "isCheckedWallpaper": config["isCheckedWallpaper"],
-            "isCheckedBackup": config["isCheckedBackup"],
-            "isCheckedInvalid": config["isCheckedInvalid"],
-            "isCheckedTemp": config["isCheckedTemp"],
-            "isCheckedAuthorblock": config["isCheckedAuthorblock"],
             "sortCurrent": config["sortCurrent"], # 订阅日期: subscriptiondate
             "sortReverse": config["sortReverse"], # 排序 正序
             "filterSize": config["filterSize"], # 筛选数量
             "displaySize": config["displaySize"], # 显示大小
         }
-        self.captureStart = None
-        self.captureEnd = None
-        self.colMax = 5
 
         if not config['mklinkList'][0]["path"] or not config['mklinkList'][1]["path"]:
             self.tableWidget_main.setVisible(False)
@@ -182,55 +188,65 @@ class MyWindow(QWidget, Ui_MainForm):
             txt = self.lineEdit_search.text()
             print(f"查询文本: {txt}")
             self.btn_clear.setVisible(True)
+            self.filterData()
         self.btn_search.clicked.connect(handleSearchClick)
         
+        self.btn_clear.setVisible(False)
         def handleSearchClearClick():
             self.lineEdit_search.setText("")
             print("清空查询文本")
             self.btn_clear.setVisible(False)
+            self.filterData()
         self.btn_clear.clicked.connect(handleSearchClearClick)
-        self.btn_clear.setVisible(False)
 
         # 筛选组 类型
-        def handleGroupFilter(event):
-            # print(f"筛选组 来源 类型 {event.keyType} {event.isChecked()}")
-            self.sort[event.keyType] = event.isChecked()
-            setConfig(event.keyType, event.isChecked())
-            with timer("加载列表耗时"):
-                self.filterData()
-        self.buttonGroup_type.buttonClicked.connect(handleGroupFilter) # 类型
-        self.buttonGroup_source.buttonClicked.connect(handleGroupFilter) # 来源
-        self.checkBox_scene.keyType = "isCheckedScene"
-        self.checkBox_video.keyType = "isCheckedVideo"
-        self.checkBox_web.keyType = "isCheckedWeb"
-        self.checkBox_application.keyType = "isCheckedApplication"
         self.checkBox_scene.setChecked(self.sort["isCheckedScene"])
         self.checkBox_video.setChecked(self.sort["isCheckedVideo"])
         self.checkBox_web.setChecked(self.sort["isCheckedWeb"])
         self.checkBox_application.setChecked(self.sort["isCheckedApplication"])
+        self.checkBox_scene.keyType = "isCheckedScene"
+        self.checkBox_video.keyType = "isCheckedVideo"
+        self.checkBox_web.keyType = "isCheckedWeb"
+        self.checkBox_application.keyType = "isCheckedApplication"
+        def handleGroupFilter(event):
+            # print(f"筛选组 来源 类型 {event.keyType} {event.isChecked()}")
+            self.sort[event.keyType] = event.isChecked()
+            setConfig(event.keyType, event.isChecked())
+            self.filterData()
+        self.buttonGroup_type.buttonClicked.connect(handleGroupFilter) # 类型
+        
+        # 来源组 类型
+        self.checkBox_wallpaper.setChecked(config["isCheckedWallpaper"])
+        self.checkBox_backup.setChecked(config["isCheckedBackup"])
+        self.checkBox_temp.setChecked(config["isCheckedTemp"])
         self.checkBox_wallpaper.keyType = "isCheckedWallpaper"
         self.checkBox_backup.keyType = "isCheckedBackup"
-        self.checkBox_invalid.keyType = "isCheckedInvalid"
         self.checkBox_temp.keyType = "isCheckedTemp"
-        self.checkBox_wallpaper.setChecked(self.sort["isCheckedWallpaper"])
-        self.checkBox_backup.setChecked(self.sort["isCheckedBackup"])
-        self.checkBox_invalid.setChecked(self.sort["isCheckedInvalid"])
-        self.checkBox_temp.setChecked(self.sort["isCheckedTemp"])
+        def handleGroupSource(event):
+            # print(f"筛选组 来源 类型 {event.keyType} {event.isChecked()}")
+            setConfig(event.keyType, event.isChecked())
+            self.loadData()
+        self.buttonGroup_source.buttonClicked.connect(handleGroupSource) # 来源
 
         # 排序选择
+        for i, key in enumerate(self.sortCurrent):
+            if self.sort["sortCurrent"] == key:
+                self.comboBox_sort.setCurrentIndex(i)
+                break
         def handleSortSelect(index):
             self.sort["sortCurrent"] = self.sortCurrent[index]
             setConfig("sortCurrent", self.sort["sortCurrent"])
             # print(f'排序选择 index:{index} sortCurrent:{self.sort["sortCurrent"]}')
             self.sortData()
-            self.captureData()
         self.comboBox_sort.currentIndexChanged.connect(handleSortSelect)
-        for i, key in enumerate(self.sortCurrent):
-            if self.sort["sortCurrent"] == key:
-                self.comboBox_sort.setCurrentIndex(i)
-                break
 
         # 排序
+        if self.sort["sortReverse"]:
+            self.radioButton_reverse.setChecked(True)
+        else:
+            self.radioButton_positive.setChecked(True)
+        self.radioButton_positive.keyType = 'positive'
+        self.radioButton_reverse.keyType = 'reverse'
         def handleGroupSort(event):
             keyType = event.keyType == 'reverse'
             if self.sort["sortReverse"] == keyType:
@@ -239,17 +255,15 @@ class MyWindow(QWidget, Ui_MainForm):
             self.sort["sortReverse"] = keyType
             setConfig("sortReverse", self.sort["sortReverse"])
             self.sortData()
-            self.captureData()
         self.buttonGroup_sort.buttonClicked.connect(handleGroupSort) # 排序
-        self.radioButton_positive.keyType = 'positive'
-        self.radioButton_reverse.keyType = 'reverse'
-        if self.sort["sortReverse"]:
-            self.radioButton_reverse.setChecked(True)
-        else:
-            self.radioButton_positive.setChecked(True)
-
 
         # 查看大小
+        if self.sort["displaySize"] == 240:
+            self.radioButton_big.setChecked(True)
+        else:
+            self.radioButton_small.setChecked(True)
+        self.radioButton_big.keyType = 240
+        self.radioButton_small.keyType = 160 # 默认大小
         def handleGroupImg(event):
             if self.sort["displaySize"] == event.keyType:
                 return
@@ -258,24 +272,18 @@ class MyWindow(QWidget, Ui_MainForm):
             setConfig("displaySize", self.sort["displaySize"])
             self.refreshTable()
         self.buttonGroup_img.buttonClicked.connect(handleGroupImg) # 查看大小
-        self.radioButton_big.keyType = 240
-        self.radioButton_small.keyType = 160 # 默认大小
-        if self.sort["displaySize"] == 240:
-            self.radioButton_big.setChecked(True)
-        else:
-            self.radioButton_small.setChecked(True)
 
         # 页面显示数量选择
+        for i, key in enumerate(self.filterSize):
+            if self.sort["filterSize"] == key:
+                self.comboBox_size.setCurrentIndex(i)
+                break
         def handleSizeSelect(index):
             self.sort["filterSize"] = self.filterSize[index]
             setConfig("filterSize", self.sort["filterSize"])
             # print(f'页面显示数量选择 index:{index} filterSize:{self.sort["filterSize"]}')
             self.calculateQuantityTotal() # 刷新页面数量
         self.comboBox_size.currentIndexChanged.connect(handleSizeSelect)
-        for i, key in enumerate(self.filterSize):
-            if self.sort["filterSize"] == key:
-                self.comboBox_size.setCurrentIndex(i)
-                break
 
         # 页选择
         def handlePageSelect(index):
@@ -297,7 +305,11 @@ class MyWindow(QWidget, Ui_MainForm):
                 self.btn_left.setVisible(True)
             self.captureData()
         self.comboBox_page.currentIndexChanged.connect(handlePageSelect)
+
         # 页切换按钮
+        self.btn_left.setVisible(False)
+        self.btn_left.keyType = "sub"
+        self.btn_right.keyType = "add"
         def handleGroupPage(event):
             print(f"页切换按钮 {event.keyType} {self.page} {type(self.page)}")
             num = self.page
@@ -307,116 +319,214 @@ class MyWindow(QWidget, Ui_MainForm):
                 num -= 1
             self.comboBox_page.setCurrentIndex(num - 1) # 关联页选择,触发数据刷新
         self.buttonGroup_page.buttonClicked.connect(handleGroupPage) # 页左右切
-        self.btn_left.keyType = "sub"
-        self.btn_right.keyType = "add"
-        self.btn_left.setVisible(False)
+
+        # 分类文件夹锁定
+        self.checkBox_folders.setChecked(config["isCheckedFolders"])
+        def setFoloders(event):
+            setConfig("isCheckedFolders", event)
+            if event:
+                get_wallpaper_config()
+            self.loadData()
+        self.checkBox_folders.clicked.connect(setFoloders) 
+
+        # 失效壁纸显示
+        self.checkBox_invalid.setChecked(config["isCheckedInvalid"])
+        def setInvalid(event):
+            setConfig("isCheckedInvalid", event)
+            self.filterData()
+        self.checkBox_invalid.clicked.connect(setInvalid) 
 
         # 黑名单关联
-        def handleAuthorblockClick(isChecked):
-            print(f"黑名单关联 {isChecked}")
-            self.sort["isCheckedAuthorblock"] = isChecked
-            setConfig("isCheckedAuthorblock", isChecked)
-        self.checkBox_authorblock.clicked.connect(handleAuthorblockClick)
-        self.checkBox_authorblock.keyType = "isCheckedAuthorblock"
-        self.checkBox_authorblock.setChecked(self.sort["isCheckedAuthorblock"])
+        self.checkBox_authorblock.setChecked(config["isCheckedAuthorblock"])
+        def setAuthorblock(event):
+            setConfig("isCheckedAuthorblock", event)
+            self.refreshTable()
+        self.checkBox_authorblock.clicked.connect(setAuthorblock) 
 
         self.progressBar.setVisible(False)
 
-    def loadData(self, isFirst = False): # 加载数据
+    def loadData(self): # 加载数据
+        if not config['wallpaperPath']:
+            return
         print('loadData')
+        if len(self.workshop) == 0:
+            self.workshop = getWorkshop()
+        if len(self.backup) == 0:
+            self.backup = getBackup()
+        if len(self.tempData) == 0:
+            self.tempData = getTemp()
+
+        self.data = []
         self.page = 1
-        self.workshop = getWorkshop()
-        if isFirst:
-            # 计算总数量和总容量（计算一次）
-            total_capacity = 0
-            for obj in self.workshop:
-                # print(f'{obj["workshopid"]} : {obj["filesize"]}')
-                total_capacity += obj["filesize"]
-            self.label_capacity.setText(f"容量：{dirSizeToStr(total_capacity)}")
-            self.total_size = len(self.workshop)
-            print(f"工坊壁纸缓存合未知项目总数量：{self.total_size}  总容量：{total_capacity}")
+
+        # 计算总总容量
+        def totalCapacity(key, data):
+            if self.total_capacity[key] == "":
+                capacity = 0
+                for obj in data:
+                    # print(f'{obj["workshopid"]} : {obj["filesize"]}')
+                    capacity += obj["filesize"]
+                self.total_capacity[key] = capacity
+            return self.total_capacity[key]
+        
+        total_capacity = 0
+        self.total_data = 0
+        if config["isCheckedWallpaper"]:
+            self.data += self.workshop
+            self.total_data += len(self.workshop)
+            total_capacity += totalCapacity("workshop", self.workshop)
+        if config["isCheckedBackup"]:
+            self.data += self.backup
+            self.total_data += len(self.backup)
+            total_capacity += totalCapacity("backup", self.backup)
+        if config["isCheckedTemp"]:
+            self.data += self.tempData
+            self.total_data += len(self.tempData)
+            total_capacity += totalCapacity("tempData", self.tempData)
+        self.label_capacity.setText(f"容量：{dirSizeToStr(total_capacity)}")
+        print(f"项目总数量：{self.total_data}  {self.label_capacity.text()}")
+
+        # 生成文件夹数据并标记self.data
+        if config["isCheckedFolders"]:
+            if not len(self.folders):
+                # 生成folders 查询self.data 标记layer
+                def mergeFolder(data, folders, layer):
+                    for i, obj in enumerate(data):
+                        folders.append({
+                            "layer" : f"{i}" if layer == "" else f"{layer},{i}",
+                            "subfolders" : [],
+                            "title" : obj["title"],
+                            "previewsmall": u":/img/dir.png",
+                            "invalid": False,
+                            "steamid": "",
+                            "type" : "folder"
+                        })
+                        for key in obj["items"].keys():
+                            if len(key) < 15:
+                                for item in self.workshop:
+                                    if item["workshopid"] == key:
+                                        item["layer"] = folders[i]["layer"]
+                                        # print("layer", item["workshopid"], item["layer"])
+                                        break
+                            else:
+                                for item in self.backup:
+                                    if key.find(item["workshopid"]) != -1:
+                                        item["layer"] = folders[i]["layer"]
+                                        # print("layer2", item["workshopid"], item["layer"])
+                                        break
+                        if len(obj["subfolders"]):
+                            mergeFolder(obj["subfolders"], folders[i]["subfolders"], folders[i]["layer"])
+                self.folders = {
+                    "layer" : "",
+                    "subfolders" : [],
+                    "title" : "首页",
+                    "previewsmall": u":/img/dir.png",
+                    "invalid": False,
+                    "steamid": "",
+                    "type" : "folder"
+                }
+                mergeFolder(config["folders"], self.folders["subfolders"], self.folders["layer"])
+
+        self.sortData()
+
+    def sortData(self): # 排序列表数据
+        print(f'排序sortData: {len(self.data)}')
+        # 排序(除了名称倒序，其他都是正序)
+        self.data.sort(key=lambda x:x[self.sort["sortCurrent"]], reverse = self.sort["sortReverse"])
+
+        self.foldersData()
+
+    def foldersData(self): # 筛选文件夹数据
+        self.folders_size = 0
+        self.folders_data = []
+        if config["isCheckedFolders"]:
+            # # 获取文件夹展开层级数据
+            folders = []
+            # 生成文件夹头部
+            if len(self.folders_index):
+                folders = [{
+                    "layer" : "",
+                    "subfolders" : [],
+                    "title" : "返回",
+                    "previewsmall": u":/img/dir.png",
+                    "invalid": True,
+                    "steamid": "",
+                    "type" : "folder"
+                }]
+                data = self.folders["subfolders"]
+                for i in self.folders_index:
+                    data = data[i]["subfolders"]
+                folders += data
+            else:
+                folders = self.folders["subfolders"]
+            self.folders_size = len(folders)
+            print("生成folders", self.folders_size)
+            foldersIndex = ",".join('%s' %item for item in self.folders_index)
+            if foldersIndex == "":
+                self.folders_data = folders + list(filter(lambda item: "layer" not in item, self.data))
+            else:
+                self.folders_data = folders + list(filter(lambda item: "layer" in item and item["layer"] == foldersIndex, self.data))
+        else:
+            self.folders_data = self.data
         self.filterData()
 
-    def filterData(self): # 筛选数据
+    def filterData(self): # 筛选类型数据
+        isCheckedInvalid = config["isCheckedInvalid"] and not self.sort["isCheckedScene"] and not self.sort["isCheckedVideo"] and not self.sort["isCheckedWeb"] and not self.sort["isCheckedApplication"]
         # 筛选来源
-        def filterSource(obj):
+        def filterType(obj):
+            nonlocal isCheckedInvalid
             # 筛选失效
             def filterInvalid():
                 nonlocal obj
                 if obj["invalid"]:
-                    return self.sort["isCheckedInvalid"]
+                    return config["isCheckedInvalid"]
                 else:
                     return True
             # 筛选类型
-            def filterType():
-                nonlocal obj
-                if "type" in obj:
-                    keyType = obj["type"].lower()
-                    if self.sort["isCheckedScene"] and keyType == "scene":
-                        return filterInvalid()
-                    elif self.sort["isCheckedVideo"] and keyType == "video":
-                        return filterInvalid()
-                    elif self.sort["isCheckedWeb"] and keyType == "web":
-                        return filterInvalid()
-                    elif self.sort["isCheckedApplication"] and keyType == "application":
-                        return filterInvalid()
-                    elif keyType == "dir":
-                        return filterInvalid()
-                return False
-            try:
-                keySource = obj["source"].lower()
-                # if keySource == "wallpaper":
-                #     if self.sort["isCheckedWallpaper"]:
-                #         return filterType()
-                #     else:
-                #         return False
-                # elif keySource == "backup":
-                
-                if self.sort["isCheckedWallpaper"] and keySource == "wallpaper":
-                    if self.sort["isCheckedInvalid"] and obj["invalid"]:
-                        return True
-                    else:
-                        return filterType()
-                elif self.sort["isCheckedBackup"] and keySource == "backup":
-                    if self.sort["isCheckedInvalid"] and obj["invalid"]:
-                        return True
-                    else:
-                        return filterType()
-                elif not self.sort["isCheckedWallpaper"] and not self.sort["isCheckedBackup"]:
-                    return self.sort["isCheckedInvalid"] and obj["invalid"]
-            except Exception as e:
-                logging.error(f"筛选来源{e}: {obj}")
+            if "type" in obj:
+                keyType = obj["type"].lower()
+                if self.sort["isCheckedScene"] and keyType == "scene":
+                    return filterInvalid()
+                elif self.sort["isCheckedVideo"] and keyType == "video":
+                    return filterInvalid()
+                elif self.sort["isCheckedWeb"] and keyType == "web":
+                    return filterInvalid()
+                elif self.sort["isCheckedApplication"] and keyType == "application":
+                    return filterInvalid()
+                elif keyType == "dir":
+                    return filterInvalid()
+                elif keyType == "folder":
+                    return True
+                elif isCheckedInvalid:
+                    return obj["invalid"]
             # if config['isDevelopment']:
             #     print(f'不符合筛选排除: {obj["source"]} {obj["workshopid"]}')
             return False
-        # print(f"筛选前长度：{len(self.workshop)}")
-        self.data = list(filter(filterSource, self.workshop))
-        self.filter_total_size = len(self.data) # 筛选后长度
-        self.label_filter.setText(f"筛选结果（ {self.total_size} 个中有 {self.filter_total_size} 个）")
+        print(f"筛选filterTypeData: {len(self.folders_data)}")
+        self.filter_data = list(filter(filterType, self.folders_data))
+        self.total_size = len(self.filter_data) # 筛选后长度
+        self.label_filter.setText(f"筛选结果（ {self.total_data} 个中有 {self.total_size - self.folders_size} 个）")
+
         self.calculateQuantityTotal()
 
     def calculateQuantityTotal(self): # 重新计算总页数
-        self.total_page = math.ceil(self.filter_total_size / self.sort["filterSize"])
+        self.total_page = math.ceil(self.total_size / self.sort["filterSize"])
         self.label_page.setText(f"共 {self.total_page} 页")
-        print('重新计算总页数calculateQuantityTotal: ', self.total_page)
+        print('重置总页数calculateQuantityTotal: ', self.total_page)
         model = QStringListModel()
         pageData = []
         for i in range(0, self.total_page):
             pageData.append(str(i+1))
         model.setStringList(pageData)
         self.comboBox_page.setModel(model) # 会触发刷新数据
-
-    def sortData(self): # 排序列表数据
-        print(f'设置列表数据sortData {len(self.data)}')
-        # 排序(除了名称倒序，其他都是正序)
-        self.data.sort(key=lambda x:x[self.sort["sortCurrent"]], reverse = self.sort["sortReverse"])
     
     def captureData(self): # 截取列表数据
         # 截取
         self.captureStart = (self.page - 1) * self.sort["filterSize"]
         self.captureEnd = self.page * self.sort["filterSize"]
-        if self.captureEnd > self.filter_total_size:
+        if self.captureEnd > self.total_size:
             self.captureEnd = None
+        print(f'截取captureData: {self.captureStart} - {self.captureEnd}')
         self.refreshTable()
 
     def refreshTable(self): # 刷新列表
@@ -434,7 +544,7 @@ class MyWindow(QWidget, Ui_MainForm):
 
         self.tableWidget_main.clearContents() # 清空
         if self.total_page == self.page:
-            self.tableWidget_main.setRowCount(math.ceil(self.filter_total_size % self.sort["filterSize"] / self.colMax))
+            self.tableWidget_main.setRowCount(math.ceil(self.total_size % self.sort["filterSize"] / self.colMax))
         else:
             self.tableWidget_main.setRowCount(math.ceil(self.sort["filterSize"] / self.colMax))
         self.tableWidget_main.setRowHeight(0, imgWidth)
@@ -448,10 +558,19 @@ class MyWindow(QWidget, Ui_MainForm):
 
         row = 0 # 计数行
         col = 0 # 计数列
-        for item in self.data[self.captureStart:self.captureEnd]: # 截取功能要浅拷贝处理，否则会加载上次截取
+        for item in self.filter_data[self.captureStart:self.captureEnd]: # 截取功能要浅拷贝处理，否则会加载上次截取
             # 绘制单元格
             widget = ItemImg()
-            widget.setContent(imgWidth, item["previewsmall"], item["title"])
+            # 黑名单匹配
+            isAuthorblock = False
+            if config["isCheckedAuthorblock"] and item.get("authorsteamid"):
+                for obj in self.virus:
+                    if obj["steamid"] == item["authorsteamid"]:
+                        print(f'黑名单匹配: {obj["personaname"]} {"*" * 100}')
+                        item["title"] = f'黑名单【{obj["personaname"]}】{item["title"]}'
+                        isAuthorblock = True
+                        break
+            widget.setContent(imgWidth, item["previewsmall"], item["title"], isAuthorblock, item['invalid'])
             self.tableWidget_main.setCellWidget(row, col, widget)
             col += 1
             if col >= self.colMax:
@@ -509,10 +628,12 @@ class MyWindow(QWidget, Ui_MainForm):
         if indexAt.isValid():
             row, col = indexAt.row(), indexAt.column()
             index = row * self.colMax + col + (self.page - 1) * self.sort["filterSize"]
-            if index >= len(self.data) or index < 0:
+            if index >= len(self.filter_data) or index < 0:
                 return
-            self.itemMenu = self.data[index]
+            self.itemMenu = self.filter_data[index]
             # 项目适配选项
+            if self.itemMenu["type"] == "folder":
+                return
             if self.itemMenu["source"] == "wallpaper":
                 self.actionMoveBackup.setVisible(True)
             elif self.itemMenu["source"] == "backup":
@@ -554,11 +675,32 @@ class MyWindow(QWidget, Ui_MainForm):
         # 表格点击（重复点击不会触发）
         def handleTableMainChange(row, col):
             index = row * self.colMax + col + (self.page - 1) * self.sort["filterSize"]
-            if index >= len(self.data) or index < 0:
+            if index >= len(self.filter_data) or index < 0:
                 return
-            item = self.data[index]
+            item = self.filter_data[index]
+            # 点击文件夹
+            if item["type"] == "folder":
+                print(item, index)
+                if item["title"] == "返回":
+                    current = self.folders_index.pop()
+                    data = self.folders["subfolders"]
+                    for i in self.folders_index:
+                        data = data[i]["subfolders"]
+                    __index = data[current]["title"].find("-(")
+                    if __index != -1:
+                        data[current]["title"] = f"{data[current]['title'][:__index]}-({self.total_size - self.folders_size})"
+                    else:
+                        data[current]["title"] = f"{data[current]['title']}-({self.total_size - self.folders_size})"
+                else:
+                    if len(self.folders_index) == 0:
+                        self.folders_index.append(index)
+                    else:
+                        self.folders_index.append(index - 1)
+                print("返回foldersIndex", self.folders_index)
+                self.foldersData()
+                return
             # 首次点击
-            if self.currentItem == None:
+            elif self.currentItem == None:
                 self.label_error_project.setVisible(False)
                 # self.label_img.setVisible(True)
                 self.label_name.setVisible(True)
@@ -835,31 +977,31 @@ class MyWindow(QWidget, Ui_MainForm):
         # https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/
         self.btn_virus_refresh.clicked.connect(lambda: openMessageDialog("steamworks key 失效"))
         
+        try:
+            path = os.path.join(os.getcwd(), 'virus')
+            if os.path.exists(path):
+                f1 = open(os.path.join(path, 'virus.json'), encoding="utf-8")
+                self.virus = json.load(f1)
+                f1.close()
+        except Exception as e:
+            logging.error(f"读取virus.json: {e}")
+        
     def get_virus_list(self): # 毒狗名单列表数据加载
         if not self.listWidget_virus.count():
-            try:
-                path = os.path.join(os.getcwd(), 'virus')
-                if os.path.exists(path):
-                    f1 = open(os.path.join(path, 'virus.json'), encoding="utf-8")
-                    self.virus = json.load(f1)
-                    # print(data)
-                    print('毒狗列表加载数据')
-                    self.listWidget_virus.setIconSize(QSize(48, 48))
-                    for item in self.virus:
-                        strIsBlock = ""
-                        for obj in temp_authorblocklistnames:
-                            if obj["value"] == item["steamid"]:
-                                strIsBlock = "【已拉黑】"
-                                break
-                        note = f'{item["steamid"]}{strIsBlock}{os.linesep}目前名字：{item["personaname"]}{os.linesep}{" // ".join(item["realname"])}'
-                        # print(os.path.join(os.getcwd(), 'virus', item["avatarmedium"]))
-                        icon = QPixmap(os.path.join(os.getcwd(), 'virus', item["avatarmedium"]))
-                        icon.scaled(48, 48, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-                        item = QListWidgetItem(icon, note)
-                        self.listWidget_virus.addItem(item)
-                    f1.close()
-            except Exception as e:
-                logging.error(f"读取virus.json: {e}")
+            print('毒狗列表加载数据')
+            self.listWidget_virus.setIconSize(QSize(48, 48))
+            for item in self.virus:
+                strIsBlock = ""
+                for obj in temp_authorblocklistnames:
+                    if obj["value"] == item["steamid"]:
+                        strIsBlock = "【已拉黑】"
+                        break
+                note = f'{item["steamid"]}{strIsBlock}{os.linesep}目前名字：{item["personaname"]}{os.linesep}{" // ".join(item["realname"])}'
+                # print(os.path.join(os.getcwd(), 'virus', item["avatarmedium"]))
+                icon = QPixmap(os.path.join(os.getcwd(), 'virus', item["avatarmedium"]))
+                icon.scaled(48, 48, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                item = QListWidgetItem(icon, note)
+                self.listWidget_virus.addItem(item)
 
     def initTemp(self): # 临时文件夹初始化
         self.TempDir = config["TempDir"]

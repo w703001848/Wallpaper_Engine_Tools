@@ -16,7 +16,7 @@ import winreg as reg
 
 from .main import checkEnvironment, getDirSize, dirSizeToStr
 
-version = "1.7"
+version = "1.8"
 chair_path = os.getcwd() # 当前工作目录
 config_path = os.path.join(os.getcwd(), 'config.json')
 
@@ -48,20 +48,21 @@ config = {
     "isCheckedApplication": True, # 应用
     "isCheckedWallpaper": False, # 工坊
     "isCheckedBackup": False, # 备份
-    "isCheckedInvalid": True, # 失效
     "isCheckedTemp": False, # temp
     "TempDir": [], # 临时存放文件夹
-    "isCheckedAuthorblock": True, # 黑名单
     "sortCurrent": "subscriptiondate", # 订阅日期
     "sortReverse": False, # 排序 正序
     "filterSize": 30, # 分页
     "displaySize": 160, # 显示大小
-    "isFolders": True, # 是否开启同步wallpaper壁纸分类数据
+    "isCheckedFolders": True, # 是否开启同步wallpaper壁纸分类数据
+    "isCheckedInvalid": True, # 失效
+    "isCheckedAuthorblock": True, # 黑名单
     "folders": [], # 工坊分类数据
     "unWorkshop": [], # 工坊失效壁纸
     "unWorkshopProject": [], # 工坊缺少project.json文件夹
     "workshopBackup": [], # 工坊壁纸备份数据
     "unBackupProject": [], # 备份缺少project.json文件夹
+    "tempProject": [], # 工坊壁纸临时数据
 }
 
 """ 123 """
@@ -108,6 +109,7 @@ def setConfig(key, obj):
     try:
         if config[key] != obj:
             config[key] = obj
+            # logging.error(f"config: {key} - {obj}")
     except Exception as e:
         logging.error(f"设置config.json: {e}")
 
@@ -173,8 +175,7 @@ def get_wallpaper_config():
         f1 = open(os.path.join(os.path.dirname(config["wallpaperPath"]), 'config.json'), encoding="utf-8")
         res = json.load(f1) # 从文件读取json并反序列化
         temp_authorblocklistnames = res[config["username"]]["general"]["browser"]["authorblocklistnames"]
-        if config["isFolders"]:
-            setConfig('folders', res[config["username"]]["general"]["browser"]["folders"])
+        setConfig('folders', res[config["username"]]["general"]["browser"]["folders"])
         f1.close()
         return True
     except Exception as e:
@@ -196,10 +197,21 @@ def get_workshopcache():
 #     """ 获取WallpaperEngine 图片缓存位置 """
 #     return os.path.join(config['uiThumbnails'], name)
 
+# 如果存在父级关联工坊壁纸缓存查询提取
+def search_workshopcache_dependency(temp_workshopcache, obj):
+    global temp_dependency # 父级关联项目
+    if "dependency" in obj:
+        for item in temp_workshopcache:
+            if item["workshopid"] == obj["dependency"]:
+                temp_dependency.append(item)
+                break
+
 def get_project_json(source, invalid, dir_name, dir_path, data, project_path):
     """ 新增壁纸缓存 """
     global temp_dependency # 父级关联项目
     obj = None
+    # 获取创建时间
+    file_stat = os.stat(project_path)
     # def generateProject():
     if data is None:
         size = getDirSize(dir_path)
@@ -222,11 +234,11 @@ def get_project_json(source, invalid, dir_name, dir_path, data, project_path):
             "rating" : 0,
             "ratingrounded" : 5.0,
             "status" : "",
-            "subscriptiondate" : int(time.time()),
+            "subscriptiondate" : file_stat.st_ctime,
             "tags" : "",
             "title" : dir_name,
             "type" : "dir",
-            "updatedate" : int(time.time()),
+            "updatedate" : file_stat.st_mtime,
             "workshopid" : dir_name,
             "workshopurl" : "",
             "invalid": invalid, # 自增，用于判断失效
@@ -256,7 +268,10 @@ def get_project_json(source, invalid, dir_name, dir_path, data, project_path):
         obj["rating"] = 0
         obj["ratingrounded"] = 5.0
         obj["status"] = ''
-        obj["subscriptiondate"] = int(time.time())
+        if "subscriptiondate" in data:
+            obj["subscriptiondate"] = data["subscriptiondate"]
+        else:
+            obj["subscriptiondate"] = file_stat.st_ctime
         if "tags" in data:
             obj["tags"] = ','.join(data["tags"])
         else:
@@ -270,7 +285,10 @@ def get_project_json(source, invalid, dir_name, dir_path, data, project_path):
                     break
         else:
             obj["type"] = "Web"
-        obj["updatedate"] = int(time.time())
+        if "updatedate" in data:
+            obj["updatedate"] = data["updatedate"]
+        else:
+            obj["updatedate"] = file_stat.st_mtime
         obj["workshopid"] = dir_name
         obj["workshopurl"] = os.path.join("steam://url/CommunityFilePage", dir_name)
         obj["invalid"] = invalid
@@ -278,7 +296,6 @@ def get_project_json(source, invalid, dir_name, dir_path, data, project_path):
         if "storagepath" not in data:
             obj["storagepath"] = ""
     return obj
-
 
 def getWorkshop():
     """ 
@@ -293,19 +310,8 @@ def getWorkshop():
     un_workshop = config['unWorkshop'] # 工坊失效壁纸
     un_project = config["unWorkshopProject"] # 工坊缺少project.json文件夹
 
-    workshopBackup = config["workshopBackup"] # 工坊壁纸备份数据
-    un_backup = config["unBackupProject"] # 备份缺少project.json文件夹
-
     wallpaper_steam_path = config['mklinkList'][0]["path"]
-    backupPath = config["backupPath"]
 
-    # 如果存在父级关联工坊壁纸缓存查询提取
-    def search_workshopcache_dependency(obj):
-        if "dependency" in obj:
-            for item in temp_workshopcache:
-                if item["workshopid"] == obj["dependency"]:
-                    temp_dependency.append(item)
-                    break
 
     if os.path.exists(wallpaper_steam_path):
 
@@ -317,10 +323,18 @@ def getWorkshop():
             count = 0
             while count < len(un_workshop): # 涉及删除操作用while
                 item = un_workshop[count]
+
                 if not os.path.exists(item["workshopid"]):
-                    logging.warning(f'工坊未找到{item["workshopid"]}')
+                    logging.warning(f'工坊未找到{item}')
                     del un_workshop[count]
                 else:
+                    # 启动期间 workshopcache 未更新导致录入
+                    for obj in temp_workshopcache:
+                        if item["workshopid"] == obj["workshopid"]:
+                            logging.warning(f'工坊错误录入{item["workshopid"]}')
+                            del un_workshop[count]
+                            count -= 1
+                            break
                     count += 1
 
         # 清理缓存里缺少project.json文件夹是否还存在
@@ -352,7 +366,7 @@ def getWorkshop():
             item["invalid"] = False # 初始化失效
             item["source"] = 'wallpaper' # 初始化来源
             # 如果存在父级关联就查询提取
-            search_workshopcache_dependency(item)
+            search_workshopcache_dependency(temp_workshopcache, item)
 
             # 判断工坊缓存是否存在文件夹
             count = 0
@@ -392,7 +406,27 @@ def getWorkshop():
                 logging.warning(f"查询到工坊壁纸目录未知项目加入工坊，project.json不存在! {project_path}")
     else:
         logging.warning("工坊文件夹不存在!跳过查询", wallpaper_steam_path)
-    
+    if len(temp_dependency):
+        print(f'父级关联缓存：{len(temp_dependency)}')
+    if len(temp_workshopcache):
+        print(f'壁纸缓存：{len(temp_workshopcache)}')
+    if len(un_workshop):
+        print(f'壁纸缺失缓存：{len(un_workshop)}')
+    if len(un_project):
+        print(f'壁纸空文件夹缓存：{len(un_project)}')
+    return temp_workshopcache + un_workshop + un_project # 壁纸数据（已整合）
+
+def getBackup():
+    """ 
+    参数有发布id，后期可查看是否黑名单。
+
+    包含项目详细信息和图片缓存等 
+    """
+    workshopBackup = config["workshopBackup"] # 工坊壁纸备份数据
+    un_backup = config["unBackupProject"] # 备份缺少project.json文件夹
+
+    backupPath = config["backupPath"]
+
     if os.path.exists(backupPath):
         # 修改工作目录到备份文件夹
         os.chdir(backupPath)
@@ -450,7 +484,7 @@ def getWorkshop():
                 try:
                     f1 = open(project_path, encoding="utf-8")
                     data = json.load(f1) # 从文件读取json并反序列化
-                    search_workshopcache_dependency(data)
+                    search_workshopcache_dependency(workshopBackup, data)
                     workshopBackup.append(get_project_json('backup', False, dir_name, dir_path, data, project_path))
                     f1.close()
                     # logging.warning(f"备份缓存新增: {project_path}")
@@ -463,10 +497,57 @@ def getWorkshop():
                 un_backup.append(get_project_json('backup', True, dir_name, dir_path, None, project_path))
     else:
         logging.warning("备份文件夹不存在!跳过查询", backupPath)
+        
+    if len(workshopBackup):
+        print(f'备份缓存：{len(workshopBackup)}')
+    if len(un_backup):
+        print(f'备份缺失缓存：{len(un_backup)}')
+    return workshopBackup + un_backup # 壁纸数据（已整合）
 
-    print(f'父级关联缓存：{len(temp_dependency)}')
-    # print(temp_dependency)
-    return temp_workshopcache + un_workshop + un_project + workshopBackup + un_backup # 壁纸数据（已整合）
+def getTemp():
+    tempData = config["tempProject"]
+    tempDir = config["TempDir"]
+    for pathDir in tempDir:
+        if os.path.exists(pathDir):
+            backup_dir = os.listdir(pathDir)
+            # 整合工坊备份数据
+            print(f"备份文件夹列表长度：{len(backup_dir)}")
+            # 筛选是否已加入缓存，减少计算量
+            count = 0
+            while count < len(backup_dir):
+                dir_name = backup_dir[count]
+                # 筛选文件夹是否存已记录再备份缺失project.json缓存中
+                if len(list(filter(lambda item: item['workshopid'] == dir_name, tempData))):
+                    del backup_dir[count]
+                else:
+                    count += 1
+            # 需要存入临时文件夹的项目：
+            print(f"需要存入临时文件夹的项目：{len(backup_dir)}")
+            for dir_name in backup_dir:
+                dir_path = os.path.join(pathDir, dir_name)
+                if not os.path.isdir(dir_path):
+                    logging.warning(f"临时文件夹 存在无法识别文件：{dir_path}")
+                    continue
+                project_path = os.path.join(dir_path, "project.json")
+                if os.path.exists(project_path):
+                    try:
+                        f1 = open(project_path, encoding="utf-8")
+                        data = json.load(f1) # 从文件读取json并反序列化
+                        # search_workshopcache_dependency(workshopBackup, data)
+                        tempData.append(get_project_json('backup', False, dir_name, dir_path, data, project_path))
+                        f1.close()
+                        # logging.warning(f"备份缓存新增: {project_path}")
+                    except Exception as e:
+                        logging.error(f"临时project.json无法识别: {dir_name} {e}")
+                else:
+                    # 工坊文件夹存在，但缺少project.json文件，有空开发转移到备份文件夹
+                    logging.warning(f"查询到临时缺失project.json文件夹: {project_path}")
+        else:
+            logging.warning("临时文件夹不存在!跳过查询", backup_dir)
+        
+    if len(tempData):
+        print(f'临时缓存：{len(tempData)}')
+    return tempData # 壁纸数据（已整合）   
 
 def setSteamPath(path):
     """ 修改Steam安装位置 """

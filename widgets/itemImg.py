@@ -3,7 +3,7 @@ from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
 
 class ItemImg(QWidget):
-    def setContent(self, imgWidth, imgPath, name):
+    def setContent(self, imgWidth, imgPath, name, authorblock = False, invalid = False):
         verticalLayout = QVBoxLayout(self)
         verticalLayout.setContentsMargins(0, 0, 0, 0)
         
@@ -16,6 +16,8 @@ class ItemImg(QWidget):
         verticalLayout.addWidget(itemBox)
         
         txtBox = QLabel(name)
-        txtBox.setStyleSheet(u"color: rgb(255, 255, 255);background-color: rgba(0, 0, 0, 0.7);")
+        styleStr = u'color: rgb(255, 0, 0);' if invalid else u'color: rgb(255, 255, 255);'
+        styleStr += u'background-color: rgba(255, 0, 0, 0.7);' if authorblock else u'background-color: rgba(0, 0, 0, 0.7);'
+        txtBox.setStyleSheet(styleStr)
         txtBox.setMargin(6)
         verticalLayout.addWidget(txtBox)
