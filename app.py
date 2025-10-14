@@ -348,7 +348,7 @@ class MyWindow(QWidget, Ui_MainForm):
     def loadData(self): # 加载数据
         if not config['wallpaperPath']:
             return
-        print('loadData')
+        # print('loadData')
         if len(self.workshop) == 0:
             self.workshop = getWorkshop()
         if len(self.backup) == 0:
@@ -399,7 +399,9 @@ class MyWindow(QWidget, Ui_MainForm):
                             "previewsmall": u":/img/dir.png",
                             "invalid": False,
                             "steamid": "",
-                            "type" : "folder"
+                            "type" : "folder",
+                            "filesizelabel": "",
+                            "source": "",
                         })
                         for key in obj["items"].keys():
                             if len(key) < 15:
@@ -423,7 +425,9 @@ class MyWindow(QWidget, Ui_MainForm):
                     "previewsmall": u":/img/dir.png",
                     "invalid": False,
                     "steamid": "",
-                    "type" : "folder"
+                    "type" : "folder",
+                    "filesizelabel": "",
+                    "source": "",
                 }
                 mergeFolder(config["folders"], self.folders["subfolders"], self.folders["layer"])
 
@@ -570,7 +574,7 @@ class MyWindow(QWidget, Ui_MainForm):
                         item["title"] = f'黑名单【{obj["personaname"]}】{item["title"]}'
                         isAuthorblock = True
                         break
-            widget.setContent(imgWidth, item["previewsmall"], item["title"], isAuthorblock, item['invalid'])
+            widget.setContent(item["title"], imgWidth, item["previewsmall"], item["filesizelabel"], item["source"], isAuthorblock, item['invalid'])
             self.tableWidget_main.setCellWidget(row, col, widget)
             col += 1
             if col >= self.colMax:
@@ -696,7 +700,7 @@ class MyWindow(QWidget, Ui_MainForm):
                         self.folders_index.append(index)
                     else:
                         self.folders_index.append(index - 1)
-                print("返回foldersIndex", self.folders_index)
+                # print("返回foldersIndex", self.folders_index)
                 self.foldersData()
                 return
             # 首次点击

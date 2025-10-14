@@ -530,7 +530,8 @@ def getTemp():
                 else:
                     count += 1
             # 需要存入临时文件夹的项目：
-            print(f"需要存入临时文件夹的项目：{len(backup_dir)} - {pathDir}")
+            if len(backup_dir) > 0:
+                print(f"需要存入临时文件夹的项目：{len(backup_dir)} - {pathDir}")
             for dir_name in backup_dir:
                 dir_path = os.path.join(pathDir, dir_name)
                 if not os.path.isdir(dir_path):
