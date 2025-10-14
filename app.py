@@ -506,7 +506,6 @@ class MyWindow(QWidget, Ui_MainForm):
         self.filter_data = list(filter(filterType, self.folders_data))
         self.total_size = len(self.filter_data) # 筛选后长度
         self.label_filter.setText(f"筛选结果（ {self.total_data} 个中有 {self.total_size - self.folders_size} 个）")
-
         self.calculateQuantityTotal()
 
     def calculateQuantityTotal(self): # 重新计算总页数
@@ -544,7 +543,7 @@ class MyWindow(QWidget, Ui_MainForm):
 
         self.tableWidget_main.clearContents() # 清空
         if self.total_page == self.page:
-            self.tableWidget_main.setRowCount(math.ceil(self.total_size % self.sort["filterSize"] / self.colMax))
+            self.tableWidget_main.setRowCount(math.ceil((self.total_size - (self.sort["filterSize"] * (self.page - 1))) / self.colMax))
         else:
             self.tableWidget_main.setRowCount(math.ceil(self.sort["filterSize"] / self.colMax))
         self.tableWidget_main.setRowHeight(0, imgWidth)
@@ -680,7 +679,7 @@ class MyWindow(QWidget, Ui_MainForm):
             item = self.filter_data[index]
             # 点击文件夹
             if item["type"] == "folder":
-                print(item, index)
+                # print(item, index)
                 if item["title"] == "返回":
                     current = self.folders_index.pop()
                     data = self.folders["subfolders"]

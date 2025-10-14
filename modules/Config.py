@@ -290,7 +290,7 @@ def get_project_json(source, invalid, dir_name, dir_path, data, project_path):
         else:
             obj["updatedate"] = file_stat.st_mtime
         obj["workshopid"] = dir_name
-        obj["workshopurl"] = os.path.join("steam://url/CommunityFilePage", dir_name)
+        obj["workshopurl"] = "steam://url/CommunityFilePage/" + dir_name
         obj["invalid"] = invalid
         obj["source"] = source
         if "storagepath" not in data:
@@ -506,12 +506,20 @@ def getBackup():
 
 def getTemp():
     tempData = config["tempProject"]
+    # 筛选缓存是否还存在，减少计算量
+    count = 0
+    while count < len(tempData):
+        if not os.path.exists(tempData[count]["preview"]):
+            del tempData[count]
+        else:
+            count += 1
+    # print(len(tempData))
     tempDir = config["TempDir"]
     for pathDir in tempDir:
         if os.path.exists(pathDir):
             backup_dir = os.listdir(pathDir)
             # 整合工坊备份数据
-            print(f"备份文件夹列表长度：{len(backup_dir)}")
+            # print(f"备份文件夹列表长度：{len(backup_dir)} - {pathDir}")
             # 筛选是否已加入缓存，减少计算量
             count = 0
             while count < len(backup_dir):
@@ -522,7 +530,7 @@ def getTemp():
                 else:
                     count += 1
             # 需要存入临时文件夹的项目：
-            print(f"需要存入临时文件夹的项目：{len(backup_dir)}")
+            print(f"需要存入临时文件夹的项目：{len(backup_dir)} - {pathDir}")
             for dir_name in backup_dir:
                 dir_path = os.path.join(pathDir, dir_name)
                 if not os.path.isdir(dir_path):
