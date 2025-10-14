@@ -384,7 +384,7 @@ class MyWindow(QWidget, Ui_MainForm):
             self.total_data += len(self.tempData)
             total_capacity += totalCapacity("tempData", self.tempData)
         self.label_capacity.setText(f"容量：{dirSizeToStr(total_capacity)}")
-        print(f"项目总数量：{self.total_data}  {self.label_capacity.text()}")
+        # print(f"项目总数量：{self.total_data}  {self.label_capacity.text()}")
 
         # 生成文件夹数据并标记self.data
         if config["isCheckedFolders"]:
@@ -410,7 +410,7 @@ class MyWindow(QWidget, Ui_MainForm):
                                         break
                             else:
                                 for item in self.backup:
-                                    if key.find(item["workshopid"]) != -1:
+                                    if key.find('/'+ item["workshopid"]) != -1: # 加斜杠防止匹配到短id
                                         item["layer"] = folders[i]["layer"]
                                         # print("layer2", item["workshopid"], item["layer"])
                                         break
@@ -430,7 +430,7 @@ class MyWindow(QWidget, Ui_MainForm):
         self.sortData()
 
     def sortData(self): # 排序列表数据
-        print(f'排序sortData: {len(self.data)}')
+        # print(f'排序sortData: {len(self.data)}')
         # 排序(除了名称倒序，其他都是正序)
         self.data.sort(key=lambda x:x[self.sort["sortCurrent"]], reverse = self.sort["sortReverse"])
 
@@ -460,7 +460,7 @@ class MyWindow(QWidget, Ui_MainForm):
             else:
                 folders = self.folders["subfolders"]
             self.folders_size = len(folders)
-            print("生成folders", self.folders_size)
+            # print("生成folders", self.folders_size)
             foldersIndex = ",".join('%s' %item for item in self.folders_index)
             if foldersIndex == "":
                 self.folders_data = folders + list(filter(lambda item: "layer" not in item, self.data))
@@ -502,7 +502,7 @@ class MyWindow(QWidget, Ui_MainForm):
             # if config['isDevelopment']:
             #     print(f'不符合筛选排除: {obj["source"]} {obj["workshopid"]}')
             return False
-        print(f"筛选filterTypeData: {len(self.folders_data)}")
+        # print(f"筛选filterTypeData: {len(self.folders_data)}")
         self.filter_data = list(filter(filterType, self.folders_data))
         self.total_size = len(self.filter_data) # 筛选后长度
         self.label_filter.setText(f"筛选结果（ {self.total_data} 个中有 {self.total_size - self.folders_size} 个）")
@@ -511,7 +511,7 @@ class MyWindow(QWidget, Ui_MainForm):
     def calculateQuantityTotal(self): # 重新计算总页数
         self.total_page = math.ceil(self.total_size / self.sort["filterSize"])
         self.label_page.setText(f"共 {self.total_page} 页")
-        print('重置总页数calculateQuantityTotal: ', self.total_page)
+        # print('重置总页数calculateQuantityTotal: ', self.total_page)
         model = QStringListModel()
         pageData = []
         for i in range(0, self.total_page):
@@ -525,7 +525,7 @@ class MyWindow(QWidget, Ui_MainForm):
         self.captureEnd = self.page * self.sort["filterSize"]
         if self.captureEnd > self.total_size:
             self.captureEnd = None
-        print(f'截取captureData: {self.captureStart} - {self.captureEnd}')
+        # print(f'截取captureData: {self.captureStart} - {self.captureEnd}')
         self.refreshTable()
 
     def refreshTable(self): # 刷新列表
@@ -539,13 +539,14 @@ class MyWindow(QWidget, Ui_MainForm):
             #     imgWidth, _ = calculateQuantityImgsizeCol(widgetWidth, colMax)
             return imgWidth, colMax
         imgWidth, self.colMax = calculateQuantityImgsizeCol(self.tableWidget_main.size().width() - 16, 3)
-        print('重新计算图文宽度和最大列数', imgWidth, self.colMax)
+        # print('重新计算图文宽度和最大列数', imgWidth, self.colMax)
 
         self.tableWidget_main.clearContents() # 清空
         if self.total_page == self.page:
             self.tableWidget_main.setRowCount(math.ceil((self.total_size - (self.sort["filterSize"] * (self.page - 1))) / self.colMax))
         else:
             self.tableWidget_main.setRowCount(math.ceil(self.sort["filterSize"] / self.colMax))
+        # print('最大行数', self.tableWidget_main.rowCount())
         self.tableWidget_main.setRowHeight(0, imgWidth)
 
         self.tableWidget_main.setColumnCount(self.colMax)
@@ -678,8 +679,8 @@ class MyWindow(QWidget, Ui_MainForm):
                 return
             item = self.filter_data[index]
             # 点击文件夹
+            # print(item, index)
             if item["type"] == "folder":
-                # print(item, index)
                 if item["title"] == "返回":
                     current = self.folders_index.pop()
                     data = self.folders["subfolders"]
