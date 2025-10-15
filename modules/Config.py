@@ -515,7 +515,8 @@ def getTemp():
             count += 1
     # print(len(tempData))
     tempDir = config["TempDir"]
-    for pathDir in tempDir:
+    for item in tempDir:
+        pathDir = item["path"]
         if os.path.exists(pathDir):
             backup_dir = os.listdir(pathDir)
             # 整合工坊备份数据
@@ -525,7 +526,7 @@ def getTemp():
             while count < len(backup_dir):
                 dir_name = backup_dir[count]
                 # 筛选文件夹是否存已记录再备份缺失project.json缓存中
-                if len(list(filter(lambda item: item['workshopid'] == dir_name, tempData))):
+                if len(list(filter(lambda obj: obj['workshopid'] == dir_name, tempData))):
                     del backup_dir[count]
                 else:
                     count += 1

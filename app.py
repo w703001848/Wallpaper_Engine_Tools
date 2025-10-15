@@ -1012,8 +1012,14 @@ class MyWindow(QWidget, Ui_MainForm):
         def handleNewClick():
             path = openDirDialog()
             if path:
-                self.TempDir.append(path)
-                self.listWidget_temp.addItem(path)
+                txt = os.path.split(path)
+                remark, ok = QInputDialog.getText(None, '新增存储', '请输入备注 例：游戏', text=txt[1])
+                if ok:
+                    self.TempDir.append({
+                        "remark": remark,
+                        "path": path
+                    })
+                    self.listWidget_temp.addItem(f'{remark:<20} - {path}')
         self.btn_temp_new.clicked.connect(handleNewClick)
         
         def handleRemoveClick():
@@ -1035,7 +1041,7 @@ class MyWindow(QWidget, Ui_MainForm):
     def get_temp_list(self): # 临时文件夹加载
         if not self.listWidget_temp.count():
             for item in self.TempDir:
-                self.listWidget_temp.addItem(item)
+                self.listWidget_temp.addItem(f'{item["remark"]:<20} - {item["path"]}')
 
     def resizeEvent(self, event): # 窗口变化
         if self.windowWidth == self.size().width():
