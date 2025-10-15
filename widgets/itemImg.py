@@ -16,7 +16,8 @@ class ItemImg(QWidget):
         # verticalLayout.addWidget(itemBox)
         
         txtBox = QLabel(name, self)
-        styleStr = u'color: rgb(255, 0, 0);' if invalid else u'color: rgb(255, 255, 255);'
+        styleStr = u'font-size: 12px;'
+        styleStr += u'color: rgb(255, 0, 0);' if invalid else u'color: rgb(255, 255, 255);'
         styleStr += u'background-color: rgba(255, 0, 0, 0.7);' if authorblock else u'background-color: rgba(0, 0, 0, 0.7);'
         txtBox.setStyleSheet(styleStr)
         txtBox.setMargin(6)
@@ -25,10 +26,12 @@ class ItemImg(QWidget):
         
         if tag:
             tagBox = QLabel(tag, self)
-            styleStr = u'color: rgb(255, 255, 255);border-radius: 4px;font-size: 11px;padding: 4px 4px 4px 14px;'
+            styleStr = u'font-size: 9px;color: rgb(255, 255, 255);border-radius: 4px;padding: 4px 4px 4px 14px;'
             styleStr += u'background-color: rgba(0, 0, 0, 0.7);' 
             if source == "wallpaper":
-                styleStr += u'background-color: rgba(0, 255, 0, 0.7);' 
+                styleStr += u'background-color: rgba(0, 254, 255, 0.7);' 
+            elif source == "tempData":
+                styleStr += u'background-color: rgba(255, 128, 0, 0.7);' 
             else:
                 styleStr += u'background-color: rgba(0, 0, 0, 0.7);' 
             tagBox.setStyleSheet(styleStr)

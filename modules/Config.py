@@ -210,8 +210,6 @@ def get_project_json(source, invalid, dir_name, dir_path, data, project_path):
     """ 新增壁纸缓存 """
     global temp_dependency # 父级关联项目
     obj = None
-    # 获取创建时间
-    file_stat = os.stat(project_path)
     # def generateProject():
     if data is None:
         size = getDirSize(dir_path)
@@ -234,11 +232,11 @@ def get_project_json(source, invalid, dir_name, dir_path, data, project_path):
             "rating" : 0,
             "ratingrounded" : 5.0,
             "status" : "",
-            "subscriptiondate" : file_stat.st_ctime,
+            "subscriptiondate" : int(time.time()),
             "tags" : "",
             "title" : dir_name,
             "type" : "dir",
-            "updatedate" : file_stat.st_mtime,
+            "updatedate" : int(time.time()),
             "workshopid" : dir_name,
             "workshopurl" : "",
             "invalid": invalid, # 自增，用于判断失效
@@ -268,6 +266,8 @@ def get_project_json(source, invalid, dir_name, dir_path, data, project_path):
         obj["rating"] = 0
         obj["ratingrounded"] = 5.0
         obj["status"] = ''
+        # 获取创建时间
+        file_stat = os.stat(project_path)
         if "subscriptiondate" in data:
             obj["subscriptiondate"] = data["subscriptiondate"]
         else:
@@ -319,7 +319,7 @@ def getWorkshop():
         os.chdir(wallpaper_steam_path)
         # 清理缓存里工坊失效文件夹是否还存在
         if len(un_workshop):
-            print(f"清理工坊失效壁纸、文件夹缓存：{len(un_workshop)}")
+            # print(f"清理工坊失效壁纸、文件夹缓存：{len(un_workshop)}")
             count = 0
             while count < len(un_workshop): # 涉及删除操作用while
                 item = un_workshop[count]
@@ -339,7 +339,7 @@ def getWorkshop():
 
         # 清理缓存里缺少project.json文件夹是否还存在
         if len(un_project):
-            print(f"清理工坊失效壁纸、文件夹缓存：{len(un_project)}")
+            # print(f"清理工坊失效壁纸、文件夹缓存：{len(un_project)}")
             count = 0
             while count < len(un_project): # 涉及删除操作用while
                 item = un_project[count]
@@ -378,7 +378,7 @@ def getWorkshop():
                 else:
                     count += 1
         # 多出的文件夹载入工坊失效壁纸、文件夹缓存
-        print(f"工坊缓存未识别：{len(workshop_dir)}")
+        # print(f"工坊缓存未识别：{len(workshop_dir)}")
         for dir_name in workshop_dir:
             dir_path = os.path.join(wallpaper_steam_path, dir_name)
             if not os.path.isdir(dir_path):
@@ -459,7 +459,7 @@ def getBackup():
 
         backup_dir = os.listdir(backupPath)
         # 整合工坊备份数据
-        print(f"备份文件夹列表长度：{len(backup_dir)}")
+        # print(f"备份文件夹列表长度：{len(backup_dir)}")
         # 筛选是否已加入缓存，减少计算量
         count = 0
         while count < len(backup_dir):
@@ -473,7 +473,7 @@ def getBackup():
             else:
                 count += 1
         # 需要存入备份缓存的项目：
-        print(f"需要存入备份缓存的项目：{len(backup_dir)}")
+        # print(f"需要存入备份缓存的项目：{len(backup_dir)}")
         for dir_name in backup_dir:
             dir_path = os.path.join(backupPath, dir_name)
             if not os.path.isdir(dir_path):
@@ -544,7 +544,7 @@ def getTemp():
                         f1 = open(project_path, encoding="utf-8")
                         data = json.load(f1) # 从文件读取json并反序列化
                         # search_workshopcache_dependency(workshopBackup, data)
-                        tempData.append(get_project_json('backup', False, dir_name, dir_path, data, project_path))
+                        tempData.append(get_project_json('tempData', False, dir_name, dir_path, data, project_path))
                         f1.close()
                         # logging.warning(f"备份缓存新增: {project_path}")
                     except Exception as e:

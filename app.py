@@ -1,7 +1,7 @@
 import os, sys, subprocess, atexit, pyperclip
 import logging, math, time, json
 # PySide6组件调用
-from PySide6.QtCore import Qt, QSize, QStringListModel
+from PySide6.QtCore import Qt, QSize, QStringListModel, Slot
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QApplication, QWidget, QMenu, QListWidgetItem, QInputDialog
 # 加载模板
@@ -455,7 +455,9 @@ class MyWindow(QWidget, Ui_MainForm):
                     "previewsmall": u":/img/dir.png",
                     "invalid": True,
                     "steamid": "",
-                    "type" : "folder"
+                    "type" : "folder",
+                    "filesizelabel": "",
+                    "source": "",
                 }]
                 data = self.folders["subfolders"]
                 for i in self.folders_index:
@@ -534,16 +536,16 @@ class MyWindow(QWidget, Ui_MainForm):
 
     def refreshTable(self): # 刷新列表
         # 重新计算图文宽度和最大列数
-        def calculateQuantityImgsizeCol(widgetWidth, colMax):
-            imgWidth = int(widgetWidth / colMax)
-            if imgWidth > self.sort["displaySize"]:
-                imgWidth, colMax = calculateQuantityImgsizeCol(widgetWidth, colMax + 1)
-            # elif imgWidth < 180:
+        def calculateQuantityImgsizeCol(width, colMax):
+            __width = int(width / colMax)
+            if __width > self.sort["displaySize"]:
+                __width, colMax = calculateQuantityImgsizeCol(width, colMax + 1)
+            # elif __width < 180:
             #     colMax = colMax - 1
-            #     imgWidth, _ = calculateQuantityImgsizeCol(widgetWidth, colMax)
-            return imgWidth, colMax
-        imgWidth, self.colMax = calculateQuantityImgsizeCol(self.tableWidget_main.size().width() - 16, 3)
-        # print('重新计算图文宽度和最大列数', imgWidth, self.colMax)
+            #     __width, _ = calculateQuantityImgsizeCol(width, colMax)
+            return __width, colMax
+        self.imgWidth, self.colMax = calculateQuantityImgsizeCol(self.tableWidget_main.size().width() - 16, 3)
+        # print('重新计算图文宽度和最大列数', self.imgWidth, self.colMax)
 
         self.tableWidget_main.clearContents() # 清空
         if self.total_page == self.page:
@@ -551,39 +553,52 @@ class MyWindow(QWidget, Ui_MainForm):
         else:
             self.tableWidget_main.setRowCount(math.ceil(self.sort["filterSize"] / self.colMax))
         # print('最大行数', self.tableWidget_main.rowCount())
-        self.tableWidget_main.setRowHeight(0, imgWidth)
+        self.tableWidget_main.setRowHeight(0, self.imgWidth)
 
         self.tableWidget_main.setColumnCount(self.colMax)
         # 根据列数设置列宽
         i = 0
         while i < self.colMax:
-            self.tableWidget_main.setColumnWidth(i, imgWidth)
+            self.tableWidget_main.setColumnWidth(i, self.imgWidth)
             i += 1
 
         row = 0 # 计数行
         col = 0 # 计数列
         for item in self.filter_data[self.captureStart:self.captureEnd]: # 截取功能要浅拷贝处理，否则会加载上次截取
-            # 绘制单元格
-            widget = ItemImg()
-            # 黑名单匹配
-            isAuthorblock = False
-            if config["isCheckedAuthorblock"] and item.get("authorsteamid"):
-                for obj in self.virus:
-                    if obj["steamid"] == item["authorsteamid"]:
-                        print(f'黑名单匹配: {obj["personaname"]} {"*" * 100}')
-                        item["title"] = f'黑名单【{obj["personaname"]}】{item["title"]}'
-                        isAuthorblock = True
-                        break
-            widget.setContent(item["title"], imgWidth, item["previewsmall"], item["filesizelabel"], item["source"], isAuthorblock, item['invalid'])
-            self.tableWidget_main.setCellWidget(row, col, widget)
+            self.setTableWidgetItem(row, col, item)
             col += 1
             if col >= self.colMax:
                 col = 0
                 row += 1
-                self.tableWidget_main.setRowHeight(row, imgWidth)
+                self.tableWidget_main.setRowHeight(row, self.imgWidth)
+    
+    def setTableWidgetItem(self, row, col, data):
+        # 绘制单元格
+        widget = ItemImg()
+        # 黑名单匹配
+        isAuthorblock = False
+        if config["isCheckedAuthorblock"] and data.get("authorsteamid"):
+            for obj in self.virus:
+                if obj["steamid"] == data["authorsteamid"]:
+                    print(f'黑名单匹配: {obj["personaname"]} {"*" * 100}')
+                    data["title"] = f'黑名单【{obj["personaname"]}】{data["title"]}'
+                    isAuthorblock = True
+                    break
+        widget.setContent(data["title"], self.imgWidth, data["previewsmall"], data["filesizelabel"], data["source"], isAuthorblock, data['invalid'])
+        self.tableWidget_main.setCellWidget(row, col, widget)
 
     def initContextMenu(self): # 右键弹窗初始化
         self.itemMenu = None
+
+        @Slot(object) # @Slot(str)
+        def handle_running_update(i): # 接收信号
+            # print('# 接收信号: ', i)
+            self.progressBar.setVisible(False)
+            self.itemMenu = i
+            self.setTableWidgetItem(self.__row, self.__col, i)
+            # openMessageDialog(f'转移完成')
+        GeneratedDirThread.running_update.connect(handle_running_update)
+
         # 右键弹窗
         self.context_menu = QMenu(self)
         self.copyTitle = self.context_menu.addAction("标题复制")
@@ -596,15 +611,32 @@ class MyWindow(QWidget, Ui_MainForm):
             os.startfile(os.path.dirname(self.itemMenu["project"]))
         self.actionStartfile.triggered.connect(handleStartfile)
 
-        # self.context_menu.addSeparator() # 分割线
+        self.context_menu.addSeparator() # 分割线
         # self.actionEdit = self.context_menu.addAction("修改")
+
+        self.menuMoveTemp = QMenu("转移临时文件夹", self)
+        def handleMenuTemp(e):
+            for obj in config["TempDir"]:
+                if obj["remark"] == e.text():
+                    path = obj["path"]
+                    break
+            if not GeneratedDirThread.running:
+                def moveDirThread():
+                    self.progressBar.setVisible(True)
+                    self.progressBar.setRange(0,0)
+                    data = MoveProject(self.itemMenu, path)
+                    return data
+                GeneratedDirThread.setFun(moveDirThread)
+                GeneratedDirThread.start()
+            else:
+                openMessageDialog('等待上个项目转移')
+        self.menuMoveTemp.triggered.connect(handleMenuTemp)
+        self.actionMoveTemp = self.context_menu.addMenu(self.menuMoveTemp)
 
         self.actionMoveBackup = self.context_menu.addAction("转移备份")
         def handleMoveBackup():
-            # self.progressBar.setVisible(True)
-            # self.progressBar.setRange(0,0)
-            # MoveProject(self.itemMenu)
-            # self.progressBar.setVisible(False)
+            self.progressBar.setVisible(False)
+            return
             # 多线程
             if not GeneratedDirThread.paused:
                 GeneratedDirThread.setFun(lambda: MoveProject(self.itemMenu))
@@ -620,39 +652,45 @@ class MyWindow(QWidget, Ui_MainForm):
                     MoveProject(self.itemMenu, os.path.join(obj["IP"], obj["dir"]))
             self.progressBar.setVisible(False)
         self.menuMoveNas.triggered.connect(handleMenuNas)
-        self.context_menu.addMenu(self.menuMoveNas)
+        self.actionMoveNas = self.context_menu.addMenu(self.menuMoveNas)
 
         self.tableWidget_main.setContextMenuPolicy(Qt.CustomContextMenu) # 开启右键菜单触发
-        self.tableWidget_main.customContextMenuRequested.connect(self.show_context_menu)
-    
-    def show_context_menu(self, pos): # 右键弹窗显示
-        # print("右键弹窗", pos)
-        # 右键指向项目
-        indexAt = self.tableWidget_main.indexAt(pos)
-        if indexAt.isValid():
-            row, col = indexAt.row(), indexAt.column()
-            index = row * self.colMax + col + (self.page - 1) * self.sort["filterSize"]
-            if index >= len(self.filter_data) or index < 0:
-                return
-            self.itemMenu = self.filter_data[index]
-            # 项目适配选项
-            if self.itemMenu["type"] == "folder":
-                return
-            if self.itemMenu["source"] == "wallpaper":
-                self.actionMoveBackup.setVisible(True)
-            elif self.itemMenu["source"] == "backup":
-                self.actionMoveBackup.setVisible(False)
-                if self.itemMenu["storagepath"] != "":
-                    self.menuMoveNas.setVisible(False)
-            else:
-                self.actionMoveBackup.setVisible(False)
-                self.menuMoveNas.setVisible(False)
-            # 更新二级菜单
-            self.menuMoveNas.clear()
-            for obj in config["nasLink"]:
-                self.menuMoveNas.addAction(obj["remark"])
-            # 显示弹窗
-            self.context_menu.exec(self.tableWidget_main.viewport().mapToGlobal(pos))
+        def showContextMenu(pos): # 右键弹窗显示
+            self.actionMoveTemp.setVisible(False)
+            self.actionMoveBackup.setVisible(False)
+            self.actionMoveNas.setVisible(False)
+            # print("右键弹窗", pos)
+            # 右键指向项目
+            indexAt = self.tableWidget_main.indexAt(pos)
+            if indexAt.isValid():
+                # 显示位置调整
+                self.__row, self.__col = indexAt.row(), indexAt.column()
+                index = self.__row * self.colMax + self.__col + (self.page - 1) * self.sort["filterSize"]
+                if index >= len(self.filter_data) or index < 0:
+                    return
+                self.itemMenu = self.filter_data[index]
+                # 项目适配选项
+                if self.itemMenu["type"] == "folder": # 屏蔽分类
+                    return
+                elif self.itemMenu["source"] == "wallpaper":
+                    self.actionMoveTemp.setVisible(True)
+                    # 更新二级菜单
+                    self.menuMoveTemp.clear()
+                    for obj in config["TempDir"]:
+                        self.menuMoveTemp.addAction(obj["remark"])
+                elif self.itemMenu["source"] == "tempData":
+                    self.actionMoveBackup.setVisible(True)
+                    self.actionMoveNas.setVisible(True)
+                elif self.itemMenu["source"] == "backup":
+                    self.actionMoveNas.setVisible(True)
+                    if self.itemMenu["storagepath"] == "":
+                        # 更新二级菜单
+                        self.menuMoveNas.clear()
+                        for obj in config["nasLink"]:
+                            self.menuMoveNas.addAction(obj["remark"])
+                # 显示弹窗
+                self.context_menu.exec(self.tableWidget_main.viewport().mapToGlobal(pos))
+        self.tableWidget_main.customContextMenuRequested.connect(showContextMenu)
 
     def initMainRight(self): # 初始化界面右侧功能
         self.currentItem = None
@@ -1046,6 +1084,8 @@ class MyWindow(QWidget, Ui_MainForm):
     def resizeEvent(self, event): # 窗口变化
         if self.windowWidth == self.size().width():
             return
+        else:
+            self.windowWidth = self.size().width()
         self.windowDebouncer.trigger()
 
 

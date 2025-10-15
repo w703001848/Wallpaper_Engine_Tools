@@ -2,7 +2,7 @@ import os, shutil, json
 from win32com.client import Dispatch
 import logging
 
-from .Config import config
+from .Config import config, get_project_json
 from .main import convert_path, openMessageDialog, getDirSize, dirSizeToStr
 from .Thread import WorkerThread
 from PySide6.QtCore import Slot
@@ -95,16 +95,6 @@ def MoveProject(obj, path = ""):
     path_old = ""
     path_new = ""
     try:
-        f1 = open(obj["project"], encoding='utf-8')
-        obj.update(json.load(f1))
-        f1.close()
-
-        if obj["source"] == "wallpaper":
-            # 源地址: 工坊
-            path_old = os.path.join(config['mklinkList'][0]["path"], obj["workshopid"])
-        else:
-            # 源地址: 备份
-            path_old = os.path.join(config["backupPath"], obj["workshopid"])
         if path == "":
             # 转移地址, -> 备份
             path_new = os.path.join(config["backupPath"], obj["workshopid"])
@@ -112,6 +102,40 @@ def MoveProject(obj, path = ""):
             # 转移地址, -> path
             path_new = os.path.join(path, obj["workshopid"])
 
+        if obj["source"] == "wallpaper":
+            # 源地址: 工坊
+            path_old = os.path.join(config['mklinkList'][0]["path"], obj["workshopid"])
+        elif obj["source"] == "tempData":
+            # 源地址: 工坊
+            path_old = os.path.dirname(obj["project"])
+        elif obj["source"] == "backup":
+            # 源地址: 备份
+            path_old = os.path.join(config["backupPath"], obj["workshopid"])
+
+        if obj["source"] == "wallpaper":
+            # 移动文件夹
+            shutil.move(path_old, path_new)
+            # 更新数据
+            obj["project"] = os.path.join(path_new, 'project.json')
+            f1 = open(obj["project"], encoding='utf-8')
+            objCopy = obj.copy()
+            objCopy.update(json.load(f1)) # 合并，重合以f1为主
+            f1.close()
+            # 更新数据2
+            obj["file"] = os.path.join(path_new, objCopy["file"])
+            obj["source"] = "tempData"
+            obj["invalid"] = False
+            obj["previewsmall"] = obj["preview"] = os.path.join(path_new, objCopy["preview"])
+            # 更新数据3
+            objCopy.pop("previewsmall")
+            objCopy.pop("project")
+            objCopy.pop("source")
+            objCopy.pop("invalid")
+            f2 = open(obj["project"], 'w', encoding='utf-8')
+            json.dump(objCopy, f2, ensure_ascii=False)
+            f2.close()
+            os.startfile(path_new)
+            return obj
         # 创建目标文件夹
         if not os.path.isdir(path_new):
             os.makedirs(path_new)
@@ -143,8 +167,8 @@ def MoveProject(obj, path = ""):
         logging.error(f"转移内容失败: {e}")
         # openMessageDialog(str(e), 'error')
 
-@Slot(bool) # @Slot(str)
-def handle_running_update(i): # 接收信号
-    print(f'# 接收信号 {i}')
-    openMessageDialog(f'转移完成')
-GeneratedDirThread.running_update.connect(handle_running_update)
+# @Slot(bool) # @Slot(str)
+# def handle_running_update(i): # 接收信号
+#     print(f'# 接收信号 {i}')
+#     openMessageDialog(f'转移完成')
+# GeneratedDirThread.running_update.connect(handle_running_update)

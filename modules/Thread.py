@@ -36,7 +36,7 @@ class WorkerThread(QThread):
     paused: 暂停状态
     """
     count_update = Signal(int)  # 创建一个信号，用于发送进度
-    running_update = Signal(bool)  # 创建一个信号，用于发送进度
+    running_update = Signal(object)  # 创建一个信号，用于发送结果
     
     def __init__(self, time = None):
         super().__init__()
@@ -58,9 +58,9 @@ class WorkerThread(QThread):
                         timer = time.time()
             self.running = False
         elif self.fun is not None:
-            self.fun()
+            data = self.fun()
             self.running = False
-            self.running_update.emit(True)
+            self.running_update.emit(data)
 
     def setFun(self, fun):
         self.fun = fun
