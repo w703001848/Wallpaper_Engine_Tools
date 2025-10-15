@@ -509,7 +509,7 @@ def getTemp():
     # 筛选缓存是否还存在，减少计算量
     count = 0
     while count < len(tempData):
-        if not os.path.exists(tempData[count]["preview"]):
+        if not os.path.exists(tempData[count]["preview"]) or tempData[count]["source"] != "tempData":
             del tempData[count]
         else:
             count += 1
