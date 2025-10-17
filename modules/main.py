@@ -167,7 +167,6 @@ def checkEnvironment():
         print("正式环境")
         return True
 
-
 # 拖放事件是否开启接收
 def dragEnterEvent(event):
     if event.mimeData().hasUrls():
@@ -176,3 +175,80 @@ def dragEnterEvent(event):
 # 当前平台路径分割符号转换
 def convert_path(path, to_unix=os.name=='nt'):
     return path.replace("/", "\\") if to_unix else path.replace("\\", "/")
+
+# folder/preview 转换、生成
+def renameDir(c_path, name_new, name_old):
+    print('当前文件夹路径: %s' %(c_path))
+    try:
+        path_old = os.path.join(c_path, name_old)
+        path_new = os.path.join(c_path, name_new)
+        # print('旧: %s' %(path_old))
+        # print('新: %s' %(path_new))
+        os.rename(path_old, path_new) # 重命名
+        # print('重命名: %s' %(name_new))
+    except Exception as e:
+        print('*' * 80)
+        print(e)
+    print('-' * 100)
+
+# cmd 选择地址进行 folder/preview 转换、生成
+def folderCreate(TempDir, index = -1):
+    dir_path = ""
+    key_dir = None
+
+    print('=' * 100)
+    if index == -1:
+        print('退出: 回车')
+    else:
+        print("退出: exit")
+    for i, obj in enumerate(TempDir):
+        if i == index:
+            print(i, '默认: 回车', obj["path"])
+        else:
+            print(i, obj["path"])
+    print('-' * 100)
+
+    __txt = input('请输入序号：')
+    if __txt.isdecimal():
+        key_dir = int(__txt)
+        if key_dir < 0 or key_dir >= len(TempDir):
+            logging.error('输入序号无法识别: ', key_dir)
+            return
+    else:
+        key_dir = __txt
+    print('-' * 100)
+    
+    if key_dir == "exit":
+        print("退出".ljust(100, "*"))
+        return
+    elif key_dir == "":
+        if index == -1:
+            print("退出".ljust(100, "*"))
+            return
+        else:
+            dir_path = TempDir[index]["path"]
+    else:
+        dir_path = TempDir[key_dir]["path"]
+
+    print('0.preview重命名folder/回车默认')
+    print('1.folder重命名preview')
+    key_type = input('请输入：') or '0'
+    print('-' * 100)
+
+    list_dir = os.listdir(dir_path)
+    for name_dir in list_dir:
+        __path = os.path.join(dir_path, name_dir) # 结合目录名与文件名
+
+        if os.path.isdir(__path):
+            list_c = os.listdir(__path)
+            for i in list_c:
+                preview = os.path.splitext(i)
+                if preview[0] == 'preview' and key_type == '0':
+                    name_new = 'folder' + preview[1]
+                    renameDir(__path, name_new, i)
+                    break
+                elif preview[0] == 'folder' and key_type == '1':
+                    name_new = 'preview' + preview[1]
+                    renameDir(__path, name_new, i)
+                    break
+

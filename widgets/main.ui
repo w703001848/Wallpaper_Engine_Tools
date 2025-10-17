@@ -1474,8 +1474,8 @@ background-color: rgb(85, 85, 255);</string>
           <property name="geometry">
            <rect>
             <x>0</x>
-            <y>0</y>
-            <width>465</width>
+            <y>-313</y>
+            <width>983</width>
             <height>1046</height>
            </rect>
           </property>
@@ -1867,6 +1867,34 @@ background-color: rgb(255, 85, 0);</string>
                   </property>
                  </widget>
                 </item>
+                <item>
+                 <widget class="QPushButton" name="btn_folder">
+                  <property name="styleSheet">
+                   <string notr="true">color: rgb(255, 255, 255);
+background-color: rgb(255, 170, 127);</string>
+                  </property>
+                  <property name="text">
+                   <string>生成folder</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="btn_naslink_file_create">
+                  <property name="minimumSize">
+                   <size>
+                    <width>120</width>
+                    <height>23</height>
+                   </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">color: rgb(255, 255, 255);
+background-color: rgb(85, 85, 255);</string>
+                  </property>
+                  <property name="text">
+                   <string>单文件生成nas快捷方式</string>
+                  </property>
+                 </widget>
+                </item>
                </layout>
               </item>
               <item>
@@ -1920,6 +1948,13 @@ background-color: rgb(255, 85, 0);</string>
  </resources>
  <connections/>
  <buttongroups>
+  <buttongroup name="buttonGroup_sort"/>
+  <buttongroup name="buttonGroup_img"/>
+  <buttongroup name="buttonGroup_type">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
   <buttongroup name="buttonGroup_page">
    <property name="exclusive">
     <bool>false</bool>
@@ -1930,12 +1965,5 @@ background-color: rgb(255, 85, 0);</string>
     <bool>false</bool>
    </property>
   </buttongroup>
-  <buttongroup name="buttonGroup_type">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
-  <buttongroup name="buttonGroup_img"/>
-  <buttongroup name="buttonGroup_sort"/>
  </buttongroups>
 </ui>

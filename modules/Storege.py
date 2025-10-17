@@ -2,7 +2,7 @@ import os, shutil, json
 from win32com.client import Dispatch
 import logging
 
-from .Config import config, get_project_json
+from .Config import config
 from .main import convert_path, openMessageDialog, getDirSize, dirSizeToStr
 from .Thread import WorkerThread
 from PySide6.QtCore import Slot
@@ -10,13 +10,15 @@ shell = Dispatch("WScript.Shell")
 
 list_notify = list()
 
-GeneratedDirThread = WorkerThread()
+# 创建文件夹
+def CreateDir(dir_path):
+    if not os.path.isdir(dir_path):
+        os.makedirs(dir_path)
 
 # 生成快捷方式
 def GeneratedLnk(shorcut, target):
     # 目标文件路径
     try:
-        target = target
         shortcut = shell.CreateShortcut(shorcut + '.lnk')
         shortcut.TargetPath = convert_path(target)
         shortcut.Save()
@@ -26,9 +28,6 @@ def GeneratedLnk(shorcut, target):
         print('-' * 60)
         # 未开发，选择二级扫描
         list_notify.append(target)
-
-def GeneratedDir(name, path):
-    pass
 
 # 生成快捷方式项目至备份
 def GeneratedDirNas(path, name):
@@ -92,83 +91,46 @@ def GeneratedDirNas(path, name):
 
 # 转移项目
 def MoveProject(obj, path = ""):
+    # 转移地址, -> path
+    path_new = os.path.join(path, obj["workshopid"])
     path_old = ""
-    path_new = ""
     try:
-        if path == "":
-            # 转移地址, -> 备份
-            path_new = os.path.join(config["backupPath"], obj["workshopid"])
-        else:
-            # 转移地址, -> path
-            path_new = os.path.join(path, obj["workshopid"])
-
         if obj["source"] == "wallpaper":
             # 源地址: 工坊
             path_old = os.path.join(config['mklinkList'][0]["path"], obj["workshopid"])
+            obj["source"] = "tempData"
         elif obj["source"] == "tempData":
             # 源地址: 工坊
             path_old = os.path.dirname(obj["project"])
+            obj["source"] = "backup"
         elif obj["source"] == "backup":
             # 源地址: 备份
             path_old = os.path.join(config["backupPath"], obj["workshopid"])
-
-        if obj["source"] == "wallpaper":
-            # 移动文件夹
-            shutil.move(path_old, path_new)
-            # 更新数据
-            obj["project"] = os.path.join(path_new, 'project.json')
-            f1 = open(obj["project"], encoding='utf-8')
-            objCopy = obj.copy()
-            objCopy.update(json.load(f1)) # 合并，重合以f1为主
-            f1.close()
-            # 更新数据2
-            obj["file"] = os.path.join(path_new, objCopy["file"])
-            obj["source"] = "tempData"
-            obj["invalid"] = False
-            obj["previewsmall"] = obj["preview"] = os.path.join(path_new, objCopy["preview"])
-            # 更新数据3
-            objCopy.pop("previewsmall")
-            objCopy.pop("project")
-            objCopy.pop("source")
-            objCopy.pop("invalid")
-            f2 = open(obj["project"], 'w', encoding='utf-8')
-            json.dump(objCopy, f2, ensure_ascii=False)
-            f2.close()
-            os.startfile(path_new)
-            return obj
-        # 创建目标文件夹
-        if not os.path.isdir(path_new):
-            os.makedirs(path_new)
-        lists = os.listdir(path_old)
-        if "filesize" not in obj:
-            obj["filesize"] = getDirSize(path_old)
-            obj["filesizelabel"] = dirSizeToStr(obj["filesize"])
-        if path != "":
+            obj["source"] = "backup"
             obj["storagepath"] = path_new
-        # print(os.path.join(path_new, 'project.json'))
-        f1 = open(os.path.join(path_new, 'project.json'), 'w', encoding='utf-8')
-        json.dump(obj, f1, ensure_ascii=False)
+        # 移动文件夹
+        shutil.move(path_old, path_new)
+        # 更新数据
+        f1 = open(os.path.join(path_new, 'project.json'), 'w+', encoding='utf-8')
+        objCopy = obj.copy()
+        objCopy.update(json.load(f1)) # 合并，重合以f1为主
+        # 更新数据3
+        objCopy.pop("previewsmall")
+        objCopy.pop("project")
+        objCopy.pop("source")
+        objCopy.pop("invalid")
+        json.dump(objCopy, f1, ensure_ascii=False)
         f1.close()
-        # 复制文件
-        # shutil.copy2(obj["project"], path_new)
-        os.remove(obj["project"])
-        # 转移内容
-        for item_name in lists:
-            if item_name == 'project.json':
-                continue
-            else:
-                # 移动文件
-                shutil.move(os.path.join(path_old, item_name), path_new)
-        # 创建备份快捷方式
-        if path != "":
+        # 更新数据2
+        if obj["source"] == "backup":
             GeneratedDirNas(path, obj["workshopid"])
-        # openMessageDialog(f'转移完成:{obj["workshopid"]}')
+        else:
+            obj["project"] = os.path.join(path_new, 'project.json')
+            obj["file"] = os.path.join(path_new, objCopy["file"])
+            obj["previewsmall"] = obj["preview"] = os.path.join(path_new, objCopy["preview"])
+            obj["invalid"] = False
+        # os.startfile(path_new)
+        return obj
     except Exception as e:
         logging.error(f"转移内容失败: {e}")
         # openMessageDialog(str(e), 'error')
-
-# @Slot(bool) # @Slot(str)
-# def handle_running_update(i): # 接收信号
-#     print(f'# 接收信号 {i}')
-#     openMessageDialog(f'转移完成')
-# GeneratedDirThread.running_update.connect(handle_running_update)

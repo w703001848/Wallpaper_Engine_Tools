@@ -803,7 +803,7 @@ class Ui_MainForm(object):
         self.scrollArea_1.setWidgetResizable(True)
         self.scrollAreaWidgetContents_1 = QWidget()
         self.scrollAreaWidgetContents_1.setObjectName(u"scrollAreaWidgetContents_1")
-        self.scrollAreaWidgetContents_1.setGeometry(QRect(0, 0, 465, 1046))
+        self.scrollAreaWidgetContents_1.setGeometry(QRect(0, -313, 983, 1046))
         self.verticalLayout_2 = QVBoxLayout(self.scrollAreaWidgetContents_1)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.groupBox_dir = QGroupBox(self.scrollAreaWidgetContents_1)
@@ -1026,6 +1026,21 @@ class Ui_MainForm(object):
 
         self.horizontalLayout_4.addWidget(self.btn_temp_remove)
 
+        self.btn_folder = QPushButton(self.groupBox_11)
+        self.btn_folder.setObjectName(u"btn_folder")
+        self.btn_folder.setStyleSheet(u"color: rgb(255, 255, 255);\n"
+"background-color: rgb(255, 170, 127);")
+
+        self.horizontalLayout_4.addWidget(self.btn_folder)
+
+        self.btn_naslink_file_create = QPushButton(self.groupBox_11)
+        self.btn_naslink_file_create.setObjectName(u"btn_naslink_file_create")
+        self.btn_naslink_file_create.setMinimumSize(QSize(120, 23))
+        self.btn_naslink_file_create.setStyleSheet(u"color: rgb(255, 255, 255);\n"
+"background-color: rgb(85, 85, 255);")
+
+        self.horizontalLayout_4.addWidget(self.btn_naslink_file_create)
+
 
         self.verticalLayout_21.addLayout(self.horizontalLayout_4)
 
@@ -1199,6 +1214,8 @@ class Ui_MainForm(object):
         self.groupBox_11.setTitle(QCoreApplication.translate("MainForm", u"\u4e34\u65f6\u5b58\u653e", None))
         self.btn_temp_new.setText(QCoreApplication.translate("MainForm", u"\u65b0\u589e", None))
         self.btn_temp_remove.setText(QCoreApplication.translate("MainForm", u"\u79fb\u9664", None))
+        self.btn_folder.setText(QCoreApplication.translate("MainForm", u"\u751f\u6210folder", None))
+        self.btn_naslink_file_create.setText(QCoreApplication.translate("MainForm", u"\u5355\u6587\u4ef6\u751f\u6210nas\u5feb\u6377\u65b9\u5f0f", None))
         self.groupBox_info.setTitle(QCoreApplication.translate("MainForm", u"\u5173\u4e8e", None))
         self.label_version.setText(QCoreApplication.translate("MainForm", u"\u7248\u672c\uff1a0", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_set), QCoreApplication.translate("MainForm", u"\u8bbe\u7f6e", None))

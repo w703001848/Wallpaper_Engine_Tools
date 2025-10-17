@@ -8,11 +8,12 @@ from PySide6.QtWidgets import QApplication, QWidget, QMenu, QListWidgetItem, QIn
 from widgets.Ui_main import Ui_MainForm
 from widgets.itemImg import ItemImg
 # 功能模块
-from modules.main import Debouncer, timer, convert_path, Unlock_hidden_achievements, getDirSize, dirSizeToStr, openFileDialog, openDirDialog, openMessageDialog, openStartfile, dragEnterEvent
+from modules.main import Debouncer, timer, convert_path, Unlock_hidden_achievements, getDirSize, dirSizeToStr, openFileDialog, openDirDialog, openMessageDialog, openStartfile, dragEnterEvent, folderCreate
 from modules.Config import config, temp_authorblocklistnames, get_wallpaper_config, getWorkshop, getBackup, getTemp, setSteamPath, setWallpaperPath, setWallpaperBackupPath, setConfig, saveConfig
 from modules.RePKG import runRepkg, followWork, updateRepkgData
 from modules.Mklink import mklinkCreate, mklinkNew, mklinkBack, updateMklinkList
-from modules.Storege import MoveProject, GeneratedDirNas, GeneratedDirThread
+from modules.Storege import MoveProject, GeneratedDirNas
+from modules.Thread import WorkerThread
 # 资源图片
 from img import images_rc
 
@@ -584,12 +585,13 @@ class MyWindow(QWidget, Ui_MainForm):
                     data["title"] = f'黑名单【{obj["personaname"]}】{data["title"]}'
                     isAuthorblock = True
                     break
-        widget.setContent(data["title"], self.imgWidth, data["previewsmall"], data["filesizelabel"], data["source"], isAuthorblock, data['invalid'])
+        widget.setContent(data, self.imgWidth, isAuthorblock)
         self.tableWidget_main.setCellWidget(row, col, widget)
 
     def initContextMenu(self): # 右键弹窗初始化
         self.itemMenu = None
-
+        # 多线程
+        GeneratedDirThread = WorkerThread()
         @Slot(object) # @Slot(str)
         def handle_running_update(i): # 接收信号
             # print('# 接收信号: ', i)
@@ -620,6 +622,7 @@ class MyWindow(QWidget, Ui_MainForm):
                 if obj["remark"] == e.text():
                     path = obj["path"]
                     break
+            # 多线程
             if not GeneratedDirThread.running:
                 def moveDirThread():
                     self.progressBar.setVisible(True)
@@ -635,22 +638,36 @@ class MyWindow(QWidget, Ui_MainForm):
 
         self.actionMoveBackup = self.context_menu.addAction("转移备份")
         def handleMoveBackup():
-            self.progressBar.setVisible(False)
-            return
             # 多线程
-            if not GeneratedDirThread.paused:
-                GeneratedDirThread.setFun(lambda: MoveProject(self.itemMenu))
+            if not GeneratedDirThread.running:
+                def moveDirThread():
+                    self.progressBar.setVisible(True)
+                    self.progressBar.setRange(0,0)
+                    data = MoveProject(self.itemMenu, config["backupPath"])
+                    return data
+                GeneratedDirThread.setFun(moveDirThread)
                 GeneratedDirThread.start()
+            else:
+                openMessageDialog('等待上个项目转移')
         self.actionMoveBackup.triggered.connect(handleMoveBackup)
 
         self.menuMoveNas = QMenu("转移NAS同步备份", self)
         def handleMenuNas(e):
-            self.progressBar.setVisible(True)
-            self.progressBar.setRange(0,0)
             for obj in config["nasLink"]:
                 if obj["remark"] == e.text():
-                    MoveProject(self.itemMenu, os.path.join(obj["IP"], obj["dir"]))
-            self.progressBar.setVisible(False)
+                    path = os.path.join(obj["IP"], obj["dir"])
+                    break
+            # 多线程
+            if not GeneratedDirThread.running:
+                def moveDirThread():
+                    self.progressBar.setVisible(True)
+                    self.progressBar.setRange(0,0)
+                    data = MoveProject(self.itemMenu, path)
+                    return data
+                GeneratedDirThread.setFun(moveDirThread)
+                GeneratedDirThread.start()
+            else:
+                openMessageDialog('等待上个项目转移')
         self.menuMoveNas.triggered.connect(handleMenuNas)
         self.actionMoveNas = self.context_menu.addMenu(self.menuMoveNas)
 
@@ -1071,6 +1088,21 @@ class MyWindow(QWidget, Ui_MainForm):
                 openMessageDialog("请选择需要删除的地址！")
         self.btn_temp_remove.clicked.connect(handleRemoveClick)
         self.btn_temp_remove.setVisible(False)
+        
+        def handleFileCreateClick():
+            openMessageDialog("请选择需要生成的地址！")
+            index = self.listWidget_temp.currentRow()
+            if index >=0:
+                pass
+        self.btn_naslink_file_create.clicked.connect(handleFileCreateClick)
+        
+        def handleFolderClick():
+            if len(self.TempDir) > 0:
+                openMessageDialog("请在cmd中选择！")
+                folderCreate(self.TempDir, self.listWidget_temp.currentRow())
+            else:
+                openMessageDialog("请添加临时地址！")
+        self.btn_folder.clicked.connect(handleFolderClick)
 
         def handleTempChange(event):
             self.btn_temp_remove.setVisible(True)

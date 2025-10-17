@@ -81,6 +81,9 @@ class WorkerThread(QThread):
     # @Slot(int) # @Slot(str)
     # def handle_count_update(self, i): # 接收信号
     #     progressBar.setValue(i)
+    #     print(f'# 接收信号 {i}')
+    #     openMessageDialog(f'转移完成')
+    # self.counter_thread.running_update.connect(handle_running_update)
     
     # 使用2
     # self.counter_thread = WorkerThread(lambda:fun_xxx)
