@@ -111,25 +111,29 @@ def MoveProject(obj, path = ""):
         # 移动文件夹
         shutil.move(path_old, path_new)
         # 更新数据
-        f1 = open(os.path.join(path_new, 'project.json'), 'w+', encoding='utf-8')
+        projectPath = os.path.join(path_new, 'project.json')
+        f1 = open(projectPath, encoding='utf-8')
         objCopy = obj.copy()
         objCopy.update(json.load(f1)) # 合并，重合以f1为主
+        f1.close()
         # 更新数据3
         objCopy.pop("previewsmall")
         objCopy.pop("project")
         objCopy.pop("source")
         objCopy.pop("invalid")
-        json.dump(objCopy, f1, ensure_ascii=False)
-        f1.close()
+        f2 = open(projectPath, 'w', encoding='utf-8')
+        json.dump(objCopy, f2, ensure_ascii=False)
+        f2.close()
         # 更新数据2
         if obj["source"] == "backup":
             GeneratedDirNas(path, obj["workshopid"])
         else:
-            obj["project"] = os.path.join(path_new, 'project.json')
+            obj["project"] = projectPath
             obj["file"] = os.path.join(path_new, objCopy["file"])
             obj["previewsmall"] = obj["preview"] = os.path.join(path_new, objCopy["preview"])
             obj["invalid"] = False
         # os.startfile(path_new)
+        print(obj)
         return obj
     except Exception as e:
         logging.error(f"转移内容失败: {e}")
