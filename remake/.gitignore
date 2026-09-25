@@ -1,0 +1,6 @@
+# Generated dependencies and build output for the standalone remake.
+node_modules/
+dist/
+dist-electron/
+release/
+*.log

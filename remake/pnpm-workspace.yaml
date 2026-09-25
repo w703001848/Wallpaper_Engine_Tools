@@ -1,0 +1,7 @@
+allowBuilds:
+  electron: true
+  electron-winstaller: false
+
+# electron-builder 26.15.3 uses cache APIs introduced after @electron/get 3.
+overrides:
+  app-builder-lib@26.15.3>@electron/get: 5.1.0

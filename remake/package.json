@@ -1,0 +1,40 @@
+{
+  "name": "wallpaper-engine-tools-remake",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsc -p tsconfig.electron.json && concurrently -k \"tsc -p tsconfig.electron.json --watch --preserveWatchOutput\" \"vite --config vite.config.ts\" \"wait-on http://localhost:5173 file:dist-electron/electron/main.js && electron . --dev\"",
+    "build": "tsc -p tsconfig.electron.json && vite build --config vite.config.ts && electron-builder --dir",
+    "test": "vitest run --config vitest.config.ts",
+    "test:watch": "vitest --config vitest.config.ts",
+    "lint": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "lucide-react": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  },
+  "devDependencies": {
+    "concurrently": "latest",
+    "electron-builder": "latest",
+    "electron": "latest",
+    "typescript": "latest",
+    "vite": "latest",
+    "vitest": "latest",
+    "wait-on": "latest",
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest"
+  },
+  "main": "dist-electron/electron/main.js",
+  "build": {
+    "appId": "com.wallpaper-engine-tools.remake",
+    "productName": "Wallpaper Engine Tools",
+    "asar": true,
+    "files": ["dist/**/*", "dist-electron/**/*", "resources/**/*", "package.json"],
+    "extraResources": [{ "from": "../RePKG.exe", "to": "RePKG.exe" }],
+    "win": { "target": "dir" }
+  }
+}
