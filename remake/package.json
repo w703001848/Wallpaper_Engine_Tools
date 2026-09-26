@@ -32,8 +32,9 @@
   "build": {
     "appId": "com.wallpaper-engine-tools.remake",
     "productName": "Wallpaper Engine Tools",
+    "electronDist": "node_modules/electron/dist",
     "asar": true,
-    "files": ["dist/**/*", "dist-electron/**/*", "resources/**/*", "package.json"],
+    "files": ["dist/index.html", "dist/assets/**/*", "dist-electron/**/*", "resources/**/*", "package.json"],
     "extraResources": [{ "from": "../RePKG.exe", "to": "RePKG.exe" }],
     "win": { "target": "dir" }
   }

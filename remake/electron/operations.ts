@@ -5,7 +5,7 @@ import crypto from 'node:crypto';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import type { ConflictAction, OperationPlan, OperationResult } from '../src/shared/types.js';
-import { LibraryDatabase } from './database.js';
+import type { LibraryDatabase } from './database.js';
 
 const cancelled = new Set<string>();
 export function cancelOperation(operationId: string): boolean { cancelled.add(operationId); return true; }
@@ -20,8 +20,11 @@ async function hasSpace(parent: string, required: number): Promise<boolean> { tr
 async function uniquePath(target: string): Promise<string> { if (!(await exists(target))) return target; const ext = path.extname(target); const base = target.slice(0, target.length - ext.length); let n = 1; while (await exists(`${base} (${n})${ext}`)) n++; return `${base} (${n})${ext}`; }
 
 export async function previewOperation(input: Omit<OperationPlan, 'id' | 'estimatedBytes' | 'conflicts' | 'checks'>): Promise<OperationPlan> {
-  const sourceExists = await exists(input.source); const targetExists = await exists(input.target); const targetParent = await existingParent(path.dirname(input.target)); const estimatedBytes = sourceExists ? await bytes(input.source) : 0;
-  return { ...input, id: id(), estimatedBytes, conflicts: targetExists ? [{ source: input.source, target: input.target, defaultAction: 'skip' }] : [], checks: { sourceExists, targetParentWritable: await writable(targetParent), enoughSpace: await hasSpace(targetParent, estimatedBytes) } };
+  const source = path.resolve(input.source);
+  // Copy and move receive a destination directory. Appending the source name keeps the selected project folder intact.
+  const target = input.kind === 'copy' || input.kind === 'move' ? path.join(path.resolve(input.target), path.basename(source)) : path.resolve(input.target);
+  const sourceExists = await exists(source); const targetExists = await exists(target); const targetParent = await existingParent(path.dirname(target)); const estimatedBytes = sourceExists ? await bytes(source) : 0;
+  return { ...input, source, target, id: id(), estimatedBytes, conflicts: targetExists ? [{ source, target, defaultAction: 'skip' }] : [], checks: { sourceExists, targetParentWritable: await writable(targetParent), enoughSpace: await hasSpace(targetParent, estimatedBytes) } };
 }
 
 export async function executeOperation(plan: OperationPlan, actions: Record<string, ConflictAction>, db: LibraryDatabase): Promise<OperationResult> {
@@ -33,6 +36,9 @@ export async function executeOperation(plan: OperationPlan, actions: Record<stri
     if (!plan.checks.enoughSpace) throw new Error('目标磁盘可用空间不足');
     let target = plan.target; const action = actions[plan.target] || plan.conflicts[0]?.defaultAction || 'skip';
     if (await exists(target)) { if (action === 'skip') throw new Error('目标已存在，操作已跳过'); if (action === 'rename') target = await uniquePath(target); }
+    // Copying into the source tree can recurse, while overwriting the source itself can delete the committed move.
+    const relativeTarget = path.relative(path.resolve(plan.source), path.resolve(target));
+    if (!relativeTarget || (!relativeTarget.startsWith('..') && !path.isAbsolute(relativeTarget))) throw new Error('目标文件夹不能与源文件夹相同或位于其内部');
     await fs.mkdir(path.dirname(target), { recursive: true });
     // Copy into an isolated staging path first. The destination is only committed after byte validation.
     if (plan.kind === 'copy' || plan.kind === 'move') { staging = `${target}.wet-staging-${plan.id}`; await fs.cp(plan.source, staging, { recursive: true, force: false }); if (cancelled.delete(plan.id)) throw new Error('操作已取消'); if (await bytes(staging) !== plan.estimatedBytes) throw new Error('目标校验失败，文件大小不一致'); if (action === 'overwrite' && await exists(target)) { displaced = `${target}.wet-backup-${plan.id}`; await fs.rename(target, displaced); } await fs.rename(staging, target); staging = ''; if (plan.kind === 'move') await fs.rm(plan.source, { recursive: true, force: true }); }
@@ -56,19 +62,27 @@ export async function createShortcut(shortcutPath: string, targetPath: string): 
 
 export async function createSymlink(source: string, target: string): Promise<OperationResult> {
   const result: OperationResult = { id: id(), success: false, message: '', changedPaths: [], rollbackAvailable: true };
-  const backup = `${source}.wet-backup`; let sourceRenamed = false; let targetWasCreated = false;
+  const sourcePath = path.resolve(source); const targetPath = path.resolve(target); const backup = `${sourcePath}.wet-backup`; let sourceRenamed = false; let targetWasCreated = false; let linkCreated = false;
   try {
-    if (!(await exists(source))) throw new Error('需要链接的原目录不存在');
+    if (!(await exists(sourcePath))) throw new Error('需要链接的原目录不存在');
+    if (!(await fs.lstat(sourcePath)).isDirectory()) throw new Error('需要链接的源路径必须是目录');
+    const sourceToTarget = path.relative(sourcePath, targetPath); const targetToSource = path.relative(targetPath, sourcePath);
+    if (!sourceToTarget || !targetToSource || (!sourceToTarget.startsWith('..') && !path.isAbsolute(sourceToTarget)) || (!targetToSource.startsWith('..') && !path.isAbsolute(targetToSource))) throw new Error('原目录与目标目录不能相同或互相包含');
     if (await exists(backup)) throw new Error(`备份目录已存在: ${backup}`);
-    if (!(await exists(target))) { await fs.mkdir(target, { recursive: true }); targetWasCreated = true; }
-    if ((await fs.readdir(target)).length) throw new Error('符号链接目标目录必须为空');
-    await fs.rename(source, backup); sourceRenamed = true;
-    // Keep the original directory as recovery data until the user explicitly restores the link.
-    await fs.cp(backup, target, { recursive: true, force: false });
-    if (await bytes(backup) !== await bytes(target)) throw new Error('目标目录校验失败');
-    await fs.symlink(target, source, 'dir');
-    result.success = true; result.message = `符号链接已创建，原目录保留在 ${backup}`; result.changedPaths.push(source, target, backup);
-  } catch (error) { if (sourceRenamed && !(await exists(source))) await fs.rename(backup, source).catch(() => undefined); if (targetWasCreated) await fs.rm(target, { recursive: true, force: true }).catch(() => undefined); result.message = error instanceof Error ? error.message : String(error); }
+    if (!(await exists(targetPath))) { await fs.mkdir(targetPath, { recursive: true }); targetWasCreated = true; }
+    if (!(await fs.lstat(targetPath)).isDirectory()) throw new Error('目标路径必须是目录');
+    await fs.rename(sourcePath, backup); sourceRenamed = true;
+    // Windows junctions provide directory redirection without requiring Developer Mode or elevation.
+    await fs.symlink(targetPath, sourcePath, process.platform === 'win32' ? 'junction' : 'dir'); linkCreated = true;
+    // Pure link mode deliberately leaves the original content only in the recovery backup.
+    result.success = true; result.message = `目录链接已创建，未复制原目录内容；备份保留在 ${backup}`; result.changedPaths.push(sourcePath, targetPath, backup);
+  } catch (error) {
+    if (linkCreated) await fs.unlink(sourcePath).catch(() => undefined);
+    if (sourceRenamed && !(await exists(sourcePath))) await fs.rename(backup, sourcePath).catch(() => undefined);
+    if (targetWasCreated) await fs.rm(targetPath, { recursive: true, force: true }).catch(() => undefined);
+    const cause = error as NodeJS.ErrnoException;
+    result.message = cause.code === 'EPERM' ? '没有权限创建目录链接，请确认原目录和目标目录可写，且目标不是受保护或网络位置' : error instanceof Error ? error.message : String(error);
+  }
   return result;
 }
 

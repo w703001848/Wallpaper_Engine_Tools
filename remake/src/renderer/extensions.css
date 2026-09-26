@@ -1,19 +1,1153 @@
 /* Styles for category navigation and filesystem workflow controls. */
-.folder-tree { display: flex; flex-direction: column; }
-.folder-row { border: 0; background: transparent; color: #84909b; text-align: left; padding-top: 5px; padding-bottom: 5px; border-radius: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.folder-row:hover, .folder-row.active { background: #202831; color: #d8efb2; }
-.file-result { border: 0; background: transparent; color: #8996a1; text-align: left; padding: 3px 0; }
-.file-result:hover { color: #c9f36b; }
-.danger { color: #e98585; margin-left: 12px; }
-.full { width: 100%; margin-bottom: 10px; }
-.segmented { display: grid; grid-template-columns: 1fr 1fr; background: #11161c; border: 1px solid #303944; border-radius: 5px; padding: 2px; margin-bottom: 11px; }
-.segmented button { border: 0; background: transparent; color: #7d8994; padding: 6px; border-radius: 3px; }
-.segmented button.active { background: #303a45; color: #e7edf3; }
-.storage-card select { width: 100%; height: 38px; border: 1px solid #303944; border-radius: 6px; background: #141a21; color: #dce4eb; padding: 0 9px; margin-bottom: 11px; }
-.import-card { grid-column: 1 / -1; }
-.input-action { display: grid; grid-template-columns: 1fr 34px; gap: 7px; align-items: end; }
-.input-action input, .input-action .icon-button { margin-top: 6px; }
-.detect-button { margin-bottom: 18px; }
-.empty-state { grid-column: 1 / -1; min-height: 340px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: #65727d; text-align: center; }
-.empty-state strong { color: #99a5af; }
-.empty-state span { font-size: 12px; max-width: 330px; line-height: 1.6; }
+.folder-tree {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 575px);
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.folder-row {
+  border: 0;
+  background: transparent;
+  color: #84909b;
+  text-align: left;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  border-radius: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.folder-row:hover,
+.folder-row.active {
+  background: #202831;
+  color: #d8efb2;
+}
+.file-result {
+  border: 0;
+  background: transparent;
+  color: #8996a1;
+  text-align: left;
+  padding: 7px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.file-result:hover {
+  color: #c9f36b;
+}
+.danger {
+  color: #e98585;
+  margin-left: 12px;
+}
+.full {
+  width: 100%;
+  margin-bottom: 10px;
+}
+.settings-directory-card {
+  margin-top: 16px;
+}
+.settings-directory-card .source-line {
+  min-height: 42px;
+  gap: 12px;
+  border-top: 1px solid #29313b;
+}
+.settings-directory-card .source-line > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.source-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.segmented {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: #11161c;
+  border: 1px solid #303944;
+  border-radius: 5px;
+  padding: 2px;
+  margin-bottom: 11px;
+}
+.segmented button {
+  border: 0;
+  background: transparent;
+  color: #7d8994;
+  padding: 6px;
+  border-radius: 3px;
+}
+.segmented button.active {
+  background: #303a45;
+  color: #e7edf3;
+}
+.storage-card select {
+  width: 100%;
+  height: 38px;
+  border: 1px solid #303944;
+  border-radius: 6px;
+  background: #141a21;
+  color: #dce4eb;
+  padding: 0 9px;
+  margin-bottom: 11px;
+}
+/* .import-card {
+  grid-column: 1 / -1;
+} */
+.input-action {
+  display: grid;
+  grid-template-columns: 1fr 34px;
+  gap: 7px;
+  align-items: end;
+}
+.input-action input,
+.input-action .icon-button {
+  margin-top: 6px;
+}
+.detect-button {
+  margin-bottom: 18px;
+}
+.empty-state {
+  grid-column: 1 / -1;
+  min-height: 340px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #65727d;
+  text-align: center;
+}
+.empty-state strong {
+  color: #99a5af;
+}
+.empty-state span {
+  font-size: 12px;
+  max-width: 330px;
+  line-height: 1.6;
+}
+
+/* The top navigation replaces the former full-height sidebar without changing tab state. */
+.app-shell {
+  min-height: 100vh;
+  height: 100vh;
+}
+.workspace {
+  width: 100%;
+  min-height: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+.library-workspace {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.title-block {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  min-width: 0;
+}
+.title-block .brand {
+  padding: 0;
+  flex: 0 0 auto;
+}
+.topbar {
+  align-items: center;
+}
+.top-actions {
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.top-nav {
+  flex-grow: 1;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.top-nav .nav-item {
+  width: auto;
+  margin: 0;
+  padding: 8px 10px;
+  text-align: center;
+}
+.top-nav .nav-item.active {
+  box-shadow: inset 0 -2px #c9f36b;
+}
+
+/* Keep the three library panes inside one viewport so each pane owns its overflow. */
+.library-view {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.library-view > .toolbar {
+  flex: 0 0 auto;
+}
+.content-grid {
+  flex: 1 1 auto;
+  min-height: 0;
+  grid-template-columns: minmax(155px, 170px) minmax(0, 1fr) minmax(
+      250px,
+      280px
+    );
+  align-items: stretch;
+}
+.filters,
+.details {
+  min-height: 0;
+}
+.library-area {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
+}
+.library-area .section-meta {
+  margin-bottom: 0;
+  padding-bottom: 12px;
+}
+.card-grid {
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  /* The configured value is an upper bound; narrower workspaces reduce columns while retaining at least two tracks. */
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(
+      min(
+        max(155px, var(--library-column-width, 155px)),
+        calc((100% - 13px) / 2)
+      ),
+      1fr
+    )
+  );
+  align-content: start;
+  align-items: start;
+  grid-auto-rows: max-content;
+  padding: 1px 3px 12px 0;
+  scrollbar-gutter: stable;
+}
+.project-card {
+  height: max-content;
+  min-height: 0;
+  align-self: start;
+}
+.project-card,
+.project-card:disabled {
+  color: #f0f4f7;
+  opacity: 1;
+}
+.project-card .thumb {
+  height: auto;
+  min-height: 0;
+  aspect-ratio: 1 / 1;
+}
+.card-title-overlay {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: block;
+  padding: 8px 10px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.6);
+  font-size: 13px;
+  font-weight: 650;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.project-tag {
+  position: absolute;
+  z-index: 3;
+  top: 8px;
+  left: 0;
+  min-height: 22px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 2px;
+  border-radius: 0 3px 3px 0;
+  color: #fff;
+  font-size: 10px;
+  line-height: 1;
+}
+.project-tag.source-workshop {
+  background: #316aa3;
+}
+.project-tag.source-backup {
+  background: #7a4f9e;
+}
+.project-tag.source-temp {
+  background: #a9692f;
+}
+.project-tag.source-nas {
+  background: #277d6c;
+}
+.project-tag.source-unknown {
+  background: #5d6670;
+}
+.pagination {
+  min-height: 54px;
+  margin: 0;
+  border-top: 1px solid #252c35;
+}
+.page-control {
+  min-height: 32px;
+  padding: 0 9px;
+  border: 1px solid #303944;
+  border-radius: 5px;
+  background: #1c232c;
+  color: #c8d1da;
+  white-space: nowrap;
+}
+.page-control:hover:not(:disabled) {
+  border-color: #637180;
+  background: #242d38;
+}
+.page-control:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+.page-jump {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #8c98a3;
+  white-space: nowrap;
+}
+.page-jump input {
+  width: 42px;
+  height: 32px;
+  padding: 0 5px;
+  border: 1px solid #303944;
+  border-radius: 5px;
+  background: #191f27;
+  color: #e7edf3;
+  text-align: center;
+  outline: 0;
+}
+.page-jump input:focus {
+  border-color: #91b65a;
+  box-shadow: 0 0 0 2px rgba(145, 182, 90, 0.16);
+}
+
+/* The card menu stays in the viewport and exposes only destinations configured in settings. */
+.context-menu-layer {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+}
+.project-context-menu {
+  position: fixed;
+  width: 280px;
+  max-height: min(350px, calc(100vh - 16px));
+  overflow-y: auto;
+  padding: 6px;
+  border: 1px solid #3b4652;
+  border-radius: 6px;
+  background: #171d24;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.42);
+}
+.context-menu-title {
+  overflow: hidden;
+  padding: 8px 9px;
+  color: #e3e9ee;
+  font-size: 12px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.context-menu-group {
+  padding: 6px 0;
+  border-top: 1px solid #29313b;
+}
+.context-menu-group > span {
+  display: block;
+  padding: 4px 9px 5px;
+  color: #6f7c87;
+  font-size: 10px;
+}
+.context-menu-group button {
+  width: 100%;
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 9px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #cbd4dc;
+  text-align: left;
+}
+.context-menu-group button span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.context-menu-group button:hover:not(:disabled),
+.context-menu-group button:focus-visible {
+  outline: 0;
+  background: #26313b;
+  color: #e4f5c8;
+}
+.context-menu-group button:disabled {
+  color: #59646e;
+  cursor: not-allowed;
+}
+.context-menu-empty {
+  padding: 7px 9px;
+  color: #59646e;
+  font-size: 11px;
+}
+
+.settings-display-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.settings-form select {
+  width: 100%;
+  height: 38px;
+  display: block;
+  margin-top: 6px;
+  padding: 0 9px;
+  border: 1px solid #303944;
+  border-radius: 5px;
+  background: #191f27;
+  color: #e4ebf1;
+}
+
+/* Folder rows separate filtering from expansion so parent folders remain selectable. */
+.folder-row-wrap {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+.folder-row-wrap .folder-row {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.folder-toggle {
+  flex: 0 0 22px;
+  width: 22px;
+  height: 27px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #788692;
+}
+.folder-toggle:not(:disabled):hover,
+.folder-toggle:not(:disabled):focus-visible {
+  background: #202831;
+  color: #d8efb2;
+  outline: 0;
+}
+.folder-toggle-placeholder {
+  width: 13px;
+  height: 13px;
+  display: block;
+}
+.root-folder {
+  width: 100%;
+  overflow: initial;
+}
+
+.migration-source {
+  min-width: 0;
+  margin: 12px 0 10px;
+  padding: 9px 10px;
+  border: 1px solid #29313b;
+  border-radius: 5px;
+  background: #141a21;
+}
+.migration-source span,
+.migration-source code {
+  display: block;
+}
+.migration-source span {
+  margin-bottom: 5px;
+  color: #788692;
+  font-size: 10px;
+}
+.migration-source code {
+  overflow: hidden;
+  color: #b7c1ca;
+  font-family: Consolas, monospace;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.migration-target {
+  display: flex;
+  gap: 7px;
+  margin-bottom: 11px;
+}
+.storage-card .migration-target input {
+  min-width: 0;
+  margin-bottom: 0;
+}
+.migration-target .icon-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.migration-plan {
+  min-width: 0;
+  margin-bottom: 11px;
+  padding: 9px 10px;
+  border: 1px solid #394552;
+  border-radius: 5px;
+  background: #171e26;
+}
+.migration-plan > span,
+.migration-plan > code {
+  display: block;
+}
+.migration-plan > span {
+  margin-bottom: 5px;
+  color: #82909c;
+  font-size: 10px;
+}
+.migration-plan > code {
+  overflow: hidden;
+  color: #d0d8df;
+  font-family: Consolas, monospace;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.conflict-actions {
+  grid-template-columns: repeat(3, 1fr);
+  margin: 9px 0 0;
+}
+.conflict-actions button {
+  min-width: 0;
+  font-size: 11px;
+  white-space: nowrap;
+}
+.import-card {
+  transition:
+    border-color 0.15s,
+    background-color 0.15s;
+}
+.import-card.dragging {
+  border-color: #8caf54;
+  background: #1d271d;
+}
+.import-drop-copy {
+  min-height: 42px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px dashed #394552;
+  border-radius: 5px;
+  color: #8996a1;
+  font-size: 12px;
+}
+.import-card.dragging .import-drop-copy {
+  color: #dff3bc;
+  border-color: #8caf54;
+}
+.import-file-input {
+  margin-bottom: 11px;
+}
+.storage-card .import-file-input input,
+.import-file-input .icon-button {
+  margin-top: 0;
+}
+.import-title {
+  min-width: 0;
+  margin-bottom: 11px;
+  padding: 8px 10px;
+  border-radius: 5px;
+  background: #141a21;
+}
+.import-title label,
+.import-title input {
+  display: block;
+}
+.import-title label {
+  margin-bottom: 4px;
+  color: #788692;
+  font-size: 10px;
+}
+.import-title input {
+  width: 100%;
+  margin: 0;
+}
+
+/* NAS management stays full-width because paths, status errors, and archive checks need scan-friendly rows. */
+.nas-card {
+  grid-column: 1 / -1;
+}
+.settings-nas-card {
+  margin-top: 18px;
+}
+.nas-heading,
+.nas-heading > div:last-child,
+.nas-editor-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.nas-heading {
+  margin-bottom: 12px;
+}
+.nas-heading h3 {
+  margin-bottom: 5px;
+}
+.nas-heading p {
+  margin: 0;
+  color: #75818c;
+  font-size: 11px;
+}
+.nas-editor {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.65fr) minmax(260px, 1.35fr) auto;
+  gap: 9px;
+  align-items: start;
+  margin-bottom: 12px;
+  padding: 11px;
+  border: 1px solid #394552;
+  border-radius: 5px;
+  background: #151b22;
+}
+.nas-editor > input,
+.nas-editor .input-action input,
+.nas-editor .input-action .icon-button {
+  margin: 0;
+}
+.nas-editor-actions {
+  justify-content: flex-end;
+}
+.nas-editor-actions .primary-button {
+  width: auto;
+}
+.nas-location-list {
+  border-top: 1px solid #29313b;
+}
+.nas-location {
+  min-height: 58px;
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(150px, 0.65fr) 32px 34px 34px;
+  gap: 8px;
+  align-items: center;
+  border-bottom: 1px solid #29313b;
+}
+.nas-location-main {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.nas-location-main > div {
+  min-width: 0;
+}
+.nas-location-main strong,
+.nas-location-main code,
+.nas-location-state span,
+.nas-location-state small {
+  display: block;
+}
+.nas-location-main strong {
+  color: #cbd4dc;
+  font-size: 12px;
+}
+.nas-location-main code {
+  margin-top: 4px;
+  overflow: hidden;
+  color: #77838e;
+  font-family: Consolas, monospace;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nas-dot {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 8px;
+  border-radius: 50%;
+  background: #697581;
+}
+.nas-dot.writable {
+  background: #8fbf52;
+}
+.nas-dot.readonly {
+  background: #d0a34b;
+}
+.nas-dot.offline {
+  background: #c56568;
+}
+.nas-location-state {
+  min-width: 0;
+}
+.nas-status {
+  color: #98a4ae;
+  font-size: 11px;
+}
+.nas-status.writable {
+  color: #b8d77a;
+}
+.nas-status.readonly {
+  color: #e2b965;
+}
+.nas-status.offline {
+  color: #e28d90;
+}
+.nas-location-state small {
+  margin-top: 3px;
+  overflow: hidden;
+  color: #65717d;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nas-empty {
+  padding: 18px 0;
+  color: #687581;
+  font-size: 11px;
+  text-align: center;
+}
+.nas-archive {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(190px, 0.65fr);
+  gap: 12px 16px;
+  align-items: end;
+  margin-top: 20px;
+  padding-top: 17px;
+  border-top: 1px solid #303944;
+}
+.nas-archive-only {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+.nas-archive > label {
+  display: block;
+  color: #84909b;
+  font-size: 11px;
+}
+.nas-archive .migration-source {
+  margin-bottom: 0;
+}
+.nas-archive .migration-plan,
+.nas-archive .nas-warning,
+.nas-archive > .primary-button,
+.nas-archive > .nas-repair-button,
+.nas-archive > .notice {
+  grid-column: 1 / -1;
+}
+.nas-warning {
+  padding: 9px 10px;
+  border-radius: 5px;
+  background: #32251d;
+  color: #dfaa7b;
+  font-size: 11px;
+}
+@media (max-width: 1200px) {
+  .nas-editor {
+    grid-template-columns: 1fr;
+  }
+  .nas-location {
+    grid-template-columns:
+      minmax(180px, 1fr) minmax(120px, 0.55fr)
+      32px 34px 34px;
+  }
+}
+
+.details textarea {
+  display: block;
+  width: 100%;
+  min-height: 112px;
+  margin-top: 6px;
+  padding: 9px;
+  resize: vertical;
+  border: 1px solid #303944;
+  border-radius: 5px;
+  background: #191f27;
+  color: #e4ebf1;
+  line-height: 1.5;
+  outline: 0;
+}
+.details textarea:focus {
+  border-color: #91b65a;
+  box-shadow: 0 0 0 2px rgba(145, 182, 90, 0.16);
+}
+.details .description {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.detail-meta {
+  margin: 14px 0 16px;
+  padding: 10px 0;
+  border-top: 1px solid #252c35;
+  border-bottom: 1px solid #252c35;
+}
+.detail-meta div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 0;
+}
+.detail-meta dt {
+  color: #74808b;
+  font-size: 11px;
+}
+.detail-meta dd {
+  margin: 0;
+  color: #b3bdc7;
+  font-size: 11px;
+  text-align: right;
+}
+
+/* RePKG accepts native file drops and gives extracted images the full content width. */
+.repkg-drop-zone {
+  margin-bottom: 18px;
+  padding: 14px;
+  border: 1px dashed #3b4652;
+  border-radius: 7px;
+  background: #171d24;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+.repkg-drop-zone.dragging {
+  border-color: #a9d45d;
+  background: #202a1d;
+}
+.repkg-drop-copy {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #8996a1;
+  font-size: 12px;
+}
+.repkg-drop-zone.dragging .repkg-drop-copy {
+  color: #dff3bc;
+}
+.repkg-drop-zone .path-row {
+  margin-bottom: 0;
+}
+.repkg-error {
+  margin-top: 10px;
+  color: #f0a0a0;
+  font-size: 12px;
+}
+.repkg-panel .job-card {
+  padding: 18px;
+}
+.repkg-output-directory {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 34px;
+  gap: 10px;
+  align-items: end;
+  margin-top: 14px;
+}
+.repkg-output-directory > div {
+  min-width: 0;
+}
+.repkg-output-directory span {
+  display: block;
+  margin-bottom: 5px;
+  color: #74808b;
+  font-size: 10px;
+}
+.repkg-output-directory code {
+  display: block;
+  overflow: hidden;
+  color: #b4bec8;
+  font-family: Consolas, monospace;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* Two responsive columns keep image previews large while using the available result width. */
+.repkg-panel .output-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 1fr));
+  gap: 16px;
+  align-items: start;
+}
+.repkg-panel .file-result {
+  min-height: 42px;
+  padding: 8px 10px;
+  border: 1px solid #2c3540;
+  border-radius: 5px;
+  background: #151b22;
+}
+.repkg-image {
+  margin: 0;
+  min-width: 0;
+}
+.repkg-image-frame {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #303944;
+  border-radius: 6px;
+  background: #10151b;
+  color: #76838f;
+}
+.repkg-image-frame:hover {
+  border-color: #91b65a;
+}
+.repkg-image-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.repkg-image-frame span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.repkg-image figcaption {
+  padding: 7px 2px 0;
+  overflow: hidden;
+  color: #9aa6b1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.repkg-history {
+  margin-top: 26px;
+}
+.repkg-history-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.repkg-history-title h3 {
+  margin: 0;
+}
+.repkg-history-title span {
+  color: #74808b;
+  font-size: 11px;
+}
+.repkg-history-entry {
+  /* Keep a long export history inside the tool viewport instead of pushing actions off-screen. */
+  height: calc(100vh - 350px);
+  min-height: 160px;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-gutter: stable;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.repkg-history-entry::-webkit-scrollbar {
+  display: none;
+}
+.repkg-history-item {
+  border-top: 1px solid #29313b;
+}
+.repkg-history-row {
+  min-height: 54px;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) 34px 34px;
+  gap: 8px;
+  align-items: center;
+}
+.repkg-history-row > div {
+  min-width: 0;
+}
+.repkg-history-row code,
+.repkg-history-row time {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.repkg-history-row code {
+  color: #aeb9c3;
+  font-family: Consolas, monospace;
+  font-size: 11px;
+}
+.repkg-history-row time {
+  margin-top: 4px;
+  color: #6f7b87;
+  font-size: 10px;
+}
+.repkg-delete-button {
+  color: #d78181;
+}
+.repkg-delete-button:hover {
+  border-color: #985052;
+  background: #322124;
+  color: #ffabab;
+}
+.repkg-history-output {
+  padding: 4px 0 18px 36px;
+}
+.repkg-history-output > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 42px;
+  color: #74808b;
+  font-size: 11px;
+}
+
+/* Tool pages share the viewport with the top navigation; their content must be allowed to shrink. */
+.workspace:not(.library-workspace) {
+  display: flex;
+  flex-direction: column;
+}
+.workspace:not(.library-workspace) > .tool-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* Storage content keeps the operation cards scrollable while the log stays visible on the right. */
+.storage-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 14px;
+  height: calc(100vh - 180px);
+  min-height: 160px;
+  min-width: 0;
+}
+.storage-workspace > .storage-layout {
+  height: 100%;
+  min-height: 160px;
+  overflow-y: auto;
+  align-content: start;
+  padding-right: 4px;
+  scrollbar-gutter: stable;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.storage-log {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid #29313b;
+  border-radius: 7px;
+  background: #191f27;
+  display: flex;
+  flex-direction: column;
+}
+.storage-log-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 15px 15px 12px;
+  border-bottom: 1px solid #29313b;
+  color: #c9f36b;
+}
+.storage-log-heading h3 {
+  margin: 0 0 5px;
+  color: #dce5ec;
+  font-size: 12px;
+}
+.storage-log-heading span {
+  color: #74808b;
+  font-size: 10px;
+}
+.storage-log-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 4px 14px 12px;
+  scrollbar-width: thin;
+}
+.storage-log-row {
+  display: flex;
+  gap: 9px;
+  padding: 11px 0;
+  border-bottom: 1px solid #252c35;
+}
+.storage-log-row:last-child {
+  border-bottom: 0;
+}
+.storage-log-dot {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  margin-top: 4px;
+  border-radius: 50%;
+  background: #81909d;
+}
+.storage-log-row.success .storage-log-dot {
+  background: #b6df67;
+}
+.storage-log-row.error .storage-log-dot {
+  background: #d78181;
+}
+.storage-log-row p {
+  margin: 0 0 4px;
+  color: #b9c4cd;
+  font-size: 11px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.storage-log-row time {
+  color: #66737f;
+  font-size: 10px;
+}
+.storage-log-empty {
+  padding: 24px 4px;
+  color: #687581;
+  font-size: 11px;
+  text-align: center;
+}
+
+/* Keep the heading and footer fixed; only the settings content between them should scroll. */
+.settings-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+.settings-panel > .panel-intro,
+.settings-panel > .settings-footer {
+  flex: 0 0 auto;
+}
+.settings-scroll-area {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.settings-scroll-area > .settings-form,
+.settings-scroll-area > .storage-layout {
+  max-height: none;
+  overflow: visible;
+  scrollbar-gutter: auto;
+  overscroll-behavior: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
